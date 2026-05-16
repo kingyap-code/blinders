@@ -1,0 +1,3421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blinders — Know Where Your Time Actually Goes</title>
+  <meta name="description" content="Blinders logs where your time actually goes — every 30 minutes, automatically. See your peak hours, weekly score, and the exact moments you're at your best.">
+  <meta property="og:title" content="Blinders — Know Where Your Time Actually Goes">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#3DDC97">
+  <link rel="icon" type="image/png" href="asstes/Logowhite.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+
+/* ──────────────────────────────────────────
+   RESET & BASE
+────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:       #0D0D0D;
+  --bg-s:     #111113;
+  --card:     #161618;
+  --card2:    #1a1a1c;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.04);
+  --accent:   #3DDC97;
+  --accent2:  #5ae5b0;
+  --accent-d: rgba(61,220,151,0.10);
+  --text:     #e4e4e7;
+  --text2:    #71717a;
+  --text3:    #3f3f46;
+  --gold:     #F5A623;
+  --red:      #FF5A5F;
+  --nav-h:    44px;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* prevent horizontal scroll globally */
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  /* Linear's signature dot-grid texture */
+  background-image: radial-gradient(circle, rgba(255,255,255,0.036) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
+
+/* ──────────────────────────────────────────
+   LAYOUT HELPERS
+────────────────────────────────────────── */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ──────────────────────────────────────────
+   SCROLL ANIMATIONS
+────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+.reveal.d1 { transition-delay: 0.07s; }
+.reveal.d2 { transition-delay: 0.14s; }
+.reveal.d3 { transition-delay: 0.21s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity:1; transform:none; transition:none; }
+}
+
+@keyframes blink {
+  0%,100%{ opacity:1; } 50%{ opacity:0.25; }
+}
+@keyframes pulse-glow {
+  0%,100%{ box-shadow: 0 0 0 0 rgba(61,220,151,0.6), 0 0 6px 2px rgba(61,220,151,0.4); transform: scale(1); }
+  50%{ box-shadow: 0 0 0 5px rgba(61,220,151,0.1), 0 0 12px 5px rgba(61,220,151,0.65); transform: scale(1.2); }
+}
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ──────────────────────────────────────────
+   DEMO PLACEHOLDER — replaces all UI screenshots
+────────────────────────────────────────── */
+.demo {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* subtle center glow */
+.demo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0.018) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.demo-icon {
+  width: 28px;
+  height: 28px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.demo-icon svg { width: 14px; height: 14px; stroke: var(--text3); }
+
+.demo-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+  letter-spacing: 0.02em;
+}
+
+/* ──────────────────────────────────────────
+   NAV  — Linear exact: 44px, transparent blur
+────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: var(--nav-h);
+  border-bottom: 1px solid var(--border);
+  background: rgba(13,13,13,0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+}
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+}
+.nav-brand-icon {
+  width: 20px; height: 20px;
+  background: var(--accent);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-brand-icon svg { width: 10px; height: 10px; }
+.nav-brand-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 5px;
+  transition: color 0.13s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav-login {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 5px 12px;
+  transition: color 0.13s;
+}
+.nav-login:hover { color: var(--text); }
+.nav-cta {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0D0D0D;
+  background: var(--accent);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: background 0.13s;
+  white-space: nowrap;
+}
+.nav-cta:hover { background: var(--accent2); }
+
+/* ──────────────────────────────────────────
+   HERO
+   Exact Linear pattern:
+   Left column: text
+   Right column: large demo box, clips at viewport edge
+────────────────────────────────────────── */
+.hero-section {
+  padding-top: var(--nav-h);
+  padding-bottom: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: visible;
+  position: relative;
+}
+
+
+.hero-grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 230px 40px 0;
+  gap: 0;
+}
+
+.hero-text {
+  padding: 0;
+  max-width: 100%;
+  text-align: left;
+}
+
+/* Row that holds h1 on the left + tagline on the right (Linear pattern) */
+.hero-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.hero-eyebrow {
+  display: none; /* replaced by hero-tag-right */
+}
+
+/* Right-side tagline — mirrors Linear's "Issue tracking is dead linear.app/next →" */
+.hero-tag-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: color 0.13s;
+}
+.hero-tag-right:hover { color: var(--text); }
+.hero-tag-right .hero-dot {
+  flex-shrink: 0;
+}
+.hero-dot {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse-glow 2s ease-in-out infinite;
+  box-shadow: 0 0 6px 2px rgba(61,220,151,0.5);
+  flex-shrink: 0;
+}
+
+.hero-h1 {
+  font-size: clamp(36px, 4.2vw, 54px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.07;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.hero-sub {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text2);
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0;
+}
+
+.hero-actions-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #0D0D0D;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 7px;
+  text-decoration: none;
+  transition: background 0.13s, transform 0.1s, box-shadow 0.13s;
+  font-family: inherit;
+}
+.hero-btn:hover {
+  background: var(--accent2);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(61,220,151,0.2);
+}
+.hero-ghost {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text2);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.13s;
+}
+.hero-ghost:hover { color: var(--text); }
+
+/* Hero video — centered YouTube embed */
+.hero-video-outer {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding-bottom: 0;
+}
+
+.hero-video-outer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: -108px;
+  left: -25%;
+  right: -25%;
+  background: linear-gradient(
+    to top,
+    rgba(61, 220, 151, 0.28) 0%,
+    rgba(61, 220, 151, 0.16) 18%,
+    rgba(61, 220, 151, 0.07) 42%,
+    rgba(61, 220, 151, 0.02) 70%,
+    transparent 90%
+  );
+  border-radius: 0 0 12px 12px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card);
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.hero-video::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+  z-index: 2;
+}
+
+.video-thumbnail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.video-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  background: rgba(61, 220, 151, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: background 0.2s, transform 0.2s;
+  pointer-events: auto;
+}
+
+.video-play-btn:hover {
+  background: rgba(61, 220, 151, 1);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-play-btn::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 24px solid #0D0D0D;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  margin-left: 4px;
+}
+
+.hero-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* ──────────────────────────────────────────
+   SOCIAL PROOF TICKER
+────────────────────────────────────────── */
+.ticker-section {
+  background: var(--bg-s);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  overflow: hidden;
+  margin-top: 96px;
+  position: relative;
+  z-index: 2;
+}
+.ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 52px;
+  animation: ticker 38s linear infinite;
+  width: max-content;
+}
+.ticker-item {
+  font-size: 12px;
+  color: var(--text3);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ticker-item b { color: var(--accent); font-weight: 600; }
+.ticker-sep {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--text3);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+/* ──────────────────────────────────────────
+   INTRO SECTION
+   Linear: statement left + description right + 3 feature cards below
+────────────────────────────────────────── */
+.intro-section {
+  padding: 96px 0 80px;
+  border-top: 1px solid var(--border2);
+}
+
+.intro-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  margin-bottom: 56px;
+}
+
+.intro-headline {
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.25;
+  color: var(--text);
+}
+.intro-headline em {
+  font-style: normal;
+  color: var(--text2);
+}
+
+.intro-desc {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text2);
+  line-height: 1.75;
+  padding-top: 4px;
+}
+.intro-desc p + p { margin-top: 12px; }
+
+/* 3-card grid */
+.intro-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.intro-card {
+  background: var(--card);
+  padding: 28px 24px;
+}
+.intro-card-icon {
+  width: 36px; height: 36px;
+  background: var(--accent-d);
+  border: 1px solid rgba(61,220,151,0.14);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.intro-card-icon svg { width: 16px; height: 16px; stroke: var(--accent); }
+.intro-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.intro-card-desc {
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* ──────────────────────────────────────────
+   FEATURE SECTIONS — Linear's exact pattern:
+   1. Two-column text header (label + H2 left | description right)
+   2. "See more →" link under the H2
+   3. Full-width demo box below
+────────────────────────────────────────── */
+.feat-section {
+  padding: 96px 0 0;
+  border-top: 1px solid var(--border2);
+}
+
+.feat-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  padding-bottom: 48px;
+}
+
+.feat-meta { }
+
+.feat-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.feat-h2 {
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.feat-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  transition: gap 0.13s;
+}
+.feat-more:hover { gap: 8px; }
+
+.feat-body {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text2);
+  line-height: 1.75;
+  padding-top: 6px; /* optical alignment with h2 */
+}
+.feat-body p + p { margin-top: 12px; }
+
+/* Full-width demo area */
+.feat-visual {
+  border-top: 1px solid var(--border);
+  padding: 32px 0 0;
+  /* Break out of container to be full content-width */
+}
+
+.feat-visual .demo {
+  width: 100%;
+  height: 620px;
+  border-radius: 10px;
+}
+
+/* Last feature section has bottom padding */
+.feat-section:last-of-type {
+  padding-bottom: 0;
+}
+
+/* ──────────────────────────────────────────
+   PRICING SECTION (adapted from feature layout)
+────────────────────────────────────────── */
+.pricing-section {
+  padding: 96px 0;
+  border-top: 1px solid var(--border2);
+}
+.pricing-meta { margin-bottom: 48px; }
+.pricing-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+.pricing-h2 {
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  color: var(--text);
+  margin-bottom: 10px;
+  max-width: 500px;
+}
+.pricing-sub {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+  max-width: 520px;
+}
+
+.pricing-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 1060px;
+}
+.p-card.lifetime {
+  border-color: rgba(245,166,35,0.25);
+  background: rgba(245,166,35,0.03);
+}
+.p-tier.lifetime-tier { color: var(--gold); }
+.p-btn-lifetime {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  width: 100%; padding: 9px;
+  background: var(--gold); border: none;
+  border-radius: 6px; color: #0D0D0D;
+  font-size: 12.5px; font-weight: 600;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  transition: background 0.13s, transform 0.1s;
+}
+.p-btn-lifetime:hover { background: #e8971f; transform: translateY(-1px); }
+
+.p-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.p-card.pro {
+  border-color: rgba(61,220,151,0.25);
+  background: rgba(61,220,151,0.03);
+}
+.p-tier {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+.p-tier.free { color: var(--text3); }
+.p-tier.pro  { color: var(--accent); }
+.p-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); margin-bottom: 4px; }
+.p-price { font-size: 30px; font-weight: 700; letter-spacing: -0.04em; color: var(--text); line-height: 1; }
+.p-price span { font-size: 13px; color: var(--text2); font-weight: 400; }
+.p-framing { font-size: 11px; color: var(--text3); font-style: italic; margin-top: 5px; margin-bottom: 20px; min-height: 14px; }
+.p-hr { height: 1px; background: var(--border); margin-bottom: 16px; }
+.p-list { list-style: none; display: flex; flex-direction: column; gap: 7px; flex: 1; margin-bottom: 20px; }
+.p-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12.5px; color: var(--text2); line-height: 1.4;
+}
+.p-item.locked { opacity: 0.3; }
+.p-item svg { width: 13px; height: 13px; flex-shrink: 0; margin-top: 2px; }
+.p-item strong { color: var(--text); font-weight: 500; }
+.p-btn-free {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  width: 100%; padding: 9px;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text);
+  font-size: 12.5px; font-weight: 500;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  transition: border-color 0.13s, background 0.13s;
+}
+.p-btn-free:hover { border-color: var(--text3); background: rgba(255,255,255,0.03); }
+.p-btn-pro {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  width: 100%; padding: 9px;
+  background: var(--accent); border: none;
+  border-radius: 6px; color: #0D0D0D;
+  font-size: 12.5px; font-weight: 600;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  transition: background 0.13s, transform 0.1s;
+}
+.p-btn-pro:hover { background: var(--accent2); transform: translateY(-1px); }
+.p-foot { font-size: 10.5px; color: var(--text3); text-align: center; margin-top: 6px; }
+
+.pricing-reframe {
+  max-width: 540px;
+  margin-top: 40px;
+  background: rgba(255,255,255,0.015);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+}
+.pricing-reframe p { font-size: 12.5px; color: var(--text2); line-height: 1.75; }
+.pricing-reframe strong { color: var(--text); font-weight: 500; }
+.pricing-reframe p + p { margin-top: 10px; }
+
+/* ──────────────────────────────────────────
+   TESTIMONIALS
+────────────────────────────────────────── */
+.testi-section {
+  padding: 96px 0;
+  border-top: 1px solid var(--border2);
+}
+.testi-meta { margin-bottom: 40px; }
+.testi-label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 10px;
+}
+.testi-h2 {
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 600; letter-spacing: -0.03em;
+  line-height: 1.2; color: var(--text);
+}
+.testi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.t-card {
+  background: var(--card);
+  padding: 24px 20px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.t-quote {
+  font-size: 13px; color: var(--text2);
+  line-height: 1.75; font-style: italic; flex: 1;
+}
+.t-author { display: flex; align-items: center; gap: 9px; }
+.t-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-d);
+  border: 1px solid rgba(61,220,151,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--accent); flex-shrink: 0;
+}
+.t-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.t-role { font-size: 10.5px; color: var(--text3); }
+.t-badge {
+  margin-left: auto;
+  font-size: 9.5px; font-weight: 600;
+  color: var(--accent); padding: 2px 7px;
+  background: var(--accent-d); border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ──────────────────────────────────────────
+   FINAL CTA
+   Linear: minimal, left-aligned, no background change
+────────────────────────────────────────── */
+.cta-section {
+  padding: 112px 0;
+  border-top: 1px solid var(--border2);
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::after {
+  display: none;
+}
+.cta-label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 14px;
+}
+.cta-h2 {
+  font-size: clamp(34px, 4.5vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.06;
+  color: var(--text);
+  margin-bottom: 16px;
+  max-width: 580px;
+}
+.cta-sub {
+  font-size: 15px; color: var(--text2);
+  line-height: 1.7; font-weight: 400;
+  max-width: 440px; margin-bottom: 28px;
+}
+.cta-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #0D0D0D;
+  font-size: 14px; font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 7px;
+  text-decoration: none;
+  transition: background 0.13s, transform 0.1s, box-shadow 0.13s;
+  font-family: inherit;
+}
+.cta-btn:hover {
+  background: var(--accent2);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(61,220,151,0.2);
+}
+.cta-trust {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 14px;
+}
+.cta-trust span { margin: 0 7px; opacity: 0.4; }
+
+/* ──────────────────────────────────────────
+   FOOTER — Linear: minimal 2-row
+────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0 28px;
+}
+.footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.footer-brand {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none;
+}
+.footer-brand-icon {
+  width: 18px; height: 18px;
+  background: var(--accent); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+.footer-brand-icon svg { width: 9px; height: 9px; }
+.footer-brand-name {
+  font-size: 13px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.02em;
+}
+.footer-nav {
+  display: flex; gap: 20px; list-style: none;
+}
+.footer-nav a {
+  font-size: 12px; color: var(--text3);
+  text-decoration: none; transition: color 0.13s;
+}
+.footer-nav a:hover { color: var(--text2); }
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border2);
+  padding-top: 16px;
+}
+.footer-copy {
+  font-size: 11.5px; color: var(--text3);
+}
+.footer-tagline {
+  font-size: 11.5px; color: var(--text3);
+}
+
+/* ──────────────────────────────────────────
+   RESPONSIVE
+────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .container { padding: 0 24px; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    padding: 40px 24px 0;
+  }
+  .hero-text { padding: 0; }
+  .hero-video-outer { max-width: 100%; padding-bottom: 0; }
+  .intro-row { grid-template-columns: 1fr; gap: 24px; }
+  .intro-cards { grid-template-columns: 1fr; }
+  .feat-header { grid-template-columns: 1fr; gap: 20px; }
+  .feat-body { padding-top: 0; }
+  .feat-visual .demo { height: 280px; }
+  .pricing-cards { grid-template-columns: 1fr; max-width: 420px; }
+  .testi-grid { grid-template-columns: 1fr; }
+  .footer-top { flex-direction: column; align-items: flex-start; }
+  .footer-nav { flex-wrap: wrap; gap: 12px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
+@media (max-width: 560px) {
+  .hero-h1 { font-size: 34px; }
+  .hero-actions-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .nav-links { display: none; }
+  .cta-h2 { font-size: 32px; }
+}
+
+
+
+/* ──────────────────────────────────────────
+   DEMO: LIVE TIME-LOGGING GRID (Feature 1)
+   Exact copy of app's tracker table styles.
+────────────────────────────────────────── */
+
+/* Outer card */
+.lp-demo-box {
+  position: relative;
+  width: 100%; height: 620px;
+  background: #0F0F10; border-radius: 10px;
+  overflow: hidden; display: flex; flex-direction: column;
+  font-family: 'Inter', system-ui, sans-serif; font-size: 13px;
+  color: #fff; -webkit-font-smoothing: antialiased;
+}
+/* Scrollable body (overflow-x visible so floating buttons aren't clipped) */
+.lp-demo-scroll {
+  flex: 1; overflow-y: auto; overflow-x: visible; position: relative;
+}
+.lp-demo-scroll::-webkit-scrollbar { width: 5px; }
+.lp-demo-scroll::-webkit-scrollbar-track { background: transparent; }
+.lp-demo-scroll::-webkit-scrollbar-thumb { background: #4a4d57; border-radius: 3px; }
+/* Center the table; Now button extends left of the wrap via absolute positioning */
+.lp-tbl-area { overflow: visible; display: flex; justify-content: center; }
+.lp-tbl-scroll-wrap {
+  position: relative; overflow: visible;
+  width: fit-content; margin: 0 auto;
+}
+
+/* ── TABLE ── */
+.lp-tracker-table {
+  width: auto; border-collapse: collapse;
+  border-spacing: 0; table-layout: fixed;
+}
+.lp-tracker-table thead th {
+  position: sticky; top: 0; z-index: 10;
+  background: #26282E; border-bottom: 1px solid #3a3d47;
+  padding: 13px 14px; text-align: center;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: #b0b5c0; white-space: nowrap;
+}
+.lp-tracker-table thead th:first-child { text-align: left; padding-left: 20px; }
+.lp-tracker-table thead th:nth-child(1),
+.lp-tracker-table td:nth-child(1) { width: 80px; min-width: 80px; max-width: 80px; }
+.lp-tracker-table thead th:nth-child(2),
+.lp-tracker-table td:nth-child(2) { width: 130px; min-width: 130px; max-width: 130px; }
+.lp-tracker-table thead th:nth-child(3),
+.lp-tracker-table td:nth-child(3) { width: 130px; min-width: 130px; max-width: 130px; }
+.lp-tracker-table thead th:nth-child(4),
+.lp-tracker-table td:nth-child(4) { width: 130px; min-width: 130px; max-width: 130px; }
+
+/* ── ROWS ── */
+.lp-table-row {
+  height: 36px; max-height: 36px;
+  border-left: 3px solid var(--lp-row-accent, transparent);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  background: #0F0F10;
+  transition: background 0.12s ease, border-left-color 0.15s ease;
+}
+.lp-table-row:hover { border-left-color: var(--lp-row-accent, #3a3d47) !important; }
+.lp-table-row.lp-cur-row {
+  background: transparent !important;
+  border-left: none !important;
+  box-shadow: none;
+}
+.lp-table-row.lp-cur-row:hover { background: rgba(255,255,255,0.02) !important; }
+
+/* ── CELLS ── */
+.lp-tracker-table td {
+  padding: 0 10px !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  height: 36px !important; max-height: 36px !important;
+  overflow: hidden !important; color: #fff;
+}
+.lp-cell-time {
+  font-size: 13px; font-weight: 500; color: #b0b5c0;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.lp-cur-row .lp-cell-time { color: #3DDC97; font-weight: 700; }
+.lp-now-badge {
+  display: inline-block; background: #3DDC97; color: #0F0F10;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.10em;
+  padding: 2px 7px; border-radius: 100px; margin-left: 7px;
+  animation: lpNowBlink 1.4s ease-in-out infinite;
+}
+@keyframes lpNowBlink {
+  0%,100% { box-shadow: 0 0 8px rgba(61,220,151,0.9), 0 0 20px rgba(61,220,151,0.5); opacity:1; }
+  50%     { box-shadow: 0 0 4px rgba(61,220,151,0.4), 0 0 8px rgba(61,220,151,0.2); opacity:0.7; }
+}
+.lp-cell-editable { cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-act-empty {
+  display: inline-block; width: 110px; min-height: 32px;
+  border-radius: 6px; border: 1px solid rgba(111,111,111,0.5);
+  background: transparent; cursor: pointer;
+  vertical-align: middle; box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+.lp-cell-editable:hover .lp-act-empty { border-color: rgba(255,255,255,0.35); }
+
+/* ── PILLS ── */
+.lp-dd-trigger, .lp-category-pill, .lp-status-pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 3px 10px; border-radius: 6px;
+  border: 1px solid rgba(111,111,111,0.5);
+  background: transparent; font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.6); white-space: nowrap; cursor: pointer;
+  min-width: 110px; width: 110px; height: 32px; box-sizing: border-box;
+  font-family: inherit; text-align: center;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, color 0.15s;
+}
+.lp-dd-trigger:hover, .lp-category-pill:hover, .lp-status-pill:hover {
+  border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.85);
+}
+.lp-category-pill.has-color, .lp-status-pill.has-color {
+  background: var(--pill-color); border-color: var(--pill-color);
+  color: #26282E; font-weight: 600;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--pill-color) 35%, transparent);
+}
+.lp-category-pill.has-color .lp-dd-arrow,
+.lp-status-pill.has-color .lp-dd-arrow { color: #26282E; opacity: 0.7; }
+.lp-category-pill.has-color:hover, .lp-status-pill.has-color:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--pill-color) 55%, transparent);
+}
+.lp-dd-arrow { font-size: 10px; opacity: 0.6; flex-shrink: 0; }
+
+/* ── NOW WIDGET ── */
+.lp-now-widget { position: absolute; pointer-events: none; z-index: 50; display: none; }
+.lp-now-widget.visible { display: block; }
+.lp-now-hline {
+  position: absolute; top: 50%; right: 100%;
+  width: 36px; height: 2px; background: #3DDC97;
+  transform: translateY(-50%);
+  box-shadow: 0 0 4px rgba(61,220,151,0.5);
+}
+.lp-now-btn {
+  position: absolute; top: 50%; right: calc(100% + 36px);
+  transform: translateY(-50%); pointer-events: auto;
+  background: #3DDC97; color: #000; border: none;
+  border-radius: 999px; padding: 8px 18px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  animation: lpNowGreenPulse 1.5s ease-in-out infinite;
+  transition: filter 0.15s, transform 0.15s;
+}
+.lp-now-btn:hover { filter: brightness(1.08); transform: translateY(-50%) scale(1.03); }
+@keyframes lpNowGreenPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(61,220,151,0.55), 0 4px 12px rgba(61,220,151,0.35); }
+  50%     { box-shadow: 0 0 0 10px rgba(61,220,151,0), 0 4px 22px rgba(61,220,151,0.85), 0 0 32px 6px rgba(61,220,151,0.45); }
+}
+
+/* ── FILL-ALL WIDGET ── */
+.lp-fill-widget { position: absolute; pointer-events: none; z-index: 50; display: none; }
+.lp-fill-widget.visible { display: block; }
+.lp-fill-vline {
+  position: absolute; left: 0; top: 0; width: 3px; height: calc(100% - 5px);
+  background: #FF3B3F; border-radius: 2px;
+  box-shadow: 0 0 4px rgba(255,59,63,0.45);
+}
+.lp-fill-hline {
+  position: absolute; top: 50%; right: 100%;
+  width: 36px; height: 2px; background: #FF3B3F;
+  transform: translateY(-50%);
+  box-shadow: 0 0 4px rgba(255,59,63,0.5);
+}
+/* Fill all button — same position pattern as Now button */
+.lp-fill-btn {
+  position: absolute; top: 50%; right: calc(100% + 36px);
+  transform: translateY(-50%); pointer-events: auto;
+  background: #FF5A5F; color: #000; border: none;
+  border-radius: 999px; padding: 8px 18px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+  animation: lpFillRedPulse 1.5s ease-in-out infinite;
+  transition: filter 0.15s, transform 0.15s;
+}
+.lp-fill-btn:hover { filter: brightness(1.08); transform: translateY(-50%) scale(1.03); }
+@keyframes lpFillRedPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,90,95,0.55), 0 4px 12px rgba(255,90,95,0.35); }
+  50%     { box-shadow: 0 0 0 10px rgba(255,90,95,0), 0 4px 22px rgba(255,90,95,0.85), 0 0 32px 6px rgba(255,90,95,0.55); }
+}
+
+/* ── DROPDOWN PANEL ── */
+.lp-dd-panel {
+  position: fixed; z-index: 99999;
+  background: #26282E; border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px; width: 210px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+  overflow: hidden; opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+.lp-dd-panel.lp-dd-open { opacity: 1; transform: none; pointer-events: auto; }
+.lp-dd-search-wrap { padding: 10px 10px 6px; }
+.lp-dd-search {
+  width: 100%; box-sizing: border-box; background: #1a1c20;
+  border: 1px solid rgba(255,255,255,0.10); border-radius: 7px;
+  padding: 7px 10px; font-family: inherit; font-size: 12.5px; color: #fff; outline: none;
+}
+.lp-dd-search::placeholder { color: #5a5d67; }
+.lp-dd-opts { max-height: 220px; overflow-y: auto; padding: 4px 6px; }
+.lp-dd-opt {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; color: rgba(255,255,255,0.85);
+  transition: background 0.1s;
+}
+.lp-dd-opt:hover { background: rgba(255,255,255,0.07); }
+.lp-dd-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.lp-dd-clear {
+  display: block; width: 100%; padding: 8px 16px;
+  background: none; border: none; border-top: 1px solid rgba(255,255,255,0.06);
+  font-family: inherit; font-size: 12px; color: #7a7f8a;
+  cursor: pointer; text-align: left; transition: color 0.1s;
+}
+.lp-dd-clear:hover { color: #b0b5c0; }
+
+/* ── ACTIVITY POPUP ── */
+.lp-act-ov {
+  position: absolute; inset: 0; background: rgba(15,15,16,0.55);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; opacity: 0; transition: opacity 0.18s; border-radius: 10px;
+}
+.lp-act-ov.open { opacity: 1; }
+.lp-act-card {
+  background: #26282E; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; width: 440px; max-width: calc(100% - 48px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+  padding: 24px; display: flex; flex-direction: column; gap: 16px;
+}
+.lp-act-header { display: flex; align-items: center; justify-content: space-between; }
+.lp-act-title { font-size: 16px; font-weight: 700; color: #fff; }
+.lp-act-close {
+  background: none; border: none; font-size: 16px;
+  color: rgba(255,255,255,0.45); cursor: pointer;
+  padding: 4px 6px; border-radius: 6px;
+}
+.lp-act-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.lp-act-input {
+  width: 100%; height: 44px; box-sizing: border-box;
+  background: #0F0F10; border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px; padding: 0 12px;
+  font-family: inherit; font-size: 14px; color: #fff; outline: none;
+  transition: border-color 0.15s;
+}
+.lp-act-input:focus { border-color: rgba(61,220,151,0.5); }
+.lp-act-input::placeholder { color: #5a5d67; }
+.lp-act-footer { display: flex; gap: 10px; }
+.lp-act-save {
+  flex: 1; padding: 10px 18px;
+  background: #3DDC97;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  color: #0F0F10; cursor: pointer; transition: opacity 0.15s;
+}
+.lp-act-save:hover { opacity: 0.9; }
+.lp-act-cancel {
+  flex: 1; padding: 10px 18px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px; font-family: inherit; font-size: 14px;
+  color: rgba(255,255,255,0.6); cursor: pointer; transition: background 0.15s;
+}
+.lp-act-cancel:hover { background: rgba(255,255,255,0.10); }
+
+/* ── ALARM POPUP ── */
+.lp-alarm-ov {
+  position: absolute; inset: 0; background: rgba(15,15,16,0.65);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; opacity: 0; transition: opacity 0.2s; border-radius: 10px;
+}
+.lp-alarm-ov.open { opacity: 1; }
+.lp-alarm-card {
+  background: linear-gradient(135deg,#2a2d33 0%,#1a1c20 55%,#0d0e11 100%);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
+  width: 440px; max-width: calc(100% - 48px);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  padding: 28px; display: flex; flex-direction: column;
+  align-items: center; gap: 20px;
+}
+.lp-alarm-logo { width: 36px; height: 36px; object-fit: contain; }
+.lp-alarm-time {
+  font-size: 14px; font-weight: 700; color: #fff;
+  background: rgba(255,255,255,0.10); border-radius: 8px; padding: 5px 14px;
+}
+.lp-alarm-same {
+  background: none; border: none; font-family: inherit;
+  font-size: 13px; color: #7a7f8a; cursor: pointer;
+  transition: color 0.15s; padding: 2px 4px;
+}
+.lp-alarm-same:hover { color: #b0b5c0; }
+.lp-alarm-row { display: flex; gap: 10px; width: 100%; align-items: center; }
+.lp-alarm-input {
+  flex: 1; height: 40px; box-sizing: border-box;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 0 12px;
+  font-family: inherit; font-size: 13.5px; color: #fff; outline: none;
+  transition: border-color 0.15s;
+}
+.lp-alarm-input:focus { border-color: rgba(61,220,151,0.5); }
+.lp-alarm-input::placeholder { color: #5a5d67; }
+.lp-al-dd-trigger, .lp-al-category-pill, .lp-al-status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 6px;
+  border: 1px solid rgba(111,111,111,0.5);
+  background: transparent; font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.6); white-space: nowrap; cursor: pointer;
+  min-width: 110px; width: 110px; justify-content: flex-start;
+  font-family: inherit; height: 40px; box-sizing: border-box;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.lp-al-dd-trigger:hover { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.85); }
+.lp-al-category-pill.has-color, .lp-al-status-pill.has-color {
+  background: var(--lp-adc-c); border-color: var(--lp-adc-c);
+  color: #0F0F10; font-weight: 600;
+}
+.lp-alarm-log {
+  background: #3DDC97; color: #0F0F10;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  padding: 0; height: 40px; cursor: pointer;
+  width: calc(33.333% - 5.33px);
+  align-self: center;
+  transition: opacity 0.15s, transform 0.1s; letter-spacing: 0.02em;
+}
+/* ── ALARM POPUP: 3-item row (activity + category + energy) ── */
+.lp-alarm-all-row {
+  display: flex; gap: 8px; width: 100%; align-items: center;
+}
+/* 3 items in the row — equal width, pinned to 1/3 each */
+.lp-alarm-all-row .lp-alarm-input,
+.lp-alarm-all-row .lp-al-dd-trigger,
+.lp-alarm-all-row .lp-al-category-pill,
+.lp-alarm-all-row .lp-al-status-pill {
+  flex: 0 0 calc(33.333% - 5.33px);
+  width: calc(33.333% - 5.33px);
+  min-width: 0; box-sizing: border-box;
+}
+.lp-alarm-all-row .lp-al-dd-trigger,
+.lp-alarm-all-row .lp-al-category-pill,
+.lp-alarm-all-row .lp-al-status-pill {
+  justify-content: center;
+}
+.lp-alarm-log:hover { opacity: 0.9; transform: translateY(-1px); }
+.lp-alarm-skip {
+  background: none; border: none; font-family: inherit;
+  font-size: 13px; color: #7a7f8a; cursor: pointer;
+  padding: 4px 8px; transition: color 0.15s;
+}
+.lp-alarm-skip:hover { color: #b0b5c0; }
+.lp-alarm-timer-hint {
+  font-size: 12px; color: #5a5d67; font-family: inherit;
+}
+
+/* ── ALL POPUPS (Now / Fill all / Friction-free) — shared overrides ── */
+.lp-alarm-feat2 .lp-alarm-time {
+  background: #0F0F10; border: none; border-radius: 5px;
+}
+.lp-alarm-feat2 .lp-alarm-input {
+  border: 2px solid transparent; background: #0F0F10; border-radius: 5px; text-align: center;
+}
+.lp-alarm-feat2 .lp-al-dd-trigger,
+.lp-alarm-feat2 .lp-al-category-pill,
+.lp-alarm-feat2 .lp-al-status-pill {
+  border: 2px solid transparent; background: #0F0F10; border-radius: 5px;
+}
+.lp-alarm-feat2 .lp-al-category-pill.has-color,
+.lp-alarm-feat2 .lp-al-status-pill.has-color {
+  background: var(--lp-adc-c);
+}
+.lp-alarm-feat2 .lp-alarm-log { border-radius: 5px; }
+
+/* ── LIQUID GRADIENT RING (Feature 2 popup — applied directly to elements) ── */
+@property --lp-glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes lpRotateConic {
+  from { --lp-glow-angle: 0deg; }
+  to   { --lp-glow-angle: 360deg; }
+}
+.lp-box-glow-active {
+  border: 2px solid transparent !important;
+  border-radius: 5px !important;
+  background:
+    linear-gradient(#0F0F10, #0F0F10) padding-box,
+    conic-gradient(from var(--lp-glow-angle),
+      rgba(255,215,0,0.9),
+      rgba(255,165,0,0.85),
+      rgba(240,200,50,0.9),
+      rgba(255,215,0,0.9)) border-box !important;
+  box-shadow:
+    0 0 6px 1px rgba(255,215,0,0.5),
+    0 0 14px 3px rgba(255,165,0,0.35),
+    0 0 22px 5px rgba(255,215,0,0.2) !important;
+  animation: lpRotateConic 2s linear infinite !important;
+}
+
+/* ── GREETING ── */
+.lp-greeting-section {
+  padding: 12px 28px 10px 28px; flex-shrink: 0;
+  background: #0F0F10;
+  text-align: center; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.lp-greeting-headline { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px; line-height: 1.2; margin-bottom: 2px; }
+.lp-greeting-name { color: #3DDC97; }
+.lp-greeting-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #b0b5c0; font-weight: 400; }
+.lp-greeting-meta-sep { color: rgba(255,255,255,0.25); }
+.lp-greeting-time { color: #7a7f8a; }
+
+/* ── TIMER WIDGET ── */
+/* ── TIMER WIDGET — exact copy of main app's design ── */
+.lp-timer-widget {
+  position: absolute; left: calc(100% + 10px); top: 50%;
+  transform: translateY(-50%); width: 220px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  z-index: 10; background: #1d1f23; padding: 22px 20px; border-radius: 18px;
+  border: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.10);
+  overflow: visible;
+}
+.lp-timer-ring-container {
+  background: #1d1f23;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  position: relative;
+  display: block;
+}
+.lp-timer-ring-container svg {
+  width: 180px; height: 180px; display: block;
+}
+.lp-ring-track {
+  fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 4;
+}
+.lp-ring-progress {
+  fill: none; stroke: #ffffff; stroke-width: 4;
+  stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 141.5;
+  transform: rotate(-90deg); transform-origin: 60px 60px;
+}
+.lp-timer-text {
+  font-size: 22px; font-weight: 700; fill: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif; letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+}
+.lp-timer-play-solo {
+  width: 48px; height: 38px; font-size: 14px;
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.18);
+  background: transparent; color: #ffffff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: default; line-height: 1; font-family: inherit;
+}
+.lp-timer-buttons {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+  align-items: center;
+}
+.lp-timer-wide-btn {
+  width: 100%; height: 36px;
+  font-size: 12px; padding: 8px 12px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85); border-radius: 8px;
+  font-family: inherit; font-weight: 500;
+  cursor: default; text-align: center;
+}
+
+/* ── FILL CALLOUT (text + arrow above Fill all button) ── */
+.lp-fill-callout {
+  position: absolute; pointer-events: none;
+  text-align: center; width: 120px;
+}
+.lp-fill-callout-text {
+  color: #FF5A5F; font-size: 13px; font-weight: 600;
+  line-height: 1.4; margin-bottom: 4px;
+}
+.lp-fill-arrow-svg {
+  width: 12px; height: 62px; display: block; margin: 0 auto;
+}
+
+/* ── DISABLED ROW (future slots) — solid muted colors, no opacity ── */
+.lp-row-disabled { pointer-events: none !important; }
+.lp-row-disabled .lp-cell-time { color: #3a3d47; }
+.lp-row-disabled .lp-dd-trigger { color: rgba(255,255,255,0.18); border-color: rgba(111,111,111,0.2); }
+.lp-row-disabled .lp-act-empty { border-color: rgba(111,111,111,0.2); }
+/* ── NOW WIDGET: green vertical bar (same position/style as red fill line) ── */
+.lp-now-vline {
+  position: absolute; left: 0; top: 5px; width: 3px; height: calc(100% - 5px);
+  background: #3DDC97; border-radius: 2px;
+  box-shadow: 0 0 4px rgba(61,220,151,0.45);
+}
+
+/* ── RESPONSIVE (hide floating buttons, compact columns) ── */
+@media (max-width: 900px) {
+  .lp-tbl-scroll-wrap { width: 100%; }
+  .lp-tracker-table { width: 100%; }
+  .lp-tracker-table td:nth-child(1) { width: 68px; min-width: 68px; max-width: 68px; }
+  .lp-tracker-table td:nth-child(2) { width: auto; }
+  .lp-tracker-table td:nth-child(3) { width: 88px; min-width: 88px; max-width: 88px; }
+  .lp-tracker-table td:nth-child(4) { width: 80px; min-width: 80px; max-width: 80px; }
+  .lp-dd-trigger, .lp-category-pill, .lp-status-pill { min-width: 0; width: auto; font-size: 11px; padding: 3px 7px; height: auto; }
+  .lp-act-empty { width: 75px; }
+  .lp-now-widget, .lp-fill-widget, .lp-timer-widget { display: none !important; }
+}
+
+
+  /* ── LP Sidebar (copied from app perfStrip + day-card styles) ─────────── */
+  .lp-sidebar-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 32px 16px;
+  }
+
+  .lp-sidebar {
+    width: 300px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Action buttons — identical to .strip-action-btns */
+  .lp-strip-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .lp-btn-focus {
+    width: 100%;
+    background: transparent;
+    border: 0.5px solid #26282E;
+    color: rgba(255,255,255,0.7);
+    border-radius: 6px;
+    font-size: 13px;
+    padding: 8px 12px;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: default;
+  }
+  .lp-btn-score {
+    width: 100%;
+    background: #3DDC97;
+    border: none;
+    color: #0F0F10;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: default;
+  }
+
+  /* Week cards — identical to .week-card */
+  .lp-week-card {
+    width: 100%;
+    background: transparent;
+    border: 0.5px solid #26282E;
+    border-radius: 12px;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+  }
+  .lp-week-card-best {
+    border-color: #3DDC97;
+  }
+  .lp-week-card-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .lp-week-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    color: #ffffff;
+  }
+  .lp-week-card-best .lp-week-card-title { color: #3DDC97; }
+  .lp-week-card-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .lp-week-card-track {
+    flex: 1;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .lp-week-card-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .lp-week-card-score {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+    flex-shrink: 0;
+    line-height: 1;
+    min-width: 44px;
+    text-align: right;
+  }
+  .lp-week-card-best .lp-week-card-score { color: #3DDC97; }
+  .lp-week-card-date {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+  }
+  .lp-week-card-best .lp-week-card-date { color: #3DDC97; }
+
+  /* Gold orb — identical to app */
+  .lp-gold-orb {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(circle at 32% 28%, #a8f0d0 0%, #3DDC97 45%, #1a8c5a 100%);
+    box-shadow: inset 0 0 3px rgba(255,255,255,0.45), 0 0 4px rgba(61,220,151,0.55);
+    animation: lpOrbBreath 2.4s ease-in-out infinite;
+  }
+  @keyframes lpOrbBreath {
+    0%, 100% { box-shadow: inset 0 0 3px rgba(255,255,255,0.45), 0 0 4px rgba(61,220,151,0.55); }
+    50%       { box-shadow: inset 0 0 4px rgba(255,255,255,0.65), 0 0 7px rgba(61,220,151,0.8); }
+  }
+
+  /* Strip divider */
+  .lp-strip-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 4px 0 12px;
+  }
+
+  /* Day cards — identical to .day-card */
+  .lp-day-card {
+    width: 100%;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: transparent;
+    border: 0.5px solid #26282E;
+    box-sizing: border-box;
+  }
+  .lp-day-card-row1 {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .lp-day-name {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.2;
+  }
+  .lp-day-date {
+    font-size: 9px;
+    color: rgba(255,255,255,0.2);
+    line-height: 1.3;
+  }
+  .lp-day-score-num {
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1;
+    display: block;
+  }
+  .lp-day-minbar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin: 6px 0;
+    overflow: hidden;
+  }
+  .lp-day-minbar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .lp-day-metrics {
+    display: flex;
+    gap: 0;
+    margin-bottom: 6px;
+  }
+  .lp-day-metric {
+    flex: 1;
+    text-align: center;
+  }
+  .lp-day-metric-val {
+    font-size: 11px;
+    font-weight: 600;
+    display: block;
+    line-height: 1.3;
+    color: #ffffff;
+  }
+  .lp-day-metric-lbl {
+    font-size: 9px;
+    color: rgba(255,255,255,0.25);
+    display: block;
+    line-height: 1.2;
+  }
+  .lp-day-copy {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    font-style: italic;
+    line-height: 1.35;
+    text-align: center;
+  }
+  /* ── end LP Sidebar ──────────────────────────────────────────────────── */
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     NAV
+══════════════════════════════════════ -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <div style="display:flex;align-items:center;gap:28px">
+      <a href="#" class="nav-brand" aria-label="Blinders home">
+        <img src="asstes/Logowhite.png" alt="" aria-hidden="true" style="width:22px;height:22px;object-fit:contain;display:block;">
+        <span class="nav-brand-name">Blinders</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </div>
+    <div class="nav-actions">
+      <a href="app.html" class="nav-login">Sign in</a>
+      <a href="app.html" class="nav-cta">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section class="hero-section" aria-labelledby="hero-h1">
+  <div class="hero-grid">
+    <!-- Left: text column -->
+    <div class="hero-text">
+      <h1 class="hero-h1 reveal" id="hero-h1">
+        Time auditing for<br>Founders &amp; builders
+      </h1>
+      <div class="hero-actions-row reveal d1">
+        <p class="hero-sub">
+          See your peak hours and energy patterns. Discover what's truly worth your attention — and what you should delegate.
+        </p>
+        <a href="#features" class="hero-tag-right">
+          <span class="hero-dot" aria-hidden="true"></span>
+          Log once. See patterns. Know yourself. &nbsp;→
+        </a>
+      </div>
+    </div>
+
+    <!-- Center: YouTube video embed with click-to-play -->
+    <div class="hero-video-outer reveal d2">
+      <div class="hero-video" id="videoContainer">
+        <img
+          src="https://img.youtube.com/vi/nKhQLb7HxDw/maxresdefault.jpg"
+          alt="Blinders — Time Audit Method"
+          class="video-thumbnail"
+        >
+        <div class="video-play-btn" id="playBtn"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     SOCIAL PROOF TICKER
+══════════════════════════════════════ -->
+<div class="ticker-section" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="ticker-item">Check-in every <b>15, 30, 45, or 60 min</b> — your interval, your rhythm</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">Log <b>activity + category + energy</b> in under 3 seconds</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item"><b>Daily score</b> tells you exactly how productive the day was</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">See your <b>peak performance window</b> — the hours you're actually sharp</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item"><b>Weekly summary</b> — score trends, best day, drift vs last week</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">Categories: <b>Deep Work · Admin · Meetings · Rest · Personal</b></span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">Energy levels logged: <b>High · Medium · Low</b> — spot your drain patterns</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">7 days free — <b>full history unlocked</b> on Pro</span>
+    <span class="ticker-sep"></span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item">Check-in every <b>15, 30, 45, or 60 min</b> — your interval, your rhythm</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">Log <b>activity + category + energy</b> in under 3 seconds</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item"><b>Daily score</b> tells you exactly how productive the day was</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">See your <b>peak performance window</b> — the hours you're actually sharp</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item"><b>Weekly summary</b> — score trends, best day, drift vs last week</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">Categories: <b>Deep Work · Admin · Meetings · Rest · Personal</b></span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">Energy levels logged: <b>High · Medium · Low</b> — spot your drain patterns</span>
+    <span class="ticker-sep"></span>
+    <span class="ticker-item">7 days free — <b>full history unlocked</b> on Pro</span>
+    <span class="ticker-sep"></span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════ -->
+<section style="padding:96px 0;border-top:1px solid var(--border2)" id="how-it-works" aria-labelledby="how-h">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:40px">
+      <div style="font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">How it works</div>
+      <h2 style="font-size:clamp(22px,2.4vw,28px);font-weight:600;letter-spacing:-.035em;line-height:1.2;color:var(--text)" id="how-h">Three steps. Two minutes a day.<br>Months of clarity.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+      <div class="intro-card reveal d1">
+        <div class="intro-card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:8px">01</div>
+        <div class="intro-card-title">Set your check-in interval</div>
+        <div class="intro-card-desc">Choose 15, 30, or 60 minutes. Blinders runs quietly in your browser tab and fires an alarm when it's time to log.</div>
+      </div>
+      <div class="intro-card reveal d2" style="border-left:1px solid var(--border);border-right:1px solid var(--border)">
+        <div class="intro-card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:8px">02</div>
+        <div class="intro-card-title">3-second log, every interval</div>
+        <div class="intro-card-desc">What did you just do? Category? Energy level? Three fields. 3 seconds. Then back to work.</div>
+      </div>
+      <div class="intro-card reveal d3">
+        <div class="intro-card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:8px">03</div>
+        <div class="intro-card-title">Watch the patterns emerge</div>
+        <div class="intro-card-desc">After a week you'll see your real score and peak hours. After a month, you'll know yourself better than you ever have.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FEATURE 1 — "Make product operations self-driving"
+     → "Turn every 30 minutes into measurable data"
+══════════════════════════════════════ -->
+<section class="feat-section" id="features" aria-labelledby="feat1-h">
+  <div class="container">
+    <div class="feat-header reveal">
+      <div class="feat-meta">
+        <div class="feat-label">Time logging</div>
+        <h2 class="feat-h2" id="feat1-h">
+          Turn every 30 minutes<br>into measurable data
+        </h2>
+        <a href="app.html" class="feat-more">
+          Try it free
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="feat-body">
+        <p>An alarm fires. You open Blinders. You log what you just did, pick a category, rate your energy. 3 seconds later, you're back to work.</p>
+        <p>See your energy patterns. Now you know exactly when you're most productive — and can schedule deep work during your peak hours.</p>
+        <p>After a week, you have a complete picture of where your time actually went.</p>
+      </div>
+    </div>
+    <div class="feat-visual reveal">
+      <div class="lp-demo-box" id="lpDemoGrid">
+        <!-- Greeting bar -->
+        <div class="lp-greeting-section">
+          <div class="lp-greeting-headline">Good morning, <span class="lp-greeting-name">King</span></div>
+          <div class="lp-greeting-meta">
+            <span>📍 Manila</span>
+            <span class="lp-greeting-meta-sep">·</span>
+            <span class="lp-greeting-time" id="lpGreetingTime">6:30 AM</span>
+          </div>
+        </div>
+        <!-- Table (no scroll) -->
+        <div class="lp-tbl-area">
+          <div class="lp-tbl-scroll-wrap" id="lpTblWrap">
+            <!-- Timer widget — positioned relative to table right edge -->
+            <div class="lp-timer-widget" id="lpTimerWidget">
+              <div class="lp-timer-ring-container">
+                <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <filter id="lpRingGlow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+                      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                  </defs>
+                  <circle class="lp-ring-track" cx="60" cy="60" r="45"/>
+                  <circle class="lp-ring-progress" cx="60" cy="60" r="45" filter="url(#lpRingGlow)"/>
+                  <text x="60" y="60" text-anchor="middle" class="lp-timer-text" dominant-baseline="central">15:00</text>
+                </svg>
+              </div>
+              <button class="lp-timer-play-solo">▶</button>
+              <div class="lp-timer-buttons">
+                <button class="lp-timer-wide-btn">15 min</button>
+                <button class="lp-timer-wide-btn">Notif 1</button>
+              </div>
+            </div>
+            <table class="lp-tracker-table" id="lpTrackerTable">
+              <tbody id="lpTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FEATURE 2 — "Define the product direction"
+     → "A score that moves. A number you can't stop chasing."
+══════════════════════════════════════ -->
+<section class="feat-section" aria-labelledby="feat2-h">
+  <div class="container">
+    <div class="feat-header reveal">
+      <div class="feat-meta">
+        <div class="feat-label">Friction-free logging</div>
+        <h2 class="feat-h2" id="feat2-h">
+          Log faster than<br>you can think
+        </h2>
+        <a href="app.html" class="feat-more">
+          Try it free
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="feat-body">
+        <p>When the timer goes off, you spend 3 seconds answering three questions: What did you do? What category was it? What was your energy level?</p>
+        <p>Deep Work, Movement, Meal/Break, Sleep/Rest, or Distracted — pick one. High, Medium, Low, or Charging — pick one. Done.</p>
+        <p>No friction. Just honest logging, every interval.</p>
+      </div>
+    </div>
+    <div class="feat-visual reveal">
+      <div class="lp-demo-box" id="lpDemoGrid2">
+        <!-- Greeting bar -->
+        <div class="lp-greeting-section">
+          <div class="lp-greeting-headline">Good morning, <span class="lp-greeting-name">King</span></div>
+          <div class="lp-greeting-meta">
+            <span>📍 Manila</span>
+            <span class="lp-greeting-meta-sep">·</span>
+            <span class="lp-greeting-time" id="lpGreetingTime2">6:30 AM</span>
+          </div>
+        </div>
+        <!-- Table -->
+        <div class="lp-tbl-area">
+          <div class="lp-tbl-scroll-wrap" id="lpTblWrap2">
+            <div class="lp-timer-widget" id="lpTimerWidget2">
+              <div class="lp-timer-ring-wrap">
+                <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                  <circle class="lp-ring-track" cx="60" cy="60" r="45"/>
+                  <circle class="lp-ring-arc" cx="60" cy="60" r="45"/>
+                </svg>
+                <span class="lp-timer-numeral">15:00</span>
+              </div>
+              <button class="lp-timer-play-solo">⏸</button>
+              <button class="lp-timer-wide-btn">15 min</button>
+              <button class="lp-timer-wide-btn">Notif 1</button>
+            </div>
+            <table class="lp-tracker-table" id="lpTrackerTable2">
+              <tbody id="lpTableBody2"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FEATURE 3 — "Move work forward across teams and agents"
+     → "Find your real peak hours — not your guessed ones"
+══════════════════════════════════════ -->
+<section class="feat-section" style="padding-bottom:96px" aria-labelledby="feat3-h">
+  <div class="container">
+    <div class="feat-header reveal">
+      <div class="feat-meta">
+        <div class="feat-label">Your insights</div>
+        <h2 class="feat-h2" id="feat3-h">
+          See your performance,<br>day by day.<br>Week by week.
+        </h2>
+        <a href="app.html" class="feat-more">
+          See your insights
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="feat-body">
+        <p>Every day gets a score. Green days mean you hit your deep work target. Red days show where time slipped away. The sidebar shows your full week at a glance.</p>
+        <p>See your energy patterns emerge across the week. Green peaks show when you're at your best — now you know exactly when to schedule your hardest work.</p>
+        <p>Compare this week to your best week. After a week, you own your time instead of letting it own you.</p>
+      </div>
+    </div>
+    <div class="feat-visual reveal">
+      <div class="lp-sidebar-wrap">
+        <div class="lp-sidebar">
+
+          <!-- Action buttons (Focus / Today's Score) -->
+          <div class="lp-strip-btns">
+            <div class="lp-btn-focus">Focus</div>
+            <div class="lp-btn-score">Today's Score</div>
+          </div>
+
+          <!-- Best Week card -->
+          <div class="lp-week-card lp-week-card-best">
+            <div class="lp-week-card-header">
+              <span class="lp-week-card-title">Best Week</span>
+              <span class="lp-gold-orb" aria-hidden="true"></span>
+            </div>
+            <div class="lp-week-card-row">
+              <div class="lp-week-card-track">
+                <div class="lp-week-card-fill" style="width:78%;background:#3DDC97"></div>
+              </div>
+              <span class="lp-week-card-score">78%</span>
+            </div>
+            <div class="lp-week-card-date">Mar 10 – Mar 16</div>
+          </div>
+
+          <!-- This Week card -->
+          <div class="lp-week-card">
+            <div class="lp-week-card-header">
+              <span class="lp-week-card-title">This Week</span>
+            </div>
+            <div class="lp-week-card-row">
+              <div class="lp-week-card-track">
+                <div class="lp-week-card-fill" style="width:64%;background:#6981ED"></div>
+              </div>
+              <span class="lp-week-card-score">64%</span>
+            </div>
+            <div class="lp-week-card-date">Apr 7 – Apr 13</div>
+          </div>
+
+          <div class="lp-strip-divider"></div>
+
+          <!-- MON — 100% Green -->
+          <div class="lp-day-card">
+            <div class="lp-day-card-row1">
+              <div>
+                <div class="lp-day-name">MON</div>
+                <div class="lp-day-date">Apr 7</div>
+              </div>
+              <div><span class="lp-day-score-num">100</span></div>
+            </div>
+            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:100%;background:#3DDC97"></div></div>
+            <div class="lp-day-metrics">
+              <div class="lp-day-metric"><span class="lp-day-metric-val">8h 30m</span><span class="lp-day-metric-lbl">deep</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">51/51</span><span class="lp-day-metric-lbl">logged</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">9A–5P</span><span class="lp-day-metric-lbl">peak</span></div>
+            </div>
+            <div class="lp-day-copy">Exceptional. This is you at your peak.</div>
+          </div>
+
+          <!-- TUE — 63% Blue -->
+          <div class="lp-day-card">
+            <div class="lp-day-card-row1">
+              <div>
+                <div class="lp-day-name">TUE</div>
+                <div class="lp-day-date">Apr 8</div>
+              </div>
+              <div><span class="lp-day-score-num">63</span></div>
+            </div>
+            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:63%;background:#6981ED"></div></div>
+            <div class="lp-day-metrics">
+              <div class="lp-day-metric"><span class="lp-day-metric-val">5h</span><span class="lp-day-metric-lbl">deep</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">30/48</span><span class="lp-day-metric-lbl">logged</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">9A–1P</span><span class="lp-day-metric-lbl">peak</span></div>
+            </div>
+            <div class="lp-day-copy">Good momentum. Push deeper tomorrow.</div>
+          </div>
+
+          <!-- WED — 88% Green -->
+          <div class="lp-day-card">
+            <div class="lp-day-card-row1">
+              <div>
+                <div class="lp-day-name">WED</div>
+                <div class="lp-day-date">Apr 9</div>
+              </div>
+              <div><span class="lp-day-score-num">88</span></div>
+            </div>
+            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:88%;background:#3DDC97"></div></div>
+            <div class="lp-day-metrics">
+              <div class="lp-day-metric"><span class="lp-day-metric-val">7h</span><span class="lp-day-metric-lbl">deep</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">42/48</span><span class="lp-day-metric-lbl">logged</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">8A–3P</span><span class="lp-day-metric-lbl">peak</span></div>
+            </div>
+            <div class="lp-day-copy">Strong day. Push this into a streak.</div>
+          </div>
+
+          <!-- THU — 100% Green -->
+          <div class="lp-day-card">
+            <div class="lp-day-card-row1">
+              <div>
+                <div class="lp-day-name">THU</div>
+                <div class="lp-day-date">Apr 10</div>
+              </div>
+              <div><span class="lp-day-score-num">100</span></div>
+            </div>
+            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:100%;background:#3DDC97"></div></div>
+            <div class="lp-day-metrics">
+              <div class="lp-day-metric"><span class="lp-day-metric-val">8h 30m</span><span class="lp-day-metric-lbl">deep</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">51/51</span><span class="lp-day-metric-lbl">logged</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">6A–2P</span><span class="lp-day-metric-lbl">peak</span></div>
+            </div>
+            <div class="lp-day-copy">Exceptional. This is you at your peak.</div>
+          </div>
+
+          <!-- FRI — 94% Green -->
+          <div class="lp-day-card">
+            <div class="lp-day-card-row1">
+              <div>
+                <div class="lp-day-name">FRI</div>
+                <div class="lp-day-date">Apr 11</div>
+              </div>
+              <div><span class="lp-day-score-num">94</span></div>
+            </div>
+            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:94%;background:#3DDC97"></div></div>
+            <div class="lp-day-metrics">
+              <div class="lp-day-metric"><span class="lp-day-metric-val">8h</span><span class="lp-day-metric-lbl">deep</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">47/50</span><span class="lp-day-metric-lbl">logged</span></div>
+              <div class="lp-day-metric"><span class="lp-day-metric-val">7A–3P</span><span class="lp-day-metric-lbl">peak</span></div>
+            </div>
+            <div class="lp-day-copy">Exceptional. This is you at your peak.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PRICING
+══════════════════════════════════════ -->
+<section class="pricing-section" id="pricing" aria-labelledby="pricing-h">
+  <div class="container">
+    <div class="pricing-meta reveal">
+      <div class="pricing-label">Pricing</div>
+      <h2 class="pricing-h2" id="pricing-h">Free for 3 days.<br>Then worth every dollar.</h2>
+      <p class="pricing-sub">No credit card required. Try it free for 3 days. On day 4, you hit the data wall — and you'll know exactly why it's worth it.</p>
+    </div>
+    <div class="pricing-cards reveal d1">
+      <!-- Free -->
+      <div class="p-card">
+        <div class="p-tier free">Free</div>
+        <div class="p-title">3-Day Trial</div>
+        <div class="p-price">$0 <span>/ 3 days</span></div>
+        <div class="p-framing">No credit card. Cancel anytime.</div>
+        <div class="p-hr"></div>
+        <ul class="p-list" role="list">
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Interval alarms: <strong>15, 30, 45, or 60 min</strong></li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Log <strong>activity + category + energy level</strong></li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Daily productivity score</strong> after every check-in</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Today's <strong>peak hour</strong> snapshot</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Streak counter</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Last 3 days</strong> of history</li>
+          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>History beyond 3 days</li>
+          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Weekly score trends &amp; drift detection</li>
+          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Weekly performance summary</li>
+        </ul>
+        <a href="app.html" class="p-btn-free">Start logging free →</a>
+      </div>
+      <!-- Pro -->
+      <div class="p-card pro">
+        <div class="p-tier pro">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Pro · Most popular
+        </div>
+        <div class="p-title">Full Intelligence</div>
+        <div class="p-price">$7 <span>/ month</span></div>
+        <div class="p-framing">Less than a coffee. Smarter than any journal.</div>
+        <div class="p-hr"></div>
+        <ul class="p-list" role="list">
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Everything in Free</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Unlimited history</strong> — every log, forever</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Weekly score trends</strong> — are you improving?</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Pattern drift detection</strong> — catch slumps early</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Weekly performance summary</strong> — best day, worst, avg</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Energy drain report</strong> — which categories cost you most</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
+        </ul>
+        <a href="app.html" class="p-btn-pro">Start free, upgrade anytime →</a>
+        <p class="p-foot">Cancel anytime. Your logs stay yours.</p>
+      </div>
+      <!-- Lifetime -->
+      <div class="p-card lifetime">
+        <div class="p-tier lifetime-tier">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="#F5A623" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Lifetime · One-time
+        </div>
+        <div class="p-title">Lifetime Ownership</div>
+        <div class="p-price">$77 <span>/ once</span></div>
+        <div class="p-framing">Own the app forever. No subscription.</div>
+        <div class="p-hr"></div>
+        <ul class="p-list" role="list">
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Everything in Pro</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Never pay again</strong> — one price, forever</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>All future updates</strong> included</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Priority support for life</li>
+        </ul>
+        <a href="app.html" class="p-btn-lifetime">Get lifetime access →</a>
+        <p class="p-foot">Instant unlock. No renewal. Ever.</p>
+      </div>
+    </div>
+    <div class="pricing-reframe reveal d2">
+      <p><strong>Why the 3-day trial works:</strong></p>
+      <p>On day 4, you don't lose features. You lose <em>your own data</em> — the logs you built, the streak you earned, the patterns you were just starting to see. That's not a trial expiring. That's your history going dark. Unlock it for $7.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════ -->
+<section class="testi-section" aria-labelledby="testi-h">
+  <div class="container">
+    <div class="testi-meta reveal">
+      <div class="testi-label">What founders say</div>
+      <h2 class="testi-h2" id="testi-h">From founders who discovered<br>where their time actually goes.</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="t-card reveal d1">
+        <blockquote class="t-quote">"I was convinced I was spending my days building product. Blinders showed me I was in meetings and Slack for 4 hours a day. Cut both in half the next week. Revenue went up."</blockquote>
+        <div class="t-author">
+          <div class="t-av" aria-hidden="true">ZM</div>
+          <div>
+            <div class="t-name">Zeno M.</div>
+            <div class="t-role">Founder, Sendloop</div>
+          </div>
+          <div class="t-badge">Day 62</div>
+        </div>
+      </div>
+      <div class="t-card reveal d2" style="border-left:1px solid var(--border);border-right:1px solid var(--border)">
+        <blockquote class="t-quote">"The energy pattern data hit different. I always thought I was a morning person but I was scheduling deep work in the afternoons. Fixed that one thing and my output doubled."</blockquote>
+        <div class="t-author">
+          <div class="t-av" aria-hidden="true">AN</div>
+          <div>
+            <div class="t-name">Asel N.</div>
+            <div class="t-role">Founder, DataPulse</div>
+          </div>
+          <div class="t-badge">47-day streak</div>
+        </div>
+      </div>
+      <div class="t-card reveal d3">
+        <blockquote class="t-quote">"I felt busy all day but shipped nothing. Two weeks of tracking showed me exactly which tasks were killing my momentum. Delegated three of them. First profitable month followed."</blockquote>
+        <div class="t-author">
+          <div class="t-av" aria-hidden="true">TW</div>
+          <div>
+            <div class="t-name">Tom W.</div>
+            <div class="t-role">Bootstrapped founder</div>
+          </div>
+          <div class="t-badge">Best: 91%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FINAL CTA  — Linear: large left-aligned headline, no bg change
+══════════════════════════════════════ -->
+<section class="cta-section" aria-labelledby="cta-h">
+  <div class="container">
+    <div class="reveal">
+      <div class="cta-label">Get started</div>
+    </div>
+    <h2 class="cta-h2 reveal d1" id="cta-h">
+      Day 1 is today.<br>
+      Day 4 is when<br>
+      you'll understand why.
+    </h2>
+    <p class="cta-sub reveal d2">
+      Start logging free for 3 days. Build the habit. Hit the data wall on day 4 and feel exactly what it means to not want to lose what you've built.
+    </p>
+    <div class="cta-actions reveal d2">
+      <a href="app.html" class="cta-btn">
+        Start auditing my time — it's free
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <p class="cta-trust reveal d3">
+      No credit card required <span>·</span> Works in your browser <span>·</span> Takes 30 seconds to set up
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <a href="#" class="footer-brand" aria-label="Blinders home">
+        <img src="asstes/Logowhite.png" alt="" aria-hidden="true" style="width:20px;height:20px;object-fit:contain;display:block;">
+        <span class="footer-brand-name">Blinders</span>
+      </a>
+      <nav aria-label="Footer navigation">
+        <ul class="footer-nav">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="mailto:hello@moziminute.com">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Blinders.</span>
+      <span class="footer-tagline">Built for people who take their time seriously.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const io = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }),
+    { threshold: 0.1, rootMargin: '0px 0px -24px 0px' }
+  );
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Ticker pause on hover
+  const track = document.querySelector('.ticker-track');
+  if (track) {
+    track.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
+    track.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
+  }
+
+  // Smooth anchor scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+  // YouTube click-to-play — loads iframe only after user clicks (avoids Error 153 on initial load)
+  const videoContainer = document.getElementById('videoContainer');
+  if (videoContainer) {
+    videoContainer.addEventListener('click', () => {
+      const videoId = 'nKhQLb7HxDw';
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+      iframe.title = 'Blinders — Time Audit Method';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.setAttribute('frameborder', '0');
+      // Clear thumbnail + play button, then insert iframe
+      videoContainer.querySelector('.video-thumbnail')?.remove();
+      videoContainer.querySelector('.video-play-btn')?.remove();
+      videoContainer.appendChild(iframe);
+    }, { once: true });
+  }
+
+  // Fallback: if maxresdefault thumbnail 404s (smaller videos), swap to hqdefault
+  const thumb = document.querySelector('.video-thumbnail');
+  if (thumb) {
+    thumb.addEventListener('error', () => {
+      thumb.src = 'https://img.youtube.com/vi/nKhQLb7HxDw/hqdefault.jpg';
+    }, { once: true });
+  }
+</script>
+
+<script>
+/* ================================================================
+   MOZIMINUTE LANDING PAGE — Live Time-Logging Demo (Feature 1)
+   Static demo data. No localStorage. Resets on refresh.
+================================================================ */
+(function () {
+  'use strict';
+
+  const CATS = [
+    { id:'deep-work',    label:'Deep Work',   color:'#3DDC97' },
+    { id:'movement',     label:'Movement',    color:'#3DDC97' },
+    { id:'meal-break',   label:'Meal/Break',  color:'#4DA3FF' },
+    { id:'sleep-rest',   label:'Sleep/Rest',  color:'#4DA3FF' },
+    { id:'distracted',   label:'Distracted',  color:'#FF5A5F' },
+  ];
+  const ENERGY = [
+    { id:'high',   label:'High',   color:'#3DDC97' },
+    { id:'medium', label:'Medium', color:'#4DA3FF' },
+    { id:'low',    label:'Low',    color:'#FF5A5F' },
+  ];
+
+  function autoCat(text) {
+    const t = text.toLowerCase();
+    if (/coding|writing|designing|programming|editing|researching|planning|strategy|deep.?work|\bfocus\b|creating|building/.test(t)) return 'deep-work';
+    if (/\bgym\b|workout|\brun\b|running|\bwalk\b|walking|exercise|stretch|yoga|cardio|fitness|\btrain\b|training/.test(t)) return 'movement';
+    if (/scroll|tiktok|instagram|facebook|twitter|youtube|netflix|social.?media|procrastinat/.test(t)) return 'distracted';
+    if (/\bsleep\b|\bnap\b|\bbed\b|\btired\b|\bcharging\b/.test(t)) return 'sleep-rest';
+    if (/\beat\b|eating|lunch|dinner|breakfast|meal|snack|coffee|\bbreak\b|\brest\b/.test(t)) return 'meal-break';
+
+    return null;
+  }
+
+  function getCat(label)    { return CATS.find(c => c.label === label) || null; }
+  function getEnergy(label) { return ENERGY.find(e => e.label === label) || null; }
+
+  // ── FIXED DEMO ROWS — 30-min interval, current = 8:00 AM ─────────
+  // Indices 3-5 (6:30-7:30 AM) are empty past rows → Fill All range
+  const DEMO_ROWS = [
+    { time:'5:00 AM',  activity:'Wake up', category:'Movement', energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    { time:'5:30 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'6:00 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'6:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:true  },
+    { time:'7:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:true  },
+    { time:'7:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:true  },
+    { time:'8:00 AM',  activity:'',        category:'',         energy:'',       isCur:true,  disabled:false, isPast:false },
+    { time:'8:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'9:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'9:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'10:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'10:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'11:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'11:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'12:00 PM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+  ];
+
+  // ── RENDER ───────────────────────────────────────────────────────
+  function render() {
+    const tbody = document.getElementById('lpTableBody');
+    if (!tbody) return;
+    const frag = document.createDocumentFragment();
+
+    DEMO_ROWS.forEach((row, idx) => {
+      const cat = getCat(row.category);
+      const eng = getEnergy(row.energy);
+
+      const tr = document.createElement('tr');
+      let cls = 'lp-table-row';
+      if (row.isCur)    cls += ' lp-cur-row';
+      if (row.disabled) cls += ' lp-row-disabled';
+      if (row.isPast)   cls += ' lp-row-past';
+      tr.className = cls;
+      tr.id = `lp-r-${idx}`;
+      tr.style.setProperty('--lp-row-accent', 'transparent');
+
+      // Time cell
+      const tdTime = document.createElement('td');
+      tdTime.className = 'lp-cell-time';
+      tdTime.innerHTML = `<span>${row.time}</span>`;
+
+      // Activity cell
+      const tdAct = document.createElement('td');
+      tdAct.className = 'lp-cell-editable';
+      if (row.activity) {
+        tdAct.textContent = row.activity;
+      } else {
+        tdAct.innerHTML = '<span class="lp-act-empty"></span>';
+      }
+      tdAct.addEventListener('click', () => openAlarmPopup(idx));
+
+      // Category cell
+      const tdCat = document.createElement('td');
+      tdCat.style.textAlign = 'center';
+      if (cat) {
+        tdCat.innerHTML = `<span class="lp-category-pill has-color" style="--pill-color:${cat.color}">${cat.label} <span class="lp-dd-arrow">▾</span></span>`;
+      } else {
+        tdCat.innerHTML = `<span class="lp-dd-trigger">Category <span class="lp-dd-arrow">▾</span></span>`;
+      }
+      tdCat.addEventListener('click', () => openDropdown('category', idx, tdCat));
+
+      // Energy cell
+      const tdEng = document.createElement('td');
+      tdEng.style.textAlign = 'center';
+      if (eng) {
+        tdEng.innerHTML = `<span class="lp-status-pill has-color" style="--pill-color:${eng.color}">${eng.label} <span class="lp-dd-arrow">▾</span></span>`;
+      } else {
+        tdEng.innerHTML = `<span class="lp-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></span>`;
+      }
+      if (row.category !== 'Sleep/Rest') {
+        tdEng.addEventListener('click', () => openDropdown('energy', idx, tdEng));
+      }
+
+      tr.append(tdTime, tdAct, tdCat, tdEng);
+      frag.appendChild(tr);
+    });
+
+    tbody.innerHTML = '';
+    tbody.appendChild(frag);
+    placeNowWidget();
+    placeFillWidget();
+  }
+
+  // ── NOW WIDGET (current = 8:00 AM = index 6) ─────────────────────
+  function placeNowWidget() {
+    const wrap = document.getElementById('lpTblWrap');
+    if (!wrap) return;
+    const curRow = document.getElementById('lp-r-6');
+    if (!curRow) return;
+
+    let w = document.getElementById('lpNowWidget');
+    if (!w) {
+      w = document.createElement('div');
+      w.id = 'lpNowWidget'; w.className = 'lp-now-widget';
+      w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn">Now</button>`;
+      wrap.appendChild(w);
+      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(6));
+    }
+    w.style.top    = curRow.offsetTop + 'px';
+    w.style.height = curRow.offsetHeight + 'px';
+    w.style.left   = '0';
+    w.style.width  = '100%';
+    w.classList.add('visible');
+  }
+
+  // ── FILL-ALL WIDGET (spans empty past rows 6:30-7:30 AM = indices 3-5) ─
+  function placeFillWidget() {
+    const wrap = document.getElementById('lpTblWrap');
+    if (!wrap) return;
+
+    // Hide widget once all fill-range rows have been filled
+    const fillIndices = [3, 4, 5];
+    const allFilled = fillIndices.every(i => DEMO_ROWS[i].activity);
+    if (allFilled) {
+      const existing = document.getElementById('lpFillWidget');
+      if (existing) existing.remove();
+      return;
+    }
+
+    const firstRow = document.getElementById('lp-r-3');
+    const lastRow  = document.getElementById('lp-r-5');
+    if (!firstRow || !lastRow) return;
+
+    let w = document.getElementById('lpFillWidget');
+    if (!w) {
+      w = document.createElement('div');
+      w.id = 'lpFillWidget'; w.className = 'lp-fill-widget';
+      w.innerHTML = `
+        <div class="lp-fill-vline"></div>
+        <div class="lp-fill-hline"></div>
+        <button class="lp-fill-btn" id="lpFillBtn">Fill all</button>
+        <div class="lp-fill-callout" id="lpFillCallout">
+          <p class="lp-fill-callout-text">Stepped away?<br>Fill all at once</p>
+          <svg class="lp-fill-arrow-svg" viewBox="0 0 12 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="6" y1="1" x2="6" y2="52" stroke="#FF5A5F" stroke-width="2.5" stroke-linecap="round"/>
+            <polygon points="1.5,50 6,62 10.5,50" fill="#FF5A5F"/>
+          </svg>
+        </div>`;
+      wrap.appendChild(w);
+      document.getElementById('lpFillBtn').addEventListener('click', () => openFillAllPopup());
+    }
+    const top    = firstRow.offsetTop;
+    const height = lastRow.offsetTop + lastRow.offsetHeight - firstRow.offsetTop;
+    w.style.top = top + 'px'; w.style.left = '0';
+    w.style.width = '100%'; w.style.height = height + 'px';
+    w.classList.add('visible');
+    requestAnimationFrame(() => {
+      const btn     = document.getElementById('lpFillBtn');
+      const callout = document.getElementById('lpFillCallout');
+      if (!btn || !callout) return;
+      const btnW = btn.offsetWidth, btnH = btn.offsetHeight;
+      const cW   = callout.offsetWidth, cH = callout.offsetHeight;
+      // Center callout horizontally over button (both share same right anchor)
+      callout.style.right = (w.offsetWidth + 36 + btnW / 2 - cW / 2) + 'px';
+      // Position callout just above button (button center = 50% of widget)
+      callout.style.top   = (w.offsetHeight / 2 - btnH / 2 - cH - 6) + 'px';
+    });
+  }
+
+  // ── DROPDOWN ─────────────────────────────────────────────────────
+  let _ddRemove = null, _ddScrollClose = null;
+  function closeDropdown() {
+    const p = document.getElementById('lpDdPanel');
+    if (p) { p.classList.remove('lp-dd-open'); setTimeout(() => p.remove(), 160); }
+    if (_ddRemove) { document.removeEventListener('click', _ddRemove); _ddRemove = null; }
+    if (_ddScrollClose) { window.removeEventListener('scroll', _ddScrollClose); _ddScrollClose = null; }
+  }
+
+  function openDropdown(colType, rowIdx, anchor) {
+    closeDropdown();
+    const opts = colType === 'category' ? CATS : ENERGY;
+
+    const panel = document.createElement('div');
+    panel.id = 'lpDdPanel'; panel.className = 'lp-dd-panel';
+
+    const searchWrap = document.createElement('div');
+    searchWrap.className = 'lp-dd-search-wrap';
+    const search = document.createElement('input');
+    search.type = 'text'; search.className = 'lp-dd-search';
+    search.placeholder = colType === 'category' ? 'Search categories...' : 'Search energy...';
+    searchWrap.appendChild(search);
+
+    const optList = document.createElement('div');
+    optList.className = 'lp-dd-opts';
+
+    function buildOpts(filter) {
+      optList.innerHTML = '';
+      opts.filter(o => !filter || o.label.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(opt => {
+          const d = document.createElement('div');
+          d.className = 'lp-dd-opt';
+          d.textContent = opt.label;
+          d.addEventListener('click', e => { e.stopPropagation(); pick(opt.label); });
+          optList.appendChild(d);
+        });
+    }
+    buildOpts('');
+    search.addEventListener('input', () => buildOpts(search.value));
+
+    panel.appendChild(searchWrap); panel.appendChild(optList);
+    if (colType === 'category') {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'lp-dd-clear';
+      editBtn.style.cssText = 'text-align:right;padding-right:14px;';
+      editBtn.textContent = 'Edit options';
+      editBtn.addEventListener('click', e => { e.stopPropagation(); closeDropdown(); });
+      panel.appendChild(editBtn);
+    }
+    document.body.appendChild(panel);
+
+    const rect = anchor.getBoundingClientRect();
+    const pw = 210, ph = 300;
+    let top = rect.bottom + 6, left = rect.left;
+    if (top + ph > window.innerHeight) top = rect.top - ph - 6;
+    if (left + pw > window.innerWidth) left = window.innerWidth - pw - 8;
+    panel.style.top = top + 'px'; panel.style.left = left + 'px';
+    requestAnimationFrame(() => panel.classList.add('lp-dd-open'));
+    setTimeout(() => search.focus(), 80);
+
+    function pick(label) {
+      if (colType === 'category') {
+        DEMO_ROWS[rowIdx].category = label;
+        if (label === 'Sleep/Rest') DEMO_ROWS[rowIdx].energy = 'Charging';
+        else if (DEMO_ROWS[rowIdx].energy === 'Charging') DEMO_ROWS[rowIdx].energy = '';
+      } else {
+        DEMO_ROWS[rowIdx].energy = label;
+      }
+      closeDropdown(); render();
+    }
+
+    setTimeout(() => {
+      _ddRemove = e => { if (!panel.contains(e.target)) closeDropdown(); };
+      document.addEventListener('click', _ddRemove);
+      _ddScrollClose = () => closeDropdown();
+      window.addEventListener('scroll', _ddScrollClose, { passive: true });
+    }, 10);
+  }
+
+  // ── ACTIVITY POPUP ───────────────────────────────────────────────
+  function openActivityPopup(rowIdx) {
+    const ov = document.createElement('div');
+    ov.className = 'lp-act-ov'; ov.id = 'lpActOv';
+    ov.innerHTML = `
+      <div class="lp-act-card">
+        <div class="lp-act-header">
+          <span class="lp-act-title">What are you doing?</span>
+          <button class="lp-act-close" id="lpActX">✕</button>
+        </div>
+        <input type="text" class="lp-act-input" id="lpActInput"
+               placeholder="e.g. Writing, Coding, Meeting..."
+               value="${DEMO_ROWS[rowIdx].activity}">
+        <div class="lp-act-footer">
+          <button class="lp-act-save" id="lpActSv">Save</button>
+          <button class="lp-act-cancel" id="lpActCn">Cancel</button>
+        </div>
+      </div>`;
+    document.getElementById('lpDemoGrid').appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add('open'));
+    const input = document.getElementById('lpActInput');
+    setTimeout(() => { input.focus(); input.select(); }, 80);
+
+    function save() {
+      const val = input.value.trim();
+      DEMO_ROWS[rowIdx].activity = val;
+      if (val && !DEMO_ROWS[rowIdx].category) {
+        const cid = autoCat(val);
+        DEMO_ROWS[rowIdx].category = CATS.find(c => c.id === cid)?.label || '';
+        if (DEMO_ROWS[rowIdx].category === 'Sleep/Rest') DEMO_ROWS[rowIdx].energy = 'Charging';
+      }
+      close();
+    }
+    function close() {
+      ov.classList.remove('open');
+      setTimeout(() => ov.remove(), 180);
+      render();
+    }
+
+    document.getElementById('lpActSv').addEventListener('click', save);
+    document.getElementById('lpActX').addEventListener('click', close);
+    document.getElementById('lpActCn').addEventListener('click', close);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') close(); });
+    ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  }
+
+  // ── ALARM POPUP ──────────────────────────────────────────────────
+  function openAlarmPopup(rowIdx) {
+    const row = DEMO_ROWS[rowIdx];
+    const logoSrc = document.querySelector('.nav-brand img')?.src || '';
+
+    const ov = document.createElement('div');
+    ov.className = 'lp-alarm-ov lp-alarm-feat2'; ov.id = 'lpAlarmOv';
+    ov.innerHTML = `
+      <div class="lp-alarm-card">
+        <img class="lp-alarm-logo" src="${logoSrc}" alt="Blinders">
+        <div class="lp-alarm-time">${row.time}</div>
+        <button class="lp-alarm-same" id="lpAlSame">◄ Same as last</button>
+        <div class="lp-alarm-all-row">
+          <input type="text" class="lp-alarm-input" id="lpAlAct"
+                 placeholder="e.g. Writing report..." value="${row.activity}">
+          <button id="lpAlCat" class="lp-al-dd-trigger">Category <span class="lp-dd-arrow">▾</span></button>
+          <button id="lpAlEng" class="lp-al-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></button>
+        </div>
+        <button class="lp-alarm-log" id="lpAlLog">Log It</button>
+        <button class="lp-alarm-skip" id="lpAlSkip">Skip</button>
+      </div>`;
+    document.getElementById('lpDemoGrid').appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add('open'));
+
+    // Pre-fill if row has values
+    const alCatBtn = document.getElementById('lpAlCat');
+    const alEngBtn = document.getElementById('lpAlEng');
+    let alCat = row.category, alEng = row.energy;
+    function syncPills() {
+      const cat = getCat(alCat);
+      if (cat) {
+        alCatBtn.className = 'lp-al-category-pill has-color';
+        alCatBtn.style.setProperty('--lp-adc-c', cat.color);
+        alCatBtn.innerHTML = `${cat.label} <span class="lp-dd-arrow">▾</span>`;
+      } else {
+        alCatBtn.className = 'lp-al-dd-trigger';
+        alCatBtn.removeAttribute('style');
+        alCatBtn.innerHTML = `Category <span class="lp-dd-arrow">▾</span>`;
+      }
+      const eng = getEnergy(alEng);
+      if (eng) {
+        alEngBtn.className = 'lp-al-status-pill has-color';
+        alEngBtn.style.setProperty('--lp-adc-c', eng.color);
+        alEngBtn.innerHTML = `${eng.label} <span class="lp-dd-arrow">▾</span>`;
+      } else {
+        alEngBtn.className = 'lp-al-dd-trigger';
+        alEngBtn.removeAttribute('style');
+        alEngBtn.innerHTML = `Energy <span class="lp-dd-arrow">▾</span>`;
+      }
+    }
+    syncPills();
+
+    alCatBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openAlarmDd('category', alCatBtn, val => { alCat = val; if (val === 'Sleep/Rest') alEng = 'Charging'; syncPills(); });
+    });
+    alEngBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openAlarmDd('energy', alEngBtn, val => { alEng = val; syncPills(); });
+    });
+
+    // Same as last
+    document.getElementById('lpAlSame').addEventListener('click', () => {
+      const prev = DEMO_ROWS.slice(0, rowIdx).reverse().find(r => r.activity);
+      if (prev) {
+        document.getElementById('lpAlAct').value = prev.activity;
+        alCat = prev.category; alEng = prev.energy; syncPills();
+      }
+    });
+
+    function doLog() {
+      DEMO_ROWS[rowIdx].activity = document.getElementById('lpAlAct').value.trim();
+      DEMO_ROWS[rowIdx].category = alCat;
+      DEMO_ROWS[rowIdx].energy   = alEng;
+      if (!DEMO_ROWS[rowIdx].category && DEMO_ROWS[rowIdx].activity) {
+        const cid = autoCat(DEMO_ROWS[rowIdx].activity);
+        DEMO_ROWS[rowIdx].category = CATS.find(c => c.id === cid)?.label || '';
+      }
+      close();
+    }
+    function close() {
+      ov.classList.remove('open');
+      setTimeout(() => ov.remove(), 200);
+      closeAlarmDd();
+      render();
+    }
+
+    document.getElementById('lpAlLog').addEventListener('click', doLog);
+    document.getElementById('lpAlSkip').addEventListener('click', close);
+    ov.addEventListener('click', e => { if (e.target === ov) close(); });
+    document.getElementById('lpAlAct').addEventListener('input', e => {
+      const catId = autoCat(e.target.value.trim());
+      if (catId) { const label = CATS.find(c => c.id === catId)?.label || ''; if (label) { alCat = label; syncPills(); } }
+    });
+    setTimeout(() => document.getElementById('lpAlAct')?.focus(), 80);
+  }
+
+  // ── ALARM DROPDOWN ───────────────────────────────────────────────
+  let _alDdRemove = null;
+  function closeAlarmDd() {
+    const p = document.getElementById('lpAlDdPanel');
+    if (p) { p.classList.remove('lp-dd-open'); setTimeout(() => p.remove(), 160); }
+    if (_alDdRemove) { document.removeEventListener('click', _alDdRemove); _alDdRemove = null; }
+  }
+  function openAlarmDd(colType, anchor, onPick) {
+    closeAlarmDd();
+    const opts = colType === 'category' ? CATS : ENERGY;
+    const panel = document.createElement('div');
+    panel.id = 'lpAlDdPanel'; panel.className = 'lp-dd-panel';
+    panel.style.zIndex = '100002';
+
+    const optList = document.createElement('div');
+    optList.className = 'lp-dd-opts';
+    opts.forEach(opt => {
+      const d = document.createElement('div');
+      d.className = 'lp-dd-opt';
+      d.textContent = opt.label;
+      d.addEventListener('click', e => { e.stopPropagation(); onPick(opt.label); closeAlarmDd(); });
+      optList.appendChild(d);
+    });
+    panel.appendChild(optList);
+    if (colType === 'category') {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'lp-dd-clear';
+      editBtn.style.cssText = 'text-align:right;padding-right:14px;';
+      editBtn.textContent = 'Edit options';
+      editBtn.addEventListener('click', e => { e.stopPropagation(); closeAlarmDd(); });
+      panel.appendChild(editBtn);
+    }
+    const ov = anchor.closest('.lp-alarm-ov');
+    if (ov) {
+      panel.style.position = 'absolute';
+      ov.appendChild(panel);
+      const ovRect  = ov.getBoundingClientRect();
+      const rect    = anchor.getBoundingClientRect();
+      let top  = rect.bottom - ovRect.top + 6;
+      let left = rect.left   - ovRect.left;
+      if (left + 210 > ov.offsetWidth) left = ov.offsetWidth - 218;
+      panel.style.top = top + 'px'; panel.style.left = left + 'px';
+    } else {
+      document.body.appendChild(panel);
+      const rect = anchor.getBoundingClientRect();
+      let top = rect.bottom + 6, left = rect.left;
+      if (top + 260 > window.innerHeight) top = rect.top - 260 - 6;
+      if (left + 210 > window.innerWidth) left = window.innerWidth - 218;
+      panel.style.top = top + 'px'; panel.style.left = left + 'px';
+    }
+    requestAnimationFrame(() => panel.classList.add('lp-dd-open'));
+
+    setTimeout(() => {
+      _alDdRemove = e => { if (!panel.contains(e.target) && e.target !== anchor) closeAlarmDd(); };
+      document.addEventListener('click', _alDdRemove);
+    }, 10);
+  }
+
+  // ── FILL-ALL POPUP ───────────────────────────────────────────────
+  function openFillAllPopup() {
+    const fillIndices = [3, 4, 5]; // 6:30, 7:00, 7:30 AM
+    const logoSrc = document.querySelector('.nav-brand img')?.src || '';
+
+    const ov = document.createElement('div');
+    ov.className = 'lp-alarm-ov lp-alarm-feat2'; ov.id = 'lpFillOv';
+    ov.innerHTML = `
+      <div class="lp-alarm-card">
+        <img class="lp-alarm-logo" src="${logoSrc}" alt="Blinders">
+        <div class="lp-alarm-time">Fill 6:30 AM → 7:30 AM</div>
+        <div class="lp-alarm-all-row">
+          <input type="text" class="lp-alarm-input" id="lpFillAct"
+                 placeholder="e.g. Deep Work...">
+          <button id="lpFillCat" class="lp-al-dd-trigger">Category <span class="lp-dd-arrow">▾</span></button>
+          <button id="lpFillEng" class="lp-al-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></button>
+        </div>
+        <button class="lp-alarm-log" id="lpFillLog">Fill All</button>
+        <button class="lp-alarm-skip" id="lpFillSkip">Cancel</button>
+      </div>`;
+    document.getElementById('lpDemoGrid').appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add('open'));
+
+    const fillCatBtn = document.getElementById('lpFillCat');
+    const fillEngBtn = document.getElementById('lpFillEng');
+    let fillCat = '', fillEng = '';
+
+    function syncFillPills() {
+      const cat = getCat(fillCat);
+      if (cat) {
+        fillCatBtn.className = 'lp-al-category-pill has-color';
+        fillCatBtn.style.setProperty('--lp-adc-c', cat.color);
+        fillCatBtn.innerHTML = `${cat.label} <span class="lp-dd-arrow">▾</span>`;
+      } else {
+        fillCatBtn.className = 'lp-al-dd-trigger'; fillCatBtn.removeAttribute('style');
+        fillCatBtn.innerHTML = `Category <span class="lp-dd-arrow">▾</span>`;
+      }
+      const eng = getEnergy(fillEng);
+      if (eng) {
+        fillEngBtn.className = 'lp-al-status-pill has-color';
+        fillEngBtn.style.setProperty('--lp-adc-c', eng.color);
+        fillEngBtn.innerHTML = `${eng.label} <span class="lp-dd-arrow">▾</span>`;
+      } else {
+        fillEngBtn.className = 'lp-al-dd-trigger'; fillEngBtn.removeAttribute('style');
+        fillEngBtn.innerHTML = `Energy <span class="lp-dd-arrow">▾</span>`;
+      }
+    }
+
+    fillCatBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openAlarmDd('category', fillCatBtn, val => { fillCat = val; if (val==='Sleep/Rest') fillEng='Charging'; syncFillPills(); });
+    });
+    fillEngBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openAlarmDd('energy', fillEngBtn, val => { fillEng = val; syncFillPills(); });
+    });
+
+    function doFill() {
+      const act = document.getElementById('lpFillAct').value.trim();
+      let cat = fillCat, eng = fillEng;
+      if (!cat && act) { const cid = autoCat(act); cat = CATS.find(c => c.id === cid)?.label || ''; }
+      fillIndices.forEach(idx => {
+        DEMO_ROWS[idx].activity = act; DEMO_ROWS[idx].category = cat; DEMO_ROWS[idx].energy = eng;
+      });
+      close();
+    }
+    function close() {
+      ov.classList.remove('open'); setTimeout(() => ov.remove(), 200);
+      closeAlarmDd(); render();
+    }
+    document.getElementById('lpFillLog').addEventListener('click', doFill);
+    document.getElementById('lpFillSkip').addEventListener('click', close);
+    ov.addEventListener('click', e => { if (e.target === ov) close(); });
+    document.getElementById('lpFillAct').addEventListener('input', e => {
+      const catId = autoCat(e.target.value.trim());
+      if (catId) { const label = CATS.find(c => c.id === catId)?.label || ''; if (label) { fillCat = label; syncFillPills(); } }
+    });
+    setTimeout(() => document.getElementById('lpFillAct')?.focus(), 80);
+  }
+
+  // ── GREETING CLOCK ────────────────────────────────────────────────
+  function updateGreetingTime() {
+    const el = document.getElementById('lpGreetingTime');
+    if (!el) return;
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    el.textContent = `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { render(); updateGreetingTime(); });
+  else { render(); updateGreetingTime(); }
+  setInterval(updateGreetingTime, 60000);
+
+})();
+</script>
+
+<script>
+/* ================================================================
+   MOZIMINUTE LANDING PAGE — Live Time-Logging Demo (Feature 2)
+   Always-open popup on load. Logging advances Now from 6:30→7:00 AM.
+================================================================ */
+(function () {
+  'use strict';
+
+  const CATS = [
+    { id:'deep-work',    label:'Deep Work',   color:'#3DDC97' },
+    { id:'movement',     label:'Movement',    color:'#3DDC97' },
+    { id:'meal-break',   label:'Meal/Break',  color:'#4DA3FF' },
+    { id:'sleep-rest',   label:'Sleep/Rest',  color:'#4DA3FF' },
+    { id:'distracted',   label:'Distracted',  color:'#FF5A5F' },
+  ];
+  const ENERGY = [
+    { id:'high',   label:'High',   color:'#3DDC97' },
+    { id:'medium', label:'Medium', color:'#4DA3FF' },
+    { id:'low',    label:'Low',    color:'#FF5A5F' },
+  ];
+
+  function autoCat(text) {
+    const t = text.toLowerCase();
+    if (/coding|writing|designing|programming|editing|researching|planning|strategy|deep.?work|\bfocus\b|creating|building/.test(t)) return 'deep-work';
+    if (/\bgym\b|workout|\brun\b|running|\bwalk\b|walking|exercise|stretch|yoga|cardio|fitness|\btrain\b|training/.test(t)) return 'movement';
+    if (/scroll|tiktok|instagram|facebook|twitter|youtube|netflix|social.?media|procrastinat/.test(t)) return 'distracted';
+    if (/\bsleep\b|\bnap\b|\bbed\b|\btired\b|\bcharging\b/.test(t)) return 'sleep-rest';
+    if (/\beat\b|eating|lunch|dinner|breakfast|meal|snack|coffee|\bbreak\b|\brest\b/.test(t)) return 'meal-break';
+
+    return null;
+  }
+
+  function getCat(label)    { return CATS.find(c => c.label === label) || null; }
+  function getEnergy(label) { return ENERGY.find(e => e.label === label) || null; }
+
+  // ── DEMO ROWS — current = 6:30 AM (index 3) ──────────────────────
+  const DEMO_ROWS = [
+    { time:'5:00 AM',  activity:'Wake up', category:'Movement', energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    { time:'5:30 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'6:00 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'6:30 AM',  activity:'',        category:'',         energy:'',       isCur:true,  disabled:false, isPast:false },
+    { time:'7:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'7:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'8:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'8:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'9:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'9:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'10:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'10:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'11:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'11:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'12:00 PM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+  ];
+
+  let initialPopupOpened = false;
+
+  // ── RENDER ───────────────────────────────────────────────────────
+  function render() {
+    const tbody = document.getElementById('lpTableBody2');
+    if (!tbody) return;
+    const frag = document.createDocumentFragment();
+
+    DEMO_ROWS.forEach((row, idx) => {
+      const cat = getCat(row.category);
+      const eng = getEnergy(row.energy);
+
+      const tr = document.createElement('tr');
+      let cls = 'lp-table-row';
+      if (row.isCur)    cls += ' lp-cur-row';
+      if (row.disabled) cls += ' lp-row-disabled';
+      if (row.isPast)   cls += ' lp-row-past';
+      tr.className = cls;
+      tr.id = `lp2r${idx}`;
+      tr.style.setProperty('--lp-row-accent', 'transparent');
+
+      const tdTime = document.createElement('td');
+      tdTime.className = 'lp-cell-time';
+      tdTime.innerHTML = `<span>${row.time}</span>`;
+
+      const tdAct = document.createElement('td');
+      tdAct.className = 'lp-cell-editable';
+      if (row.activity) {
+        tdAct.textContent = row.activity;
+      } else {
+        tdAct.innerHTML = '<span class="lp-act-empty"></span>';
+      }
+      tdAct.addEventListener('click', () => openAlarmPopup(idx));
+
+      const tdCat = document.createElement('td');
+      tdCat.style.textAlign = 'center';
+      if (cat) {
+        tdCat.innerHTML = `<span class="lp-category-pill has-color" style="--pill-color:${cat.color}">${cat.label} <span class="lp-dd-arrow">▾</span></span>`;
+      } else {
+        tdCat.innerHTML = `<span class="lp-dd-trigger">Category <span class="lp-dd-arrow">▾</span></span>`;
+      }
+      tdCat.addEventListener('click', () => openDropdown('category', idx, tdCat));
+
+      const tdEng = document.createElement('td');
+      tdEng.style.textAlign = 'center';
+      if (eng) {
+        tdEng.innerHTML = `<span class="lp-status-pill has-color" style="--pill-color:${eng.color}">${eng.label} <span class="lp-dd-arrow">▾</span></span>`;
+      } else {
+        tdEng.innerHTML = `<span class="lp-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></span>`;
+      }
+      if (row.category !== 'Sleep/Rest') {
+        tdEng.addEventListener('click', () => openDropdown('energy', idx, tdEng));
+      }
+
+      tr.append(tdTime, tdAct, tdCat, tdEng);
+      frag.appendChild(tr);
+    });
+
+    tbody.innerHTML = '';
+    tbody.appendChild(frag);
+    placeNowWidget();
+
+    // Auto-open popup on first render only
+    if (!initialPopupOpened && !document.getElementById('lpAlarmOv2')) {
+      initialPopupOpened = true;
+      openAlarmPopup(3);
+    }
+  }
+
+  // ── NOW WIDGET — dynamic, finds isCur row each render ────────────
+  function placeNowWidget() {
+    const wrap = document.getElementById('lpTblWrap2');
+    if (!wrap) return;
+    const curIdx = DEMO_ROWS.findIndex(r => r.isCur);
+    if (curIdx < 0) return;
+    const curRow = document.getElementById(`lp2r${curIdx}`);
+    if (!curRow) return;
+
+    // Recreate so click listener always targets the correct index
+    const old = document.getElementById('lpNowWidget2');
+    if (old) old.remove();
+
+    const w = document.createElement('div');
+    w.id = 'lpNowWidget2'; w.className = 'lp-now-widget';
+    w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn2">Now</button>`;
+    wrap.appendChild(w);
+    document.getElementById('lpNowBtn2').addEventListener('click', () => openAlarmPopup(curIdx));
+
+    w.style.top    = curRow.offsetTop + 'px';
+    w.style.height = curRow.offsetHeight + 'px';
+    w.style.left   = '0';
+    w.style.width  = '100%';
+    w.classList.add('visible');
+  }
+
+  // ── DROPDOWN (table cells) ────────────────────────────────────────
+  let _ddRemove = null, _ddScrollClose = null;
+  function closeDropdown() {
+    const p = document.getElementById('lpDdPanel2');
+    if (p) { p.classList.remove('lp-dd-open'); setTimeout(() => p.remove(), 160); }
+    if (_ddRemove) { document.removeEventListener('click', _ddRemove); _ddRemove = null; }
+    if (_ddScrollClose) { window.removeEventListener('scroll', _ddScrollClose); _ddScrollClose = null; }
+  }
+
+  function openDropdown(colType, rowIdx, anchor) {
+    closeDropdown();
+    const opts = colType === 'category' ? CATS : ENERGY;
+
+    const panel = document.createElement('div');
+    panel.id = 'lpDdPanel2'; panel.className = 'lp-dd-panel';
+
+    const searchWrap = document.createElement('div');
+    searchWrap.className = 'lp-dd-search-wrap';
+    const search = document.createElement('input');
+    search.type = 'text'; search.className = 'lp-dd-search';
+    search.placeholder = colType === 'category' ? 'Search categories...' : 'Search energy...';
+    searchWrap.appendChild(search);
+
+    const optList = document.createElement('div');
+    optList.className = 'lp-dd-opts';
+
+    function buildOpts(filter) {
+      optList.innerHTML = '';
+      opts.filter(o => !filter || o.label.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(opt => {
+          const d = document.createElement('div');
+          d.className = 'lp-dd-opt';
+          d.textContent = opt.label;
+          d.addEventListener('click', e => { e.stopPropagation(); pick(opt.label); });
+          optList.appendChild(d);
+        });
+    }
+    buildOpts('');
+    search.addEventListener('input', () => buildOpts(search.value));
+
+    panel.appendChild(searchWrap); panel.appendChild(optList);
+    if (colType === 'category') {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'lp-dd-clear';
+      editBtn.style.cssText = 'text-align:right;padding-right:14px;';
+      editBtn.textContent = 'Edit options';
+      editBtn.addEventListener('click', e => { e.stopPropagation(); closeDropdown(); });
+      panel.appendChild(editBtn);
+    }
+    document.body.appendChild(panel);
+
+    const rect = anchor.getBoundingClientRect();
+    const pw = 210, ph = 300;
+    let top = rect.bottom + 6, left = rect.left;
+    if (top + ph > window.innerHeight) top = rect.top - ph - 6;
+    if (left + pw > window.innerWidth) left = window.innerWidth - pw - 8;
+    panel.style.top = top + 'px'; panel.style.left = left + 'px';
+    requestAnimationFrame(() => panel.classList.add('lp-dd-open'));
+    setTimeout(() => search.focus(), 80);
+
+    function pick(label) {
+      if (colType === 'category') {
+        DEMO_ROWS[rowIdx].category = label;
+        if (label === 'Sleep/Rest') DEMO_ROWS[rowIdx].energy = 'Charging';
+        else if (DEMO_ROWS[rowIdx].energy === 'Charging') DEMO_ROWS[rowIdx].energy = '';
+      } else {
+        DEMO_ROWS[rowIdx].energy = label;
+      }
+      closeDropdown(); render();
+    }
+
+    setTimeout(() => {
+      _ddRemove = e => { if (!panel.contains(e.target)) closeDropdown(); };
+      document.addEventListener('click', _ddRemove);
+      _ddScrollClose = () => closeDropdown();
+      window.addEventListener('scroll', _ddScrollClose, { passive: true });
+    }, 10);
+  }
+
+  // ── ALARM POPUP ──────────────────────────────────────────────────
+  function openAlarmPopup(rowIdx) {
+    if (document.getElementById('lpAlarmOv2')) return; // prevent duplicate
+
+    const row = DEMO_ROWS[rowIdx];
+    const logoSrc = document.querySelector('.nav-brand img')?.src || '';
+
+    const ov = document.createElement('div');
+    ov.className = 'lp-alarm-ov lp-alarm-feat2'; ov.id = 'lpAlarmOv2';
+    ov.innerHTML = `
+      <div class="lp-alarm-card">
+        <img class="lp-alarm-logo" src="${logoSrc}" alt="Blinders">
+        <div class="lp-alarm-time">${row.time}</div>
+        <button class="lp-alarm-same" id="lpAlSame2">◄ Same as last</button>
+        <div class="lp-alarm-all-row">
+          <input type="text" class="lp-alarm-input" id="lpAlAct2"
+                 placeholder="e.g. Writing report..." value="${row.activity}">
+          <button id="lpAlCat2" class="lp-al-dd-trigger">Category <span class="lp-dd-arrow">▾</span></button>
+          <button id="lpAlEng2" class="lp-al-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></button>
+        </div>
+        <button class="lp-alarm-log" id="lpAlLog2">Log It</button>
+        <button class="lp-alarm-skip" id="lpAlSkip2">Skip</button>
+      </div>`;
+    document.getElementById('lpDemoGrid2').appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add('open'));
+
+    const alCatBtn = document.getElementById('lpAlCat2');
+    const alEngBtn = document.getElementById('lpAlEng2');
+    let alCat = row.category, alEng = row.energy;
+
+    function syncPills() {
+      const cat = getCat(alCat);
+      if (cat) {
+        alCatBtn.className = 'lp-al-category-pill has-color';
+        alCatBtn.style.setProperty('--lp-adc-c', cat.color);
+        alCatBtn.innerHTML = `${cat.label} <span class="lp-dd-arrow">▾</span>`;
+      } else {
+        alCatBtn.className = 'lp-al-dd-trigger';
+        alCatBtn.removeAttribute('style');
+        alCatBtn.innerHTML = `Category <span class="lp-dd-arrow">▾</span>`;
+      }
+      const eng = getEnergy(alEng);
+      if (eng) {
+        alEngBtn.className = 'lp-al-status-pill has-color';
+        alEngBtn.style.setProperty('--lp-adc-c', eng.color);
+        alEngBtn.innerHTML = `${eng.label} <span class="lp-dd-arrow">▾</span>`;
+      } else {
+        alEngBtn.className = 'lp-al-dd-trigger';
+        alEngBtn.removeAttribute('style');
+        alEngBtn.innerHTML = `Energy <span class="lp-dd-arrow">▾</span>`;
+      }
+    }
+    syncPills();
+
+    alCatBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openAlarmDd('category', alCatBtn, val => { alCat = val; if (val === 'Sleep/Rest') alEng = 'Charging'; syncPills(); checkAndUpdateGlow(); });
+    });
+    alEngBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openAlarmDd('energy', alEngBtn, val => { alEng = val; syncPills(); checkAndUpdateGlow(); });
+    });
+
+    document.getElementById('lpAlSame2').addEventListener('click', () => {
+      const prev = DEMO_ROWS.slice(0, rowIdx).reverse().find(r => r.activity);
+      if (prev) {
+        document.getElementById('lpAlAct2').value = prev.activity;
+        alCat = prev.category; alEng = prev.energy; syncPills();
+      }
+    });
+
+    // Gold gradient ring on empty boxes — persists until box is filled
+    function showHighlight(elIds) {
+      elIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (!el.classList.contains('lp-box-glow-active')) {
+          el.classList.add('lp-box-glow-active');
+        }
+      });
+    }
+
+    function checkAndUpdateGlow() {
+      const anyGlowing = ['lpAlAct2','lpAlCat2','lpAlEng2'].some(id =>
+        document.getElementById(id)?.classList.contains('lp-box-glow-active')
+      );
+      if (!anyGlowing) return;
+      const actVal = document.getElementById('lpAlAct2')?.value.trim() || '';
+      if (actVal) document.getElementById('lpAlAct2')?.classList.remove('lp-box-glow-active');
+      if (alCat)  document.getElementById('lpAlCat2')?.classList.remove('lp-box-glow-active');
+      if (alEng)  document.getElementById('lpAlEng2')?.classList.remove('lp-box-glow-active');
+    }
+
+    // Returns true if all filled, else flashes empties and returns false
+    function validateOrHighlight() {
+      const actVal = document.getElementById('lpAlAct2')?.value.trim() || '';
+      const emptyIds = [];
+      if (!actVal) emptyIds.push('lpAlAct2');
+      if (!alCat)  emptyIds.push('lpAlCat2');
+      if (!alEng)  emptyIds.push('lpAlEng2');
+      if (emptyIds.length) { showHighlight(emptyIds); return false; }
+      return true;
+    }
+
+    function doLog() {
+      if (!validateOrHighlight()) return;
+      const actVal = document.getElementById('lpAlAct2').value.trim();
+      DEMO_ROWS[rowIdx].activity = actVal;
+      DEMO_ROWS[rowIdx].category = alCat;
+      DEMO_ROWS[rowIdx].energy   = alEng;
+      if (!DEMO_ROWS[rowIdx].category && actVal) {
+        const cid = autoCat(actVal);
+        DEMO_ROWS[rowIdx].category = CATS.find(c => c.id === cid)?.label || '';
+      }
+      // Advance current time slot: 6:30 AM → 7:00 AM
+      DEMO_ROWS[rowIdx].isCur  = false;
+      DEMO_ROWS[rowIdx].isPast = true;
+      if (rowIdx + 1 < DEMO_ROWS.length) DEMO_ROWS[rowIdx + 1].isCur = true;
+      close();
+    }
+
+    function clearGlow() {
+      ['lpAlAct2','lpAlCat2','lpAlEng2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('lp-box-glow-active');
+      });
+    }
+
+    function close() {
+      clearGlow();
+      ov.classList.remove('open');
+      setTimeout(() => ov.remove(), 200);
+      closeAlarmDd();
+      render();
+    }
+
+    document.getElementById('lpAlLog2').addEventListener('click', doLog);
+
+    // Skip: clear form and any glow, keep popup open
+    document.getElementById('lpAlSkip2').addEventListener('click', () => {
+      clearGlow();
+      document.getElementById('lpAlAct2').value = '';
+      alCat = ''; alEng = '';
+      syncPills();
+    });
+
+    // Backdrop click: flash empty boxes, never close
+    ov.addEventListener('click', e => { if (e.target === ov) validateOrHighlight(); });
+
+    const actInput = document.getElementById('lpAlAct2');
+    actInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLog(); });
+    actInput.addEventListener('input', () => {
+      const catId = autoCat(actInput.value.trim());
+      if (catId) { const label = CATS.find(c => c.id === catId)?.label || ''; if (label && label !== alCat) { alCat = label; syncPills(); } }
+      checkAndUpdateGlow();
+    });
+    // Always-on: show gold glow immediately on any empty box when popup opens
+    requestAnimationFrame(() => {
+      const emptyIds = [];
+      if (!actInput.value.trim()) emptyIds.push('lpAlAct2');
+      if (!alCat) emptyIds.push('lpAlCat2');
+      if (!alEng) emptyIds.push('lpAlEng2');
+      if (emptyIds.length) showHighlight(emptyIds);
+    });
+    setTimeout(() => actInput.focus(), 80);
+  }
+
+  // ── ALARM DROPDOWN ───────────────────────────────────────────────
+  let _alDdRemove = null;
+  function closeAlarmDd() {
+    const p = document.getElementById('lpAlDdPanel2');
+    if (p) { p.classList.remove('lp-dd-open'); setTimeout(() => p.remove(), 160); }
+    if (_alDdRemove) { document.removeEventListener('click', _alDdRemove); _alDdRemove = null; }
+  }
+  function openAlarmDd(colType, anchor, onPick) {
+    closeAlarmDd();
+    const opts = colType === 'category' ? CATS : ENERGY;
+    const panel = document.createElement('div');
+    panel.id = 'lpAlDdPanel2'; panel.className = 'lp-dd-panel';
+    panel.style.zIndex = '100002';
+
+    const optList = document.createElement('div');
+    optList.className = 'lp-dd-opts';
+    opts.forEach(opt => {
+      const d = document.createElement('div');
+      d.className = 'lp-dd-opt';
+      d.textContent = opt.label;
+      d.addEventListener('click', e => { e.stopPropagation(); onPick(opt.label); closeAlarmDd(); });
+      optList.appendChild(d);
+    });
+    panel.appendChild(optList);
+    if (colType === 'category') {
+      const editBtn = document.createElement('button');
+      editBtn.className = 'lp-dd-clear';
+      editBtn.style.cssText = 'text-align:right;padding-right:14px;';
+      editBtn.textContent = 'Edit options';
+      editBtn.addEventListener('click', e => { e.stopPropagation(); closeAlarmDd(); });
+      panel.appendChild(editBtn);
+    }
+
+    const ov = anchor.closest('.lp-alarm-ov');
+    if (ov) {
+      panel.style.position = 'absolute';
+      ov.appendChild(panel);
+      const ovRect = ov.getBoundingClientRect();
+      const rect   = anchor.getBoundingClientRect();
+      let top  = rect.bottom - ovRect.top + 6;
+      let left = rect.left   - ovRect.left;
+      if (left + 210 > ov.offsetWidth) left = ov.offsetWidth - 218;
+      panel.style.top = top + 'px'; panel.style.left = left + 'px';
+    } else {
+      document.body.appendChild(panel);
+      const rect = anchor.getBoundingClientRect();
+      let top = rect.bottom + 6, left = rect.left;
+      if (top + 260 > window.innerHeight) top = rect.top - 260 - 6;
+      if (left + 210 > window.innerWidth) left = window.innerWidth - 218;
+      panel.style.top = top + 'px'; panel.style.left = left + 'px';
+    }
+
+    requestAnimationFrame(() => panel.classList.add('lp-dd-open'));
+    setTimeout(() => {
+      _alDdRemove = e => { if (!panel.contains(e.target) && e.target !== anchor) closeAlarmDd(); };
+      document.addEventListener('click', _alDdRemove);
+    }, 10);
+  }
+
+  // ── GREETING CLOCK ────────────────────────────────────────────────
+  function updateGreetingTime() {
+    const el = document.getElementById('lpGreetingTime2');
+    if (!el) return;
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    el.textContent = `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────────
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { render(); updateGreetingTime(); });
+  else { render(); updateGreetingTime(); }
+  setInterval(updateGreetingTime, 60000);
+
+})();
+</script>
+
+</body>
+</html>
