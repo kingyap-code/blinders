@@ -8,7 +8,7 @@
   <meta property="og:title" content="Blinders — Know Where Your Time Actually Goes">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#3DDC97">
-  <link rel="icon" type="image/png" href="asstes/Logowhite.png">
+  <link rel="icon" type="image/png" href="asstes/petals-box.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -411,17 +411,7 @@ body {
   cursor: pointer;
 }
 
-.hero-video::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 30%;
-  background: linear-gradient(to bottom, transparent, var(--bg));
-  pointer-events: none;
-  z-index: 2;
-}
+
 
 .video-thumbnail {
   position: absolute;
@@ -1427,7 +1417,7 @@ footer {
 }
 .lp-ring-progress {
   fill: none; stroke: #ffffff; stroke-width: 4;
-  stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 141.5;
+  stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 0;
   transform: rotate(-90deg); transform-origin: 60px 60px;
 }
 .lp-timer-text {
@@ -1715,7 +1705,7 @@ footer {
   <div class="nav-inner">
     <div style="display:flex;align-items:center;gap:28px">
       <a href="#" class="nav-brand" aria-label="Blinders home">
-        <img src="asstes/Logowhite.png" alt="" aria-hidden="true" style="width:22px;height:22px;object-fit:contain;display:block;">
+        <img src="asstes/petals-circle.png" alt="" aria-hidden="true" style="width:22px;height:22px;object-fit:contain;display:block;">
         <span class="nav-brand-name">Blinders</span>
       </a>
       <ul class="nav-links">
@@ -1756,7 +1746,7 @@ footer {
     <div class="hero-video-outer reveal d2">
       <div class="hero-video" id="videoContainer">
         <img
-          src="https://img.youtube.com/vi/nKhQLb7HxDw/maxresdefault.jpg"
+          src="https://img.youtube.com/vi/JQLdWsR0f-E/maxresdefault.jpg"
           alt="Blinders — Time Audit Method"
           class="video-thumbnail"
         >
@@ -1865,7 +1855,6 @@ footer {
       <div class="feat-body">
         <p>An alarm fires. You open Blinders. You log what you just did, pick a category, rate your energy. 3 seconds later, you're back to work.</p>
         <p>See your energy patterns. Now you know exactly when you're most productive — and can schedule deep work during your peak hours.</p>
-        <p>After a week, you have a complete picture of where your time actually went.</p>
       </div>
     </div>
     <div class="feat-visual reveal">
@@ -1894,12 +1883,12 @@ footer {
                   </defs>
                   <circle class="lp-ring-track" cx="60" cy="60" r="45"/>
                   <circle class="lp-ring-progress" cx="60" cy="60" r="45" filter="url(#lpRingGlow)"/>
-                  <text x="60" y="60" text-anchor="middle" class="lp-timer-text" dominant-baseline="central">15:00</text>
+                  <text x="60" y="60" text-anchor="middle" class="lp-timer-text" dominant-baseline="central">30:00</text>
                 </svg>
               </div>
               <button class="lp-timer-play-solo">▶</button>
               <div class="lp-timer-buttons">
-                <button class="lp-timer-wide-btn">15 min</button>
+                <button class="lp-timer-wide-btn">30 min</button>
                 <button class="lp-timer-wide-btn">Notif 1</button>
               </div>
             </div>
@@ -1932,7 +1921,6 @@ footer {
       </div>
       <div class="feat-body">
         <p>When the timer goes off, you spend 3 seconds answering three questions: What did you do? What category was it? What was your energy level?</p>
-        <p>Deep Work, Movement, Meal/Break, Sleep/Rest, or Distracted — pick one. High, Medium, Low, or Charging — pick one. Done.</p>
         <p>No friction. Just honest logging, every interval.</p>
       </div>
     </div>
@@ -1951,16 +1939,24 @@ footer {
         <div class="lp-tbl-area">
           <div class="lp-tbl-scroll-wrap" id="lpTblWrap2">
             <div class="lp-timer-widget" id="lpTimerWidget2">
-              <div class="lp-timer-ring-wrap">
+              <div class="lp-timer-ring-container">
                 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <filter id="lpRingGlow2" x="-20%" y="-20%" width="140%" height="140%">
+                      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+                      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                  </defs>
                   <circle class="lp-ring-track" cx="60" cy="60" r="45"/>
-                  <circle class="lp-ring-arc" cx="60" cy="60" r="45"/>
+                  <circle class="lp-ring-progress" cx="60" cy="60" r="45" filter="url(#lpRingGlow2)"/>
+                  <text x="60" y="60" text-anchor="middle" class="lp-timer-text" dominant-baseline="central">30:00</text>
                 </svg>
-                <span class="lp-timer-numeral">15:00</span>
               </div>
               <button class="lp-timer-play-solo">⏸</button>
-              <button class="lp-timer-wide-btn">15 min</button>
-              <button class="lp-timer-wide-btn">Notif 1</button>
+              <div class="lp-timer-buttons">
+                <button class="lp-timer-wide-btn">30 min</button>
+                <button class="lp-timer-wide-btn">Notif 1</button>
+              </div>
             </div>
             <table class="lp-tracker-table" id="lpTrackerTable2">
               <tbody id="lpTableBody2"></tbody>
@@ -1991,8 +1987,8 @@ footer {
       </div>
       <div class="feat-body">
         <p>Every day gets a score. Green days mean you hit your deep work target. Red days show where time slipped away. The sidebar shows your full week at a glance.</p>
-        <p>See your energy patterns emerge across the week. Green peaks show when you're at your best — now you know exactly when to schedule your hardest work.</p>
         <p>Compare this week to your best week. After a week, you own your time instead of letting it own you.</p>
+        <p>After a week, you have a complete picture of where your time actually went.</p>
       </div>
     </div>
     <div class="feat-visual reveal">
@@ -2140,16 +2136,16 @@ footer {
   <div class="container">
     <div class="pricing-meta reveal">
       <div class="pricing-label">Pricing</div>
-      <h2 class="pricing-h2" id="pricing-h">Free for 3 days.<br>Then worth every dollar.</h2>
-      <p class="pricing-sub">No credit card required. Try it free for 3 days. On day 4, you hit the data wall — and you'll know exactly why it's worth it.</p>
+      <h2 class="pricing-h2" id="pricing-h">Built for builders who refuse<br>to guess where their time went.</h2>
+      <p class="pricing-sub">7 days free. No credit card. Cancel anytime. By day 7, you'll see your real schedule — and you'll know if this is for you.</p>
     </div>
     <div class="pricing-cards reveal d1">
       <!-- Free -->
       <div class="p-card">
         <div class="p-tier free">Free</div>
-        <div class="p-title">3-Day Trial</div>
-        <div class="p-price">$0 <span>/ 3 days</span></div>
-        <div class="p-framing">No credit card. Cancel anytime.</div>
+        <div class="p-title">7-Day Trial</div>
+        <div class="p-price">$0 <span>/ 7 days</span></div>
+        <div class="p-framing">No credit card. See your full first week.</div>
         <div class="p-hr"></div>
         <ul class="p-list" role="list">
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Interval alarms: <strong>15, 30, 45, or 60 min</strong></li>
@@ -2157,8 +2153,8 @@ footer {
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Daily productivity score</strong> after every check-in</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Today's <strong>peak hour</strong> snapshot</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Streak counter</li>
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Last 3 days</strong> of history</li>
-          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>History beyond 3 days</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Last 7 days</strong> of history</li>
+          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>History beyond 7 days</li>
           <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Weekly score trends &amp; drift detection</li>
           <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Weekly performance summary</li>
         </ul>
@@ -2171,8 +2167,8 @@ footer {
           Pro · Most popular
         </div>
         <div class="p-title">Full Intelligence</div>
-        <div class="p-price">$7 <span>/ month</span></div>
-        <div class="p-framing">Less than a coffee. Smarter than any journal.</div>
+        <div class="p-price">$15 <span>/ month</span></div>
+        <div class="p-framing">The system founders use to find their hidden 10 hours a week.</div>
         <div class="p-hr"></div>
         <ul class="p-list" role="list">
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Everything in Free</li>
@@ -2183,7 +2179,7 @@ footer {
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Energy drain report</strong> — which categories cost you most</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
         </ul>
-        <a href="app.html" class="p-btn-pro">Start free, upgrade anytime →</a>
+        <a href="#" class="p-btn-pro" onclick="Paddle.Checkout.open({ items: [{ priceId: 'pri_01krwe41jsa1zvdr0b2r0g4jhj', quantity: 1 }] }); return false;">Start free, upgrade anytime →</a>
         <p class="p-foot">Cancel anytime. Your logs stay yours.</p>
       </div>
       <!-- Lifetime -->
@@ -2193,22 +2189,19 @@ footer {
           Lifetime · One-time
         </div>
         <div class="p-title">Lifetime Ownership</div>
-        <div class="p-price">$77 <span>/ once</span></div>
-        <div class="p-framing">Own the app forever. No subscription.</div>
+        <div class="p-price">$179 <span>/ once</span></div>
+        <div class="p-framing">Pay once. Own your time forever. <strong>Launch price — won't last.</strong></div>
         <div class="p-hr"></div>
         <ul class="p-list" role="list">
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Everything in Pro</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Never pay again</strong> — one price, forever</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>All future updates</strong> included</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Priority support for life</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>30-day money-back guarantee</strong></li>
         </ul>
-        <a href="app.html" class="p-btn-lifetime">Get lifetime access →</a>
+        <a href="#" class="p-btn-lifetime" onclick="Paddle.Checkout.open({ items: [{ priceId: 'pri_01krweb5v49taf2ynqn4jrstjp', quantity: 1 }] }); return false;">Get lifetime access →</a>
         <p class="p-foot">Instant unlock. No renewal. Ever.</p>
       </div>
-    </div>
-    <div class="pricing-reframe reveal d2">
-      <p><strong>Why the 3-day trial works:</strong></p>
-      <p>On day 4, you don't lose features. You lose <em>your own data</em> — the logs you built, the streak you earned, the patterns you were just starting to see. That's not a trial expiring. That's your history going dark. Unlock it for $7.</p>
     </div>
   </div>
 </section>
@@ -2270,11 +2263,11 @@ footer {
     </div>
     <h2 class="cta-h2 reveal d1" id="cta-h">
       Day 1 is today.<br>
-      Day 4 is when<br>
-      you'll understand why.
+      Day 7 is when<br>
+      you'll know for sure.
     </h2>
     <p class="cta-sub reveal d2">
-      Start logging free for 3 days. Build the habit. Hit the data wall on day 4 and feel exactly what it means to not want to lose what you've built.
+      Start free for 7 days. Build the habit. See your real schedule emerge. By the end of the week, you'll know if this is the tool that finally tells you where your time actually went.
     </p>
     <div class="cta-actions reveal d2">
       <a href="app.html" class="cta-btn">
@@ -2295,7 +2288,7 @@ footer {
   <div class="container">
     <div class="footer-top">
       <a href="#" class="footer-brand" aria-label="Blinders home">
-        <img src="asstes/Logowhite.png" alt="" aria-hidden="true" style="width:20px;height:20px;object-fit:contain;display:block;">
+        <img src="asstes/petals-circle.png" alt="" aria-hidden="true" style="width:20px;height:20px;object-fit:contain;display:block;">
         <span class="footer-brand-name">Blinders</span>
       </a>
       <nav aria-label="Footer navigation">
@@ -2317,6 +2310,10 @@ footer {
 </footer>
 
 <script>
+  // Always start at the very top — prevent browser scroll restoration
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+
   // Scroll reveal
   const io = new IntersectionObserver(
     entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }),
@@ -2341,29 +2338,28 @@ footer {
     });
   });
 
-  // YouTube click-to-play — loads iframe only after user clicks (avoids Error 153 on initial load)
+  // YouTube click-to-play — simple embed
   const videoContainer = document.getElementById('videoContainer');
   if (videoContainer) {
     videoContainer.addEventListener('click', () => {
-      const videoId = 'nKhQLb7HxDw';
+      const videoId = 'JQLdWsR0f-E';
       const iframe = document.createElement('iframe');
       iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
       iframe.title = 'Blinders — Time Audit Method';
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
       iframe.allowFullscreen = true;
       iframe.setAttribute('frameborder', '0');
-      // Clear thumbnail + play button, then insert iframe
       videoContainer.querySelector('.video-thumbnail')?.remove();
       videoContainer.querySelector('.video-play-btn')?.remove();
       videoContainer.appendChild(iframe);
     }, { once: true });
   }
 
-  // Fallback: if maxresdefault thumbnail 404s (smaller videos), swap to hqdefault
+  // Fallback thumbnail
   const thumb = document.querySelector('.video-thumbnail');
   if (thumb) {
     thumb.addEventListener('error', () => {
-      thumb.src = 'https://img.youtube.com/vi/nKhQLb7HxDw/hqdefault.jpg';
+      thumb.src = 'https://img.youtube.com/vi/JQLdWsR0f-E/hqdefault.jpg';
     }, { once: true });
   }
 </script>
@@ -2784,6 +2780,22 @@ footer {
       const catId = autoCat(e.target.value.trim());
       if (catId) { const label = CATS.find(c => c.id === catId)?.label || ''; if (label) { alCat = label; syncPills(); } }
     });
+    // Auto-open dropdown on hover if field is empty (alarm popup only)
+    // Switching buttons closes previous dropdown and opens the new one
+    [['lpAlCat', () => alCat, 'category'], ['lpAlEng', () => alEng, 'energy']].forEach(([id, getVal, type]) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      let _ht = null;
+      btn.addEventListener('mouseenter', () => {
+        if (getVal()) return;
+        _ht = setTimeout(() => {
+          if (getVal()) return;
+          if (document.getElementById('lpAlDdPanel')) closeAlarmDd();
+          btn.click();
+        }, 150);
+      });
+      btn.addEventListener('mouseleave', () => { clearTimeout(_ht); _ht = null; });
+    });
     setTimeout(() => document.getElementById('lpAlAct')?.focus(), 80);
   }
 
@@ -2922,6 +2934,22 @@ footer {
       const catId = autoCat(e.target.value.trim());
       if (catId) { const label = CATS.find(c => c.id === catId)?.label || ''; if (label) { fillCat = label; syncFillPills(); } }
     });
+    // Auto-open dropdown on hover if field is empty (fill-all popup only)
+    // Switching buttons closes previous dropdown and opens the new one
+    [['lpFillCat', () => fillCat], ['lpFillEng', () => fillEng]].forEach(([id, getVal]) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      let _ht = null;
+      btn.addEventListener('mouseenter', () => {
+        if (getVal()) return;
+        _ht = setTimeout(() => {
+          if (getVal()) return;
+          if (document.getElementById('lpAlDdPanel')) closeAlarmDd();
+          btn.click();
+        }, 150);
+      });
+      btn.addEventListener('mouseleave', () => { clearTimeout(_ht); _ht = null; });
+    });
     setTimeout(() => document.getElementById('lpFillAct')?.focus(), 80);
   }
 
@@ -2937,8 +2965,8 @@ footer {
   }
 
   // ── INIT ─────────────────────────────────────────────────────────
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { render(); updateGreetingTime(); });
-  else { render(); updateGreetingTime(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { render(); updateGreetingTime(); window.scrollTo(0, 0); });
+  else { render(); updateGreetingTime(); window.scrollTo(0, 0); }
   setInterval(updateGreetingTime, 60000);
 
 })();
@@ -3060,11 +3088,6 @@ footer {
     tbody.appendChild(frag);
     placeNowWidget();
 
-    // Auto-open popup on first render only
-    if (!initialPopupOpened && !document.getElementById('lpAlarmOv2')) {
-      initialPopupOpened = true;
-      openAlarmPopup(3);
-    }
   }
 
   // ── NOW WIDGET — dynamic, finds isCur row each render ────────────
@@ -3336,7 +3359,23 @@ footer {
       if (!alEng) emptyIds.push('lpAlEng2');
       if (emptyIds.length) showHighlight(emptyIds);
     });
-    setTimeout(() => actInput.focus(), 80);
+    // Auto-open dropdown on hover if field is empty (Feature 2 alarm popup only)
+    // Switching buttons closes previous dropdown and opens the new one
+    [['lpAlCat2', () => alCat], ['lpAlEng2', () => alEng]].forEach(([id, getVal]) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      let _ht = null;
+      btn.addEventListener('mouseenter', () => {
+        if (getVal()) return;
+        _ht = setTimeout(() => {
+          if (getVal()) return;
+          if (document.getElementById('lpAlDdPanel2')) closeAlarmDd();
+          btn.click();
+        }, 150);
+      });
+      btn.addEventListener('mouseleave', () => { clearTimeout(_ht); _ht = null; });
+    });
+    setTimeout(() => actInput.focus({ preventScroll: true }), 80);
   }
 
   // ── ALARM DROPDOWN ───────────────────────────────────────────────
@@ -3410,12 +3449,289 @@ footer {
   }
 
   // ── INIT ─────────────────────────────────────────────────────────
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { render(); updateGreetingTime(); });
-  else { render(); updateGreetingTime(); }
+  function init2() { render(); updateGreetingTime(); window.scrollTo(0, 0); setTimeout(() => openAlarmPopup(3), 120); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init2);
+  else init2();
   setInterval(updateGreetingTime, 60000);
 
 })();
 </script>
+
+<script>
+(function () {
+  const TOTAL = 1800; // 30 minutes in seconds
+  const CIRC  = 283;  // stroke-dasharray circumference
+
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    return String(m).padStart(2,'0') + ':' + String(s % 60).padStart(2,'0');
+  }
+
+  function makeTimer(widgetId, autoStart) {
+    const widget = document.getElementById(widgetId);
+    if (!widget) return;
+    const textEl = widget.querySelector('.lp-timer-text');
+    const ringEl = widget.querySelector('.lp-ring-progress');
+    const btn    = widget.querySelector('.lp-timer-play-solo');
+    const blurEl = widget.querySelector('feGaussianBlur');
+
+    let remaining = TOTAL;
+    let iv = null;
+
+    function updateUI() {
+      const ratio = remaining / TOTAL;
+      textEl.textContent = fmt(remaining);
+      ringEl.style.strokeDashoffset = ((1 - ratio) * CIRC).toFixed(2);
+      if (blurEl) blurEl.setAttribute('stdDeviation', (ratio * 4).toFixed(1));
+    }
+
+    function tick() {
+      if (remaining <= 0) { stop(); remaining = TOTAL; updateUI(); return; }
+      remaining--;
+      updateUI();
+    }
+
+    function stop()  { clearInterval(iv); iv = null; btn.textContent = '▶'; }
+    function start() { iv = setInterval(tick, 1000); btn.textContent = '⏸'; }
+
+    btn.addEventListener('click', () => iv ? stop() : start());
+    updateUI();
+    if (autoStart) start();
+  }
+
+  function init() {
+    makeTimer('lpTimerWidget',  true);
+    makeTimer('lpTimerWidget2', true);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+
+
+<!-- Feedback button -->
+<style>
+  .feedback-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9000;
+    background: rgba(22,22,24,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: rgba(255,255,255,0.78);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'Inter', system-ui, sans-serif;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .feedback-fab:hover {
+    background: rgba(30,30,34,0.95);
+    color: #fff;
+    border-color: rgba(255,255,255,0.18);
+  }
+  .feedback-fab svg { width: 13px; height: 13px; }
+
+  .fb-overlay {
+    position: fixed; inset: 0;
+    background: rgba(13,13,13,0.6);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    padding: 16px;
+  }
+  .fb-overlay.open { display: flex; opacity: 1; }
+  .fb-card {
+    background: linear-gradient(135deg, #161618 0%, #0d0d0d 100%);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 22px;
+    width: 100%;
+    max-width: 460px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .fb-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .fb-title { font-size: 16px; font-weight: 700; color: #fff; }
+  .fb-close {
+    background: none; border: none; color: rgba(255,255,255,0.5);
+    font-size: 18px; cursor: pointer; line-height: 1; padding: 4px 8px;
+  }
+  .fb-close:hover { color: #fff; }
+  .fb-type-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .fb-type-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  .fb-type-btn.active {
+    background: rgba(61,220,151,0.12);
+    border-color: rgba(61,220,151,0.4);
+    color: #3DDC97;
+  }
+  .fb-textarea {
+    width: 100%;
+    min-height: 140px;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .fb-textarea:focus { border-color: #3DDC97; box-shadow: 0 0 0 3px rgba(61,220,151,0.18); }
+  .fb-textarea::placeholder { color: rgba(255,255,255,0.35); }
+  .fb-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+  .fb-btn {
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+  }
+  .fb-btn-cancel {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+  }
+  .fb-btn-send {
+    background: #3DDC97;
+    color: #0F0F10;
+  }
+  .fb-btn-send:hover { filter: brightness(1.08); }
+</style>
+
+<button class="feedback-fab" id="feedbackFab" aria-label="Send feedback">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  Feedback
+</button>
+
+<div class="fb-overlay" id="fbOverlay">
+  <div class="fb-card">
+    <div class="fb-header">
+      <span class="fb-title">Send feedback</span>
+      <button class="fb-close" id="fbCloseBtn" aria-label="Close">✕</button>
+    </div>
+    <div class="fb-type-row">
+      <button class="fb-type-btn active" data-type="Bug">Bug</button>
+      <button class="fb-type-btn" data-type="Improvement">Improvement</button>
+      <button class="fb-type-btn" data-type="Feedback">Other</button>
+    </div>
+    <textarea class="fb-textarea" id="fbTextarea" placeholder="Tell us what's broken, what could be better, or what you love."></textarea>
+    <!-- Honeypot: invisible to humans, bots will fill it. Submissions with a non-empty value are rejected. -->
+    <input type="text" id="fbHp" name="website" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;">
+    <div class="fb-actions">
+      <button class="fb-btn fb-btn-cancel" id="fbCancelBtn">Cancel</button>
+      <button class="fb-btn fb-btn-send" id="fbSendBtn">Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function setupFeedback() {
+  const fab = document.getElementById('feedbackFab');
+  const overlay = document.getElementById('fbOverlay');
+  const textarea = document.getElementById('fbTextarea');
+  const closeBtn = document.getElementById('fbCloseBtn');
+  const cancelBtn = document.getElementById('fbCancelBtn');
+  const sendBtn = document.getElementById('fbSendBtn');
+  const typeBtns = document.querySelectorAll('.fb-type-btn');
+  let selectedType = 'Bug';
+
+  const open = () => { overlay.classList.add('open'); setTimeout(() => textarea.focus(), 100); };
+  const close = () => { overlay.classList.remove('open'); };
+
+  fab.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  cancelBtn.addEventListener('click', close);
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  typeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      typeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedType = btn.dataset.type;
+    });
+  });
+
+  // Paste your Google Apps Script Web App URL here once deployed
+  const FEEDBACK_GAS_URL = '';
+
+  sendBtn.addEventListener('click', () => {
+    const text = textarea.value.trim();
+    if (!text) return;
+    // Honeypot — bots fill hidden inputs, humans don't. Silently drop spam.
+    const hp = document.getElementById('fbHp')?.value;
+    if (hp) { textarea.value = ''; close(); return; }
+    // Rate-limit: max 1 submission per 30 seconds per browser, to keep
+    // the Google Apps Script quota safe at scale.
+    const RATE_LIMIT_MS = 30_000;
+    const lastSend = +localStorage.getItem('mozimin_last_fb') || 0;
+    const wait = RATE_LIMIT_MS - (Date.now() - lastSend);
+    if (wait > 0) {
+      const orig = sendBtn.textContent;
+      sendBtn.textContent = `Wait ${Math.ceil(wait/1000)}s…`;
+      setTimeout(() => { sendBtn.textContent = orig; }, 1500);
+      return;
+    }
+    sendBtn.textContent = 'Sending…';
+    sendBtn.disabled = true;
+    localStorage.setItem('mozimin_last_fb', Date.now());
+    const params = new URLSearchParams({ type: selectedType, msg: text, page: 'landing' });
+    const submit = FEEDBACK_GAS_URL
+      ? fetch(`${FEEDBACK_GAS_URL}?${params}`, { mode: 'no-cors' })
+      : Promise.resolve();
+    submit.finally(() => {
+      textarea.value = '';
+      close();
+      sendBtn.textContent = 'Send';
+      sendBtn.disabled = false;
+    });
+  });
+})();
+</script>
+
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script>
+  Paddle.Environment.set("sandbox");
+  Paddle.Initialize({ token: "test_cbcbdc1fde1ddec9d62e9f67419" });
+</script>
+
+<!-- Vercel Web Analytics — privacy-friendly, cookie-less page view tracking.
+     Starts collecting data once Analytics is enabled in the Vercel project dashboard.
+     Until then, the script is a no-op and harmless. Docs: https://vercel.com/docs/analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 
 </body>
 </html>
