@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blinders</title>
   <meta name="theme-color" content="#3DDC97">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src https://script.google.com;">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -491,16 +491,25 @@
     .cell-editable[data-col="activity"] { text-align: center; }
 
     .activity-empty-state {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: 110px;
       min-width: 110px;
-      min-height: 32px;
+      height: 32px;
+      padding: 3px 10px;
       border-radius: 6px;
       border: 1px solid rgba(111,111,111,0.5);
       background: transparent;
       cursor: pointer;
       vertical-align: middle;
       box-sizing: border-box;
+      font-size: 13px;
+      line-height: 1;
+      color: #ffffff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       transition: border-color 0.15s ease;
     }
 
@@ -5951,27 +5960,18 @@ function onTimerDone() {
   setTimeout(startTimer, 800);
 }
 
-// Proactive bounce: signal the user to add more rows BEFORE they hit the
-// last available slot. Triggers when the current-time row is empty AND
-// there are no empty rows after it. Drops the bounce automatically once
-// state changes (e.g. user adds rows).
+// Bounce when the current-time slot is on the last row of the table — the
+// user has nowhere to log next and needs to add more rows. Stops as soon
+// as the user clicks Add and new rows appear past current.
 function shouldBounceLoadMore() {
   const btn = document.getElementById('loadMoreBtn');
   if (!btn || btn.style.display === 'none') return false;
   if (state.date !== todayStr()) return false;
   const slot = currentSlotTime();
-  if (!slot) {
-    // Past day-end: bounce only if every row is filled (no slot left to log into).
-    return state.rows.length > 0 && state.rows.every(r => rowHasData(r));
-  }
+  if (!slot) return false;
   const idx = state.rows.findIndex(r => r.time === slot);
   if (idx < 0) return false;
-  if (rowHasData(state.rows[idx])) return false;
-  // Current row is empty — bounce only if no later empty row exists.
-  for (let i = idx + 1; i < state.rows.length; i++) {
-    if (!rowHasData(state.rows[i])) return false;
-  }
-  return true;
+  return idx === state.rows.length - 1;
 }
 
 function updateLoadMoreBounce() {
@@ -6994,11 +6994,11 @@ function renderActivityCellContent(td, value) {
   if (display) {
     td.classList.remove('placeholder');
     td.classList.add('activity-has-value');
-    td.textContent = display;
   } else {
     td.classList.remove('activity-has-value', 'placeholder');
-    td.innerHTML = '<span class="activity-empty-state"></span>';
   }
+  td.innerHTML = '<span class="activity-empty-state"></span>';
+  if (display) td.querySelector('.activity-empty-state').textContent = display;
 }
 
 function attachCellListeners() {
@@ -10596,7 +10596,7 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
     // Paste your Google Apps Script Web App URL here once deployed
-    const FEEDBACK_GAS_URL = '';
+    const FEEDBACK_GAS_URL = 'https://script.google.com/macros/s/AKfycbxSSC7cRHY1m5pDULmy0AoIpa78jNjB9v_XJkJkw4HXLnVw6WADFSqW87OWOLCKuIxy/exec';
 
     document.getElementById('fbSend').addEventListener('click', () => {
       const text = document.getElementById('fbText').value.trim();
