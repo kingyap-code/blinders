@@ -2278,6 +2278,9 @@ footer {
         <p class="p-foot">Instant unlock. No renewal. Ever.</p>
       </div>
     </div>
+    <div style="text-align:center;margin-top:22px;">
+      <a href="#" id="landingRestoreLink" style="font-size:13px;color:var(--text3);text-decoration:underline;">Already paid? Restore access →</a>
+    </div>
   </div>
 </section>
 
@@ -3790,6 +3793,7 @@ footer {
 })();
 </script>
 
+<script src="plan.js"></script>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
   function blindersResetCheckoutBtns() {
@@ -3820,7 +3824,19 @@ footer {
       if (ev && (ev.name === "checkout.loaded" || ev.name === "checkout.closed" || ev.name === "checkout.error")) {
         blindersResetCheckoutBtns();
       }
+      if (ev && ev.name === "checkout.completed") {
+        var txId = ev.data && (ev.data.transaction_id || (ev.data.transaction && ev.data.transaction.id));
+        if (txId && window.BlindersPlan) {
+          window.BlindersPlan.activate(txId).then(function (plan) {
+            if (plan !== "free") setTimeout(function () { window.location.href = "app.html"; }, 1800);
+          });
+        }
+      }
     }
+  });
+  document.getElementById('landingRestoreLink')?.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (window.BlindersPlan) window.BlindersPlan.promptRestore();
   });
 </script>
 

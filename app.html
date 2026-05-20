@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blinders</title>
   <meta name="theme-color" content="#3DDC97">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com; media-src 'self' data: blob:; connect-src https://script.google.com https://*.paddle.com; frame-src https://*.paddle.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com; media-src 'self' data: blob:; connect-src 'self' https://script.google.com https://*.paddle.com; frame-src https://*.paddle.com;">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6948,6 +6948,9 @@ function openUpgradeModal() {
           <div class="upgrade-plan-foot">Launch price — won't last. Instant unlock.</div>
         </div>
       </div>
+      <div style="text-align:center;margin-top:14px;">
+        <a href="#" id="upgradeRestoreLink" style="font-size:12.5px;color:rgba(255,255,255,0.5);text-decoration:underline;">Already paid? Restore access →</a>
+      </div>
     </div>`;
   document.body.appendChild(overlay);
   requestAnimationFrame(() => overlay.classList.add('open'));
@@ -6968,6 +6971,10 @@ function openUpgradeModal() {
     if (typeof Paddle !== 'undefined') {
       blindersCheckout(e.currentTarget, 'pri_01ks1tzeg628mrqt3h9zgwrjfw');
     }
+  });
+  document.getElementById('upgradeRestoreLink')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (window.BlindersPlan) window.BlindersPlan.promptRestore();
   });
 }
 
@@ -7893,13 +7900,17 @@ function showAlarmOverlay(slotTime, rowIdx) {
     if (r.activity || r.category || r.energy) { lastNonEmptyRow = r; break; }
   }
 
-  // Feature 8: count consecutive empty rows before current
+  // Count consecutive empty rows immediately before current (the "latest gap" block)
   let missedCount = 0;
   for (let i = rowIdx - 1; i >= 0; i--) {
     const r = state.rows[i];
     if (!r.activity && !r.category && !r.energy) missedCount++;
     else break;
   }
+  const firstMissedIdx = rowIdx - missedCount;
+  const rangeLabel = missedCount > 0
+    ? `${state.rows[firstMissedIdx].time} – ${slotTime}`
+    : slotTime;
 
   // Feature 2: load favorites
   const defaultFavs = [
@@ -7922,7 +7933,7 @@ function showAlarmOverlay(slotTime, rowIdx) {
     <div class="alarm-card">
       <div class="alarm-header">
         <img src="asstes/petals-circle.png" class="alarm-logo" alt="Blinders">
-        <div class="alarm-time-badge">${slotTime}</div>
+        <div class="alarm-time-badge">${rangeLabel}</div>
       </div>
       ${gapBannerHTML}
       <button class="same-as-last-btn same-as-last-full" id="sameAsLastBtn"${!lastNonEmptyRow ? ' disabled' : ''}>${lastLabel}</button>
@@ -7969,7 +7980,10 @@ function showAlarmOverlay(slotTime, rowIdx) {
     stopEnergyGlow();
     stopAlarm();
     overlayRow.activity = titleCaseActivity((document.getElementById('overlayActivity')?.value || '').trim());
-    state.rows[rowIdx] = { ...overlayRow };
+    // Fill all consecutive empty slots from firstMissedIdx through current rowIdx
+    for (let i = firstMissedIdx; i <= rowIdx; i++) {
+      state.rows[i] = { ...state.rows[i], activity: overlayRow.activity, category: overlayRow.category, energy: overlayRow.energy };
+    }
     saveData();
     renderTable();
     dismissOverlay();
@@ -8730,6 +8744,15 @@ function navigateDay(dir) {
   const [y, m, day] = state.date.split('-').map(Number);
   const d = new Date(y, m - 1, day);
   d.setDate(d.getDate() + dir);
+  // Gate: free users can view today + the past 7 days only. History beyond that is Pro.
+  if (dir < 0) {
+    const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
+    if (!isPro) {
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const diffDays = Math.round((today - d) / 86400000);
+      if (diffDays > 7) { openUpgradeModal(); return; }
+    }
+  }
   state.date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   loadData(state.date, state.interval);
   updateDateUI();
@@ -9873,6 +9896,9 @@ function renderWeeklyBar(animate) {
 }
 
 function openWeeklySidebar() {
+  // Gate: weekly score trends + summary are Pro.
+  const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
+  if (!isPro) { openUpgradeModal(); return; }
   _wpAnimated = false;
   document.getElementById('weeklySidebarBackdrop').classList.add('open');
   document.getElementById('weeklySidebar').classList.add('open');
@@ -10635,6 +10661,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 </script>
 
+<script src="plan.js"></script>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
   function blindersResetCheckoutBtns() {
@@ -10664,6 +10691,14 @@ document.addEventListener('DOMContentLoaded', () => {
     eventCallback: function (ev) {
       if (ev && (ev.name === "checkout.loaded" || ev.name === "checkout.closed" || ev.name === "checkout.error")) {
         blindersResetCheckoutBtns();
+      }
+      if (ev && ev.name === "checkout.completed") {
+        var txId = ev.data && (ev.data.transaction_id || (ev.data.transaction && ev.data.transaction.id));
+        if (txId && window.BlindersPlan) {
+          window.BlindersPlan.activate(txId).then(function (plan) {
+            if (plan !== "free") setTimeout(function () { location.reload(); }, 1500);
+          });
+        }
       }
     }
   });
