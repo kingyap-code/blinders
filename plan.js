@@ -37,7 +37,7 @@
   function onChange() {
     if (document.body) document.body.setAttribute('data-plan', current);
     var label = current === 'lifetime' ? 'Lifetime' : current === 'pro' ? 'Pro' : 'Free';
-    document.querySelectorAll('.strip-profile-plan').forEach(function (el) { el.textContent = label; });
+    document.querySelectorAll('.strip-profile-plan, .popup-top-plan').forEach(function (el) { el.textContent = label; });
     if (typeof window.onBlindersPlanChange === 'function') {
       try { window.onBlindersPlanChange(current); } catch (e) {}
     }
@@ -151,6 +151,14 @@
     emailEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') goBtn.click(); });
   }
 
+  // Single source of truth for displayed prices. Update here if prices change in
+  // Paddle so the in-app upgrade modal stays in sync. (The landing page in
+  // index.html has standalone marketing copy and is edited manually alongside.)
+  var PRICING = {
+    pro:      { price: '$15',  unit: '/ month' },
+    lifetime: { price: '$179', unit: '/ once'  },
+  };
+
   window.BlindersPlan = {
     get: function () { return current; },
     isPro: isPro,
@@ -158,6 +166,7 @@
     activate: activate,
     restore: restore,
     promptRestore: promptRestore,
+    PRICING: PRICING,
   };
 
   // Reflect cached plan immediately, then verify with the server.

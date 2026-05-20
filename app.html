@@ -3270,6 +3270,17 @@
     font-size: 11px; color: rgba(255,255,255,0.4);
   }
 
+  /* "Upgrade →" nudge — only shown for free users so they always see the upsell. */
+  .strip-profile-plan-line { display: flex; align-items: baseline; gap: 8px; }
+  .strip-upgrade-nudge {
+    font-size: 11px; font-weight: 600; color: #3DDC97;
+    text-decoration: none; cursor: pointer; display: none;
+    background: rgba(61,220,151,0.12); padding: 1px 7px; border-radius: 10px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .strip-upgrade-nudge:hover { background: rgba(61,220,151,0.22); color: #2ec986; }
+  body[data-plan="free"] .strip-upgrade-nudge { display: inline-block; }
+
   .strip-profile-chevron {
     color: rgba(255,255,255,0.3);
     font-size: 16px;
@@ -6905,6 +6916,12 @@ function openSettingsModal() {
 
 function openUpgradeModal() {
   document.getElementById('upgradeOverlay')?.remove();
+  // Pull displayed prices from plan.js (single source of truth). Fall back to
+  // the historical values if plan.js failed to load.
+  const PRICING = (window.BlindersPlan && window.BlindersPlan.PRICING) || {
+    pro:      { price: '$15',  unit: '/ month' },
+    lifetime: { price: '$179', unit: '/ once'  },
+  };
   const overlay = document.createElement('div');
   overlay.id = 'upgradeOverlay';
   overlay.className = 'notes-popup-overlay';
@@ -6922,7 +6939,7 @@ function openUpgradeModal() {
         <div class="upgrade-plan">
           <div class="upgrade-plan-tag">PRO · MOST POPULAR</div>
           <div class="upgrade-plan-title">Full Intelligence</div>
-          <div class="upgrade-plan-price"><span class="upgrade-price-num">$15</span><span class="upgrade-price-unit">/ month</span></div>
+          <div class="upgrade-plan-price"><span class="upgrade-price-num">${PRICING.pro.price}</span><span class="upgrade-price-unit">${PRICING.pro.unit}</span></div>
           <ul class="upgrade-plan-feats">
             <li>Unlimited history — every log, forever</li>
             <li>Weekly score trends — are you improving?</li>
@@ -6936,7 +6953,7 @@ function openUpgradeModal() {
         <div class="upgrade-plan upgrade-plan-lifetime">
           <div class="upgrade-plan-tag upgrade-plan-tag-gold">★ LIFETIME · ONE-TIME</div>
           <div class="upgrade-plan-title">Lifetime Ownership</div>
-          <div class="upgrade-plan-price"><span class="upgrade-price-num">$179</span><span class="upgrade-price-unit">/ once</span></div>
+          <div class="upgrade-plan-price"><span class="upgrade-price-num">${PRICING.lifetime.price}</span><span class="upgrade-price-unit">${PRICING.lifetime.unit}</span></div>
           <ul class="upgrade-plan-feats">
             <li>Everything in Pro</li>
             <li><strong>Never pay again</strong> — one price, forever</li>
@@ -7995,6 +8012,11 @@ function showAlarmOverlay(slotTime, rowIdx) {
   }
 
   document.getElementById('alarmLogBtn').addEventListener('click', () => {
+    // Stop the alarm sound the moment the user engages — even if the row
+    // can't be saved yet because Energy is still empty. The popup stays
+    // open and bounces Energy; the user just doesn't have to keep hearing
+    // the ding while they finish picking it.
+    stopAlarm();
     if (!overlayRow.energy) {
       const energyCell = document.getElementById('overlayCell_energy');
       if (energyCell) {
@@ -8117,10 +8139,14 @@ function showAlarmOverlay(slotTime, rowIdx) {
     cell.addEventListener('mouseleave', () => { clearTimeout(_ht); _ht = null; });
   });
 
-  // Enter in activity input → focus Log It
+  // Enter in activity input → stop the ding + focus Log It. Stopping the
+  // alarm here (not just on a full successful log) means the user gets
+  // immediate audible feedback that the system saw their engagement, even
+  // if they still need to pick Energy before the row can be saved.
   actInput?.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
+      stopAlarm();
       document.getElementById('alarmLogBtn')?.focus();
     }
   });
@@ -8562,6 +8588,10 @@ function generateWeeklyInsights(offsetWeeks = 0) {
 // ================================================================
 
 function openScoreModal() {
+  // Pro gate: daily score breakdown (insights, focus quality, CSV export) is a paid feature.
+  const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
+  if (!isPro) { openUpgradeModal(); return; }
+
   document.getElementById('scoreModalOverlay')?.remove();
 
   const totalRows = state.rows.length;
@@ -8686,6 +8716,10 @@ function openScoreModal() {
 }
 
 function exportCSV() {
+  // Pro gate (belt-and-suspenders — the modal that calls this is also gated).
+  const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
+  if (!isPro) { openUpgradeModal(); return; }
+
   const esc = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
   const fmt12h = t => {
     if (!t) return '';
@@ -8744,6 +8778,11 @@ function navigateDay(dir) {
   const [y, m, day] = state.date.split('-').map(Number);
   const d = new Date(y, m - 1, day);
   d.setDate(d.getDate() + dir);
+  // Block forward navigation past today — there's nothing in the future to view.
+  if (dir > 0) {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    if (d > today) return;
+  }
   // Gate: free users can view today + the past 7 days only. History beyond that is Pro.
   if (dir < 0) {
     const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
@@ -8953,7 +8992,6 @@ function showDailyFocusPrompt() {
     const val = inp.value.trim();
     if (val) {
       localStorage.setItem(`mozimin_daily_focus_${state.date}`, val);
-      showToast(`Today's focus: ${val}`, 5000);
     }
     dismiss();
   }
@@ -9326,6 +9364,82 @@ function init() {
   document.getElementById('popupUpgradeBtn')?.addEventListener('click', () => {
     closeProfilePopup();
     openUpgradeModal();
+  });
+
+  // Upgrade nudge (small "Upgrade →" chip beside the Free label)
+  function wireUpgradeNudge(id) {
+    document.getElementById(id)?.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeProfilePopup();
+      openUpgradeModal();
+    });
+  }
+  wireUpgradeNudge('stripUpgradeNudge');
+  wireUpgradeNudge('popupUpgradeNudge');
+
+  // Export Backup — downloads a JSON file containing all logs + settings so the
+  // user has a safety copy if they clear browser data or switch devices.
+  document.getElementById('popupExportBackupBtn')?.addEventListener('click', () => {
+    closeProfilePopup();
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+      if (key === 'blinders_access') continue; // plan is restored via email
+      if (key.startsWith('timeaudit_') || key.startsWith('mozimin_')) {
+        data[key] = localStorage.getItem(key);
+      }
+    }
+    const payload = {
+      app: 'blinders',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const today = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `blinders-backup-${today}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast?.('Backup downloaded.');
+  });
+
+  // Import Backup — file picker → confirm → restore + reload.
+  document.getElementById('popupImportBackupBtn')?.addEventListener('click', () => {
+    closeProfilePopup();
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/json,.json';
+    fileInput.onchange = e => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        let payload;
+        try { payload = JSON.parse(ev.target.result); } catch (err) {
+          alert('That file is not a valid Blinders backup.'); return;
+        }
+        if (!payload || payload.app !== 'blinders' || !payload.data) {
+          alert('That file is not a valid Blinders backup.'); return;
+        }
+        const keys = Object.keys(payload.data).filter(
+          k => k !== 'blinders_access' && (k.startsWith('timeaudit_') || k.startsWith('mozimin_'))
+        );
+        const when = payload.exportedAt ? new Date(payload.exportedAt).toLocaleString() : 'unknown date';
+        if (!confirm(`This will replace your current data with ${keys.length} entries from this backup (${when}). Continue?`)) return;
+        keys.forEach(k => localStorage.setItem(k, payload.data[k]));
+        alert('Backup restored. Reloading…');
+        location.reload();
+      };
+      reader.readAsText(file);
+    };
+    fileInput.click();
   });
 
   // Settings: Wake Up / Log Off time pickers
@@ -10460,7 +10574,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="strip-profile-avatar" id="stripProfileAvatar">KY</div>
       <div class="strip-profile-info">
         <div class="strip-profile-name" id="stripProfileName">King</div>
-        <div class="strip-profile-plan">Free</div>
+        <div class="strip-profile-plan-line">
+          <span class="strip-profile-plan">Free</span>
+          <a class="strip-upgrade-nudge" id="stripUpgradeNudge" href="#">Upgrade →</a>
+        </div>
       </div>
       <span class="strip-profile-chevron">›</span>
     </div>
@@ -10473,7 +10590,10 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="strip-profile-avatar" id="popupAvatar">KY</div>
     <div class="strip-profile-info">
       <div class="popup-top-name" id="popupName">King</div>
-      <div class="popup-top-plan">Free</div>
+      <div class="strip-profile-plan-line">
+        <span class="popup-top-plan strip-profile-plan">Free</span>
+        <a class="strip-upgrade-nudge" id="popupUpgradeNudge" href="#">Upgrade →</a>
+      </div>
     </div>
     <span class="popup-top-chevron">›</span>
   </div>
@@ -10483,6 +10603,9 @@ document.addEventListener('DOMContentLoaded', () => {
     <input class="popup-edit-name-input" id="popupEditNameInput" type="text" placeholder="Enter your name…">
   </div>
   <div class="popup-menu-item" id="popupSettingsBtn">Settings</div>
+  <div class="popup-divider"></div>
+  <div class="popup-menu-item" id="popupExportBackupBtn">Export Backup</div>
+  <div class="popup-menu-item" id="popupImportBackupBtn">Import Backup</div>
   <div class="popup-divider"></div>
   <div class="popup-menu-item" id="popupUpgradeBtn">Upgrade Plan</div>
 </div>
