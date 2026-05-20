@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blinders</title>
   <meta name="theme-color" content="#3DDC97">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src https://script.google.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com; media-src 'self' data: blob:; connect-src https://script.google.com https://*.paddle.com; frame-src https://*.paddle.com;">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -6957,12 +6957,12 @@ function openUpgradeModal() {
 
   document.getElementById('upgradeBtnPro').addEventListener('click', () => {
     if (typeof Paddle !== 'undefined') {
-      Paddle.Checkout.open({ items: [{ priceId: 'pri_01krwe41jsa1zvdr0b2r0g4jhj', quantity: 1 }] });
+      Paddle.Checkout.open({ items: [{ priceId: 'pri_01ks1twfe0r7995nfbbte7nrw3', quantity: 1 }] });
     }
   });
   document.getElementById('upgradeBtnLife').addEventListener('click', () => {
     if (typeof Paddle !== 'undefined') {
-      Paddle.Checkout.open({ items: [{ priceId: 'pri_01krweb5v49taf2ynqn4jrstjp', quantity: 1 }] });
+      Paddle.Checkout.open({ items: [{ priceId: 'pri_01ks1tzeg628mrqt3h9zgwrjfw', quantity: 1 }] });
     }
   });
 }
@@ -10633,8 +10633,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
-  Paddle.Environment.set("sandbox");
-  Paddle.Initialize({ token: "test_cbcbdc1fde1ddec9d62e9f67419" });
+  Paddle.Environment.set("production");
+  Paddle.Initialize({ token: "live_2c18c83410f5efce1d26b4fc1ad" });
 </script>
 
 <!-- Vercel Web Analytics — privacy-friendly, cookie-less page view tracking.
