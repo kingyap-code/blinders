@@ -14,6 +14,10 @@
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Blinders%22%2C%22short_name%22%3A%22Blinders%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ffffff%22%2C%22theme_color%22%3A%22%237C4DFF%22%2C%22description%22%3A%22Where+does+your+time+actually+go%3F%22%7D">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.paddle.com">
+  <link rel="preconnect" href="https://cdn.paddle.com" crossorigin>
+  <link rel="dns-prefetch" href="https://buy.paddle.com">
+  <link rel="preconnect" href="https://buy.paddle.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -6955,14 +6959,14 @@ function openUpgradeModal() {
   document.getElementById('upClose').addEventListener('click', close);
   overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
-  document.getElementById('upgradeBtnPro').addEventListener('click', () => {
+  document.getElementById('upgradeBtnPro').addEventListener('click', (e) => {
     if (typeof Paddle !== 'undefined') {
-      Paddle.Checkout.open({ items: [{ priceId: 'pri_01ks1twfe0r7995nfbbte7nrw3', quantity: 1 }] });
+      blindersCheckout(e.currentTarget, 'pri_01ks1twfe0r7995nfbbte7nrw3');
     }
   });
-  document.getElementById('upgradeBtnLife').addEventListener('click', () => {
+  document.getElementById('upgradeBtnLife').addEventListener('click', (e) => {
     if (typeof Paddle !== 'undefined') {
-      Paddle.Checkout.open({ items: [{ priceId: 'pri_01ks1tzeg628mrqt3h9zgwrjfw', quantity: 1 }] });
+      blindersCheckout(e.currentTarget, 'pri_01ks1tzeg628mrqt3h9zgwrjfw');
     }
   });
 }
@@ -10633,8 +10637,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
+  function blindersResetCheckoutBtns() {
+    document.querySelectorAll('[data-co-loading="1"]').forEach(function (b) {
+      if (b.dataset.coLabel != null) b.innerHTML = b.dataset.coLabel;
+      b.removeAttribute('data-co-loading');
+      b.style.opacity = '';
+      b.style.pointerEvents = '';
+    });
+  }
+  function blindersCheckout(btn, priceId) {
+    if (btn) {
+      if (btn.dataset.coLoading === '1') return false;
+      btn.dataset.coLabel = btn.innerHTML;
+      btn.dataset.coLoading = '1';
+      btn.innerHTML = 'Opening checkout…';
+      btn.style.opacity = '0.7';
+      btn.style.pointerEvents = 'none';
+    }
+    Paddle.Checkout.open({ items: [{ priceId: priceId, quantity: 1 }] });
+    setTimeout(blindersResetCheckoutBtns, 12000);
+    return false;
+  }
   Paddle.Environment.set("production");
-  Paddle.Initialize({ token: "live_2c18c83410f5efce1d26b4fc1ad" });
+  Paddle.Initialize({
+    token: "live_2c18c83410f5efce1d26b4fc1ad",
+    eventCallback: function (ev) {
+      if (ev && (ev.name === "checkout.loaded" || ev.name === "checkout.closed" || ev.name === "checkout.error")) {
+        blindersResetCheckoutBtns();
+      }
+    }
+  });
 </script>
 
 <!-- Vercel Web Analytics — privacy-friendly, cookie-less page view tracking.
