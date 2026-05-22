@@ -576,14 +576,26 @@ body {
   padding: 28px 24px;
 }
 .intro-card-icon {
-  width: 36px; height: 36px;
-  background: var(--accent-d);
-  border: 1px solid rgba(61,220,151,0.14);
-  border-radius: 8px;
+  width: 52px; height: 52px;
+  background: linear-gradient(160deg, #242424 0%, #131313 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
 }
-.intro-card-icon svg { width: 16px; height: 16px; stroke: var(--accent); }
+.intro-card-icon::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.08) 0%, transparent 100%);
+  border-radius: 13px 13px 0 0;
+  pointer-events: none;
+}
+.intro-card-icon svg { width: 26px; height: 26px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.7)); }
 .intro-card-title {
   font-size: 14px;
   font-weight: 600;
@@ -1119,11 +1131,11 @@ footer {
 }
 .lp-category-pill.has-color, .lp-status-pill.has-color {
   background: var(--pill-color); border-color: var(--pill-color);
-  color: #26282E; font-weight: 600;
+  color: #000000; font-weight: 600;
   box-shadow: 0 0 8px color-mix(in srgb, var(--pill-color) 35%, transparent);
 }
 .lp-category-pill.has-color .lp-dd-arrow,
-.lp-status-pill.has-color .lp-dd-arrow { color: #26282E; opacity: 0.7; }
+.lp-status-pill.has-color .lp-dd-arrow { color: #000000; opacity: 0.7; }
 .lp-category-pill.has-color:hover, .lp-status-pill.has-color:hover {
   filter: brightness(1.08);
   box-shadow: 0 0 14px color-mix(in srgb, var(--pill-color) 55%, transparent);
@@ -1457,11 +1469,54 @@ footer {
   text-align: center; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
-.lp-greeting-headline { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.3px; line-height: 1.2; margin-bottom: 2px; }
-.lp-greeting-name { color: #3DDC97; }
+.lp-greeting-headline { font-size: 14px; font-weight: 400; color: #b0b5c0; letter-spacing: 0.01em; line-height: 1.3; margin-bottom: 2px; }
+.lp-greeting-name { color: #ffffff; font-weight: 500; }
 .lp-greeting-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #b0b5c0; font-weight: 400; }
 .lp-greeting-meta-sep { color: rgba(255,255,255,0.25); }
 .lp-greeting-time { color: #7a7f8a; }
+
+/* ─── Week pills (Mon–Sun) — copied from main app ─── */
+.lp-week-pills {
+  display: flex; align-items: center; gap: 2px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 999px; padding: 4px;
+  width: fit-content; margin: 6px auto 4px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.lp-week-pill {
+  min-width: 26px; height: 24px; padding: 0 10px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+  color: #7a7f8a;
+  position: relative;
+}
+.lp-week-pill.today {
+  background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%);
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 0 0 1px rgba(255,255,255,0.22);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
+
+/* ─── Stats bar (top metrics) — copied from main app ─── */
+.lp-stats-bar {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 0;
+  padding: 4px 12px 6px;
+  width: 100%;
+}
+.lp-stat-item {
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap; padding: 2px 12px;
+  font-size: 11.5px;
+}
+.lp-stat-item + .lp-stat-item { border-left: 1px solid rgba(255,255,255,0.06); }
+.lp-stat-dot { width: 6px; height: 6px; border-radius: 50%; flex: 0 0 6px; }
+.lp-stat-label { color: #b0b5c0; font-weight: 500; }
+.lp-stat-value { color: #ffffff; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 /* ── TIMER WIDGET ── */
 /* ── TIMER WIDGET — exact copy of main app's design ── */
@@ -1806,20 +1861,43 @@ footer {
   /* Score modal card shell */
   .lp-score-preview .score-modal-card {
     width: 100%;
-    background: var(--bg-card);
-    border: 1px solid var(--border-soft);
+    background: linear-gradient(160deg, #242424 0%, #131313 100%);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 18px;
     padding: 26px 26px 22px;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
+    position: relative; overflow: hidden;
   }
+  .lp-score-preview .score-modal-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+    border-radius: 18px 18px 0 0;
+    pointer-events: none; z-index: 0;
+  }
+  .lp-score-preview .score-modal-card > * { position: relative; z-index: 1; }
   .lp-score-preview .c-wrap { position: relative; }
   .lp-score-preview .c-steps {
     display: flex; align-items: center; gap: 6px; justify-content: center;
-    background: rgba(255,255,255,0.03); border: 1px solid var(--border-soft);
+    background: linear-gradient(160deg, #242424 0%, #131313 100%);
+    border: 1px solid rgba(255,255,255,0.1);
     border-radius: 999px; padding: 6px 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
     width: fit-content; margin: 0 auto -10px;
-    position: relative; z-index: 2;
+    position: relative; z-index: 2; overflow: hidden;
   }
+  .lp-score-preview .c-steps::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%);
+    border-radius: 999px 999px 0 0;
+    pointer-events: none; z-index: 0;
+  }
+  .lp-score-preview .c-steps > * { position: relative; z-index: 1; }
   .lp-score-preview .c-step {
     width: 28px; height: 28px; border-radius: 50%;
     background: transparent;
@@ -1828,8 +1906,12 @@ footer {
     letter-spacing: 0.04em;
   }
   .lp-score-preview .c-step.active {
-    background: var(--accent-soft); color: var(--accent);
-    box-shadow: inset 0 0 0 1px var(--accent-border);
+    background: linear-gradient(160deg, #3a3a3a 0%, #282828 100%);
+    color: var(--text-primary);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.2),
+      0 0 0 1px rgba(255,255,255,0.1),
+      0 2px 6px rgba(0,0,0,0.4);
     width: auto; padding: 0 12px; border-radius: 999px;
   }
   .lp-score-preview .c-card { padding-top: 30px; }
@@ -1849,7 +1931,7 @@ footer {
   .lp-score-preview .c-hero-date { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
   .lp-score-preview .c-panels { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .lp-score-preview .c-panel {
-    background: var(--bg-sunken); border: 1px solid var(--border-soft);
+    background: #0F0F10; border: 1px solid var(--border-soft);
     border-radius: 14px; padding: 14px;
   }
   .lp-score-preview .c-panel-label { font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -1865,13 +1947,13 @@ footer {
   .lp-score-preview .c-energy-line .fill { height: 100%; border-radius: 3px; display: block; }
   .lp-score-preview .c-energy-line .pct { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; width: 34px; text-align: right; }
   .lp-score-preview .c-energy-line.h .fill { background: #3DDC97; } .lp-score-preview .c-energy-line.h .pct { color: #3DDC97; }
-  .lp-score-preview .c-energy-line.m .fill { background: #6981ED; } .lp-score-preview .c-energy-line.m .pct { color: #6981ED; }
+  .lp-score-preview .c-energy-line.m .fill { background: rgba(255,255,255,0.55); } .lp-score-preview .c-energy-line.m .pct { color: rgba(255,255,255,0.75); }
   .lp-score-preview .c-energy-line.l .fill { background: #FF5A5F; } .lp-score-preview .c-energy-line.l .pct { color: #FF5A5F; }
   .lp-score-preview .c-question {
     margin-top: 12px;
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 14px; border-radius: 14px;
-    background: var(--bg-sunken); border: 1px solid var(--border-soft);
+    background: #0F0F10; border: 1px solid var(--border-soft);
     font-size: 13px; color: var(--text-secondary);
   }
   .lp-score-preview .c-question b { color: var(--text-primary); font-weight: 600; }
@@ -1879,13 +1961,13 @@ footer {
     margin-top: 10px;
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 14px; border-radius: 14px;
-    background: var(--bg-sunken); border: 1px solid var(--border-soft);
+    background: #0F0F10; border: 1px solid var(--border-soft);
     font-size: 13px; color: var(--text-secondary);
   }
   .lp-score-preview .c-peak-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
   .lp-score-preview .c-peak-time { font-size: 13px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
   .lp-score-preview .c-footer { display: flex; justify-content: flex-end; margin-top: 16px; }
-  .lp-score-preview .c-export {
+  .lp-score-preview .c-download {
     padding: 9px 16px; border-radius: 9px;
     background: transparent; border: 1px solid rgba(255,255,255,0.07);
     color: var(--text-secondary); font-size: 13px; cursor: default;
@@ -2010,7 +2092,10 @@ footer {
     <div class="how-steps-grid">
       <div class="intro-card reveal d1">
         <div class="intro-card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">
+            <defs><linearGradient id="mg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8e8e8"/><stop offset="45%" stop-color="#b4b4b4"/><stop offset="100%" stop-color="#686868"/></linearGradient></defs>
+            <circle cx="12" cy="12" r="10" stroke="url(#mg1)"/><polyline points="12 6 12 12 16 14" stroke="url(#mg1)"/>
+          </svg>
         </div>
         <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:8px">01</div>
         <div class="intro-card-title">Set your check-in interval</div>
@@ -2018,7 +2103,10 @@ footer {
       </div>
       <div class="intro-card reveal d2" style="border-left:1px solid var(--border);border-right:1px solid var(--border)">
         <div class="intro-card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">
+            <defs><linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8e8e8"/><stop offset="45%" stop-color="#b4b4b4"/><stop offset="100%" stop-color="#686868"/></linearGradient></defs>
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="url(#mg2)"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="url(#mg2)"/>
+          </svg>
         </div>
         <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:8px">02</div>
         <div class="intro-card-title">3-second log, every interval</div>
@@ -2026,7 +2114,10 @@ footer {
       </div>
       <div class="intro-card reveal d3">
         <div class="intro-card-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8">
+            <defs><linearGradient id="mg3" x1="0" y1="0" x2="0" y2="24" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e8e8e8"/><stop offset="45%" stop-color="#b4b4b4"/><stop offset="100%" stop-color="#686868"/></linearGradient></defs>
+            <line x1="18" y1="20" x2="18" y2="10" stroke="url(#mg3)"/><line x1="12" y1="20" x2="12" y2="4" stroke="url(#mg3)"/><line x1="6" y1="20" x2="6" y2="14" stroke="url(#mg3)"/>
+          </svg>
         </div>
         <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;margin-bottom:8px">03</div>
         <div class="intro-card-title">Watch the patterns emerge</div>
@@ -2064,9 +2155,9 @@ footer {
         <div class="lp-greeting-section">
           <div class="lp-greeting-headline">Good morning, <span class="lp-greeting-name">King</span></div>
           <div class="lp-greeting-meta">
-            <span>📍 Manila</span>
+            <span>Palo Alto</span>
             <span class="lp-greeting-meta-sep">·</span>
-            <span class="lp-greeting-time" id="lpGreetingTime">6:30 AM</span>
+            <span class="lp-greeting-time" id="lpGreetingTime1">5:49 AM</span>
           </div>
         </div>
         <!-- Table (no scroll) -->
@@ -2132,7 +2223,7 @@ footer {
         <div class="lp-greeting-section">
           <div class="lp-greeting-headline">Good morning, <span class="lp-greeting-name">King</span></div>
           <div class="lp-greeting-meta">
-            <span>📍 Manila</span>
+            <span>Palo Alto</span>
             <span class="lp-greeting-meta-sep">·</span>
             <span class="lp-greeting-time" id="lpGreetingTime2">6:30 AM</span>
           </div>
@@ -2331,8 +2422,8 @@ footer {
         <!-- Arrow pointing from sidebar to score modal -->
         <div class="lp-score-arrow" aria-hidden="true">
           <svg viewBox="0 0 64 40" fill="none">
-            <path d="M4 20 C20 20, 30 6, 48 10" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
-            <polygon points="46,5 52,10 46,15" fill="var(--accent)"/>
+            <path d="M4 20 C20 20, 30 6, 48 10" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+            <polygon points="46,5 52,10 46,15" fill="#ffffff"/>
           </svg>
         </div>
 
@@ -2367,13 +2458,14 @@ footer {
                 <div class="c-panel">
                   <div class="c-panel-label">
                     <span>Your hours</span>
-                    <span class="c-panel-meta">5 cats</span>
+                    <span class="c-panel-meta">6 activities</span>
                   </div>
-                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#3DDC97"></span>Deep Work</span><span class="v">6.0h</span></div>
-                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#6981ED"></span>Meetings</span><span class="v">2.0h</span></div>
-                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#F5A623"></span>Admin</span><span class="v">1.0h</span></div>
-                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#4DA3FF"></span>Meal/Break</span><span class="v">0.5h</span></div>
-                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#FF5A5F"></span>Distracted</span><span class="v">0.5h</span></div>
+                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Editing</span><span class="v">4h 30m</span></div>
+                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Meetings</span><span class="v">2h</span></div>
+                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Coding</span><span class="v">1h 30m</span></div>
+                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Email</span><span class="v">1h</span></div>
+                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Lunch</span><span class="v">30m</span></div>
+                  <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#FF5A5F"></span>Twitter</span><span class="v">30m</span></div>
                 </div>
                 <div class="c-panel">
                   <div class="c-panel-label">
@@ -2381,22 +2473,22 @@ footer {
                     <span class="c-panel-meta">self-rated</span>
                   </div>
                   <div class="c-energy-stack">
-                    <div class="c-energy-line h"><span class="name">High</span><span class="track"><span class="fill" style="width:65%"></span></span><span class="pct">65%</span></div>
-                    <div class="c-energy-line m"><span class="name">Med</span><span class="track"><span class="fill" style="width:25%"></span></span><span class="pct">25%</span></div>
-                    <div class="c-energy-line l"><span class="name">Low</span><span class="track"><span class="fill" style="width:10%"></span></span><span class="pct">10%</span></div>
+                    <div class="c-energy-line h"><span class="name">High</span><span class="track"><span class="fill" style="width:65%"></span></span><span class="pct">6h 30m</span></div>
+                    <div class="c-energy-line m"><span class="name">Med</span><span class="track"><span class="fill" style="width:25%"></span></span><span class="pct">2h 30m</span></div>
+                    <div class="c-energy-line l"><span class="name">Low</span><span class="track"><span class="fill" style="width:10%"></span></span><span class="pct">1h</span></div>
                   </div>
                 </div>
               </div>
               <div class="c-question">
                 <span>Distracted</span>
-                <span><b>0.5h</b></span>
+                <span><b>30m</b></span>
               </div>
               <div class="c-peak">
                 <span class="c-peak-label">Peak hour</span>
                 <span class="c-peak-time">8:00 AM – 12:00 PM</span>
               </div>
               <div class="c-footer">
-                <span class="c-export">Download Card →</span>
+                <span class="c-download">Download Data ↓</span>
               </div>
             </div>
           </div>
@@ -2655,11 +2747,12 @@ footer {
   'use strict';
 
   const CATS = [
-    { id:'deep-work',    label:'Deep Work',   color:'#3DDC97' },
-    { id:'movement',     label:'Movement',    color:'#3DDC97' },
-    { id:'meal-break',   label:'Meal/Break',  color:'#4DA3FF' },
-    { id:'sleep-rest',   label:'Sleep/Rest',  color:'#4DA3FF' },
-    { id:'distracted',   label:'Distracted',  color:'#FF5A5F' },
+    { id:'deep-work',    label:'Deep Work',    color:'#3DDC97' },
+    { id:'movement',     label:'Movement',     color:'#3DDC97' },
+    { id:'meal-break',   label:'Meal/Break',   color:'#4DA3FF' },
+    { id:'sleep-rest',   label:'Sleep/Rest',   color:'#4DA3FF' },
+    { id:'spirituality', label:'Spirituality', color:'#FFFFFF' },
+    { id:'distracted',   label:'Distracted',   color:'#FF5A5F' },
   ];
   const ENERGY = [
     { id:'high',   label:'High',   color:'#3DDC97' },
@@ -2684,21 +2777,21 @@ footer {
   // ── FIXED DEMO ROWS — 30-min interval, current = 8:00 AM ─────────
   // Indices 3-5 (6:30-7:30 AM) are empty past rows → Fill All range
   const DEMO_ROWS = [
-    { time:'5:00 AM',  activity:'Wake up', category:'Movement', energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    { time:'5:30 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'6:00 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'6:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:true  },
-    { time:'7:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:true  },
-    { time:'7:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:true  },
-    { time:'8:00 AM',  activity:'',        category:'',         energy:'',       isCur:true,  disabled:false, isPast:false },
-    { time:'8:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'9:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'9:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'10:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'10:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'11:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'11:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'12:00 PM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'5:00 AM',  activity:'Wake up',    category:'Movement',     energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    { time:'5:30 AM',  activity:'Workout',    category:'Movement',     energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'6:00 AM',  activity:'Bible',      category:'Spirituality', energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    { time:'6:30 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'7:00 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'7:30 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'8:00 AM',  activity:'Twitter',    category:'Distracted',   energy:'Low',    isCur:false, disabled:false, isPast:true  },
+    { time:'8:30 AM',  activity:'Breakfast',  category:'Meal/Break',   energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    { time:'9:00 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
+    { time:'9:30 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
+    { time:'10:00 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
+    { time:'10:30 AM', activity:'',           category:'',             energy:'',       isCur:true,  disabled:false, isPast:false },
+    { time:'11:00 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'11:30 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'12:00 PM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
   ];
 
   // ── RENDER ───────────────────────────────────────────────────────
@@ -2764,11 +2857,11 @@ footer {
     placeFillWidget();
   }
 
-  // ── NOW WIDGET (current = 8:00 AM = index 6) ─────────────────────
+  // ── NOW WIDGET (current = 10:30 AM = index 11) ────────────────────
   function placeNowWidget() {
     const wrap = document.getElementById('lpTblWrap');
     if (!wrap) return;
-    const curRow = document.getElementById('lp-r-6');
+    const curRow = document.getElementById('lp-r-11');
     if (!curRow) return;
 
     let w = document.getElementById('lpNowWidget');
@@ -2777,7 +2870,7 @@ footer {
       w.id = 'lpNowWidget'; w.className = 'lp-now-widget';
       w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn">Now</button>`;
       wrap.appendChild(w);
-      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(6));
+      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(11));
     }
     w.style.top    = curRow.offsetTop + 'px';
     w.style.height = curRow.offsetHeight + 'px';
@@ -2786,13 +2879,13 @@ footer {
     w.classList.add('visible');
   }
 
-  // ── FILL-ALL WIDGET (spans empty past rows 6:30-7:30 AM = indices 3-5) ─
+  // ── FILL-ALL WIDGET (spans empty past rows 9:00-10:00 AM = indices 8-10) ─
   function placeFillWidget() {
     const wrap = document.getElementById('lpTblWrap');
     if (!wrap) return;
 
     // Hide widget once all fill-range rows have been filled
-    const fillIndices = [3, 4, 5];
+    const fillIndices = [8, 9, 10];
     const allFilled = fillIndices.every(i => DEMO_ROWS[i].activity);
     if (allFilled) {
       const existing = document.getElementById('lpFillWidget');
@@ -2800,8 +2893,8 @@ footer {
       return;
     }
 
-    const firstRow = document.getElementById('lp-r-3');
-    const lastRow  = document.getElementById('lp-r-5');
+    const firstRow = document.getElementById('lp-r-8');
+    const lastRow  = document.getElementById('lp-r-10');
     if (!firstRow || !lastRow) return;
 
     let w = document.getElementById('lpFillWidget');
@@ -3234,7 +3327,7 @@ footer {
 
   // ── GREETING CLOCK ────────────────────────────────────────────────
   function updateGreetingTime() {
-    const el = document.getElementById('lpGreetingTime');
+    const el = document.getElementById('lpGreetingTime1');
     if (!el) return;
     const now = new Date();
     const h = now.getHours(), m = now.getMinutes();
@@ -3260,11 +3353,12 @@ footer {
   'use strict';
 
   const CATS = [
-    { id:'deep-work',    label:'Deep Work',   color:'#3DDC97' },
-    { id:'movement',     label:'Movement',    color:'#3DDC97' },
-    { id:'meal-break',   label:'Meal/Break',  color:'#4DA3FF' },
-    { id:'sleep-rest',   label:'Sleep/Rest',  color:'#4DA3FF' },
-    { id:'distracted',   label:'Distracted',  color:'#FF5A5F' },
+    { id:'deep-work',    label:'Deep Work',    color:'#3DDC97' },
+    { id:'movement',     label:'Movement',     color:'#3DDC97' },
+    { id:'meal-break',   label:'Meal/Break',   color:'#4DA3FF' },
+    { id:'sleep-rest',   label:'Sleep/Rest',   color:'#4DA3FF' },
+    { id:'spirituality', label:'Spirituality', color:'#FFFFFF' },
+    { id:'distracted',   label:'Distracted',   color:'#FF5A5F' },
   ];
   const ENERGY = [
     { id:'high',   label:'High',   color:'#3DDC97' },

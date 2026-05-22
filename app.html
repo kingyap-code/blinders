@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Blinders">
   <link rel="icon" type="image/png" href="asstes/petals-box.png">
-  <link rel="preload" as="image" href="asstes/petals-circle.png">
+  <link rel="preload" as="image" href="asstes/petals-circle-small.png">
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Blinders%22%2C%22short_name%22%3A%22Blinders%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ffffff%22%2C%22theme_color%22%3A%22%237C4DFF%22%2C%22description%22%3A%22Where+does+your+time+actually+go%3F%22%7D">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -252,13 +252,25 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
+      background: linear-gradient(160deg, #242424 0%, #131313 100%);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 999px;
       padding: 5px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
     }
+    .week-pills::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%);
+      border-radius: 999px 999px 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .week-pills > * { position: relative; z-index: 1; }
 
     .week-pill {
       min-width: 36px; height: 32px;
@@ -277,9 +289,12 @@
     }
     .week-pill:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
     .week-pill.today {
-      background: rgba(61,220,151,0.15);
-      color: var(--accent);
-      box-shadow: inset 0 0 0 1px rgba(61,220,151,0.35);
+      background: linear-gradient(160deg, #3a3a3a 0%, #282828 100%);
+      color: var(--text-primary);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.2),
+        0 0 0 1px rgba(255,255,255,0.1),
+        0 2px 6px rgba(0,0,0,0.4);
     }
     .week-pill.future { cursor: default; pointer-events: none; }
     .week-pill.locked { opacity: 0.55; }
@@ -386,16 +401,17 @@
     }
 
     .greeting-headline {
-      font-size: 20px;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: -0.3px;
-      line-height: 1.2;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.01em;
+      line-height: 1.3;
       margin-bottom: 2px;
     }
 
     .greeting-name {
-      color: var(--accent);
+      color: var(--text-primary);
+      font-weight: 500;
       cursor: text;
       border-radius: 4px;
       padding: 0 2px;
@@ -405,10 +421,10 @@
       min-width: 10px;
     }
 
-    .greeting-name:hover { background: var(--accent-soft); }
+    .greeting-name:hover { background: rgba(255,255,255,0.06); }
     .greeting-name:focus {
-      background: var(--accent-soft);
-      box-shadow: 0 0 0 2px rgba(61,220,151,0.25);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.18);
     }
 
     .greeting-meta {
@@ -1010,17 +1026,17 @@
     .status-pill.has-color {
       background: var(--pill-color);
       border-color: var(--pill-color);
-      color: #26282E;
+      color: #000000;
       font-weight: 600;
       box-shadow: 0 0 8px color-mix(in srgb, var(--pill-color) 35%, transparent);
     }
     .category-pill.has-color .dd-arrow,
-    .status-pill.has-color .dd-arrow { color: #26282E; opacity: 0.7; }
+    .status-pill.has-color .dd-arrow { color: #000000; opacity: 0.7; }
     .category-pill.has-color:hover,
     .status-pill.has-color:hover {
       background: var(--pill-color);
       border-color: var(--pill-color);
-      color: #26282E;
+      color: #000000;
       filter: brightness(1.08);
       box-shadow: 0 0 14px color-mix(in srgb, var(--pill-color) 55%, transparent);
     }
@@ -2111,7 +2127,6 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      border: 2px solid #3DDC97;
       object-fit: cover;
       flex-shrink: 0;
     }
@@ -2418,24 +2433,50 @@
     /* ===================== SCORE MODAL (Variant C) ===================== */
     .score-modal-card {
       width: 100%;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
+      background: linear-gradient(160deg, #242424 0%, #131313 100%);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 18px;
       padding: 26px 26px 22px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
       max-height: 88vh;
       overflow-y: auto;
+      position: relative;
     }
+    .score-modal-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 45%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+      border-radius: 18px 18px 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .score-modal-card > * { position: relative; z-index: 1; }
     .c-wrap { position: relative; width: 420px; max-width: 92vw; }
     @media (max-width: 960px) { .c-wrap { width: 380px; } }
     @media (max-width: 500px) { .c-wrap { width: 320px; } }
     .c-steps {
       display: flex; align-items: center; gap: 6px; justify-content: center;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border-soft);
+      background: linear-gradient(160deg, #242424 0%, #131313 100%);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 999px; padding: 6px 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
       width: fit-content; margin: 0 auto -10px;
       position: relative; z-index: 2;
+      overflow: hidden;
     }
+    .c-steps::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%);
+      border-radius: 999px 999px 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .c-steps > * { position: relative; z-index: 1; }
     .c-step {
       width: 28px; height: 28px; border-radius: 50%;
       background: transparent;
@@ -2451,8 +2492,12 @@
     }
     .c-step { position: relative; }
     .c-step.active {
-      background: var(--accent-soft); color: var(--accent);
-      box-shadow: inset 0 0 0 1px var(--accent-border);
+      background: linear-gradient(160deg, #3a3a3a 0%, #282828 100%);
+      color: var(--text-primary);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.2),
+        0 0 0 1px rgba(255,255,255,0.1),
+        0 2px 6px rgba(0,0,0,0.4);
       width: auto; padding: 0 12px; border-radius: 999px; gap: 6px;
     }
     .c-step.active .c-step-label { font-size: 11px; }
@@ -2473,7 +2518,7 @@
     .c-hero-date { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
     .c-panels { display: grid; grid-template-columns: 1fr; gap: 10px; }
     .c-panel {
-      background: var(--bg-sunken); border: 1px solid var(--border-soft);
+      background: var(--bg-primary); border: 1px solid var(--border-soft);
       border-radius: 14px; padding: 14px;
     }
     .c-panel-label { font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -2489,7 +2534,7 @@
     .c-energy-line .fill { height: 100%; border-radius: 3px; min-width: 2px; display: block; }
     .c-energy-line .pct { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; width: 34px; text-align: right; }
     .c-energy-line.h .fill { background: #3DDC97; } .c-energy-line.h .pct { color: #3DDC97; }
-    .c-energy-line.m .fill { background: #6981ED; } .c-energy-line.m .pct { color: #6981ED; }
+    .c-energy-line.m .fill { background: rgba(255,255,255,0.55); } .c-energy-line.m .pct { color: rgba(255,255,255,0.75); }
     .c-energy-line.l .fill { background: #FF5A5F; } .c-energy-line.l .pct { color: #FF5A5F; }
     .c-question {
       margin-top: 12px;
@@ -2503,19 +2548,19 @@
       margin-top: 10px;
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 14px; border-radius: 14px;
-      background: var(--bg-sunken); border: 1px solid var(--border-soft);
+      background: var(--bg-primary); border: 1px solid var(--border-soft);
       font-size: 13px; color: var(--text-secondary);
     }
     .c-peak-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
     .c-peak-time { font-size: 13px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
     .c-footer { display: flex; justify-content: flex-end; margin-top: 16px; }
-    .c-export {
+    .c-download {
       padding: 9px 16px; border-radius: 9px;
       background: transparent; border: 1px solid var(--border);
       color: var(--text-secondary); font-size: 13px; cursor: pointer;
       font-family: inherit; transition: all 0.15s ease;
     }
-    .c-export:hover { border-color: var(--accent-border); color: var(--accent); }
+    .c-download:hover { border-color: rgba(220,235,255,0.7); color: #e8f0ff; box-shadow: 0 0 14px rgba(200,220,255,0.18), 0 0 0 1px rgba(220,235,255,0.25); }
     @media (max-width: 500px) {
       .c-hero-num { font-size: 52px; }
     }
@@ -4048,12 +4093,7 @@
 
   /* Logo spin animation when timer alert is active */
   .header-logo-img {
-    transition: transform 0.3s ease, opacity 0.15s ease;
-    opacity: 0;
-  }
-
-  .header-logo-img.loaded {
-    opacity: 1;
+    transition: transform 0.3s ease;
   }
 
   .header-logo-img.logo-spin {
@@ -5283,7 +5323,6 @@
     font-weight: 600;
   }
   </style>
-  <script src="asstes/lib/html2canvas.min.js" defer></script>
 </head>
 <body class="onboarding">
 <script>
@@ -5407,7 +5446,7 @@
   <!-- ===== HEADER ===== -->
   <header class="header">
     <div class="header-logo">
-      <img src="asstes/petals-circle.png" class="header-logo-img" alt="Blinders logo" onload="this.classList.add('loaded')">
+      <img src="asstes/petals-circle-small.png" class="header-logo-img" alt="Blinders logo">
       <span class="logo-mark">Blinders</span>
       <span class="logo-sub">Where does your time actually go?</span>
     </div>
@@ -5526,11 +5565,6 @@
         contenteditable="true"
         spellcheck="false"
         title="Click to edit your name">King</span>
-    </div>
-    <div class="greeting-meta">
-      <span class="greeting-tz" id="greetingTz">📍 &nbsp;Detecting location...</span>
-      <span class="greeting-meta-sep">·</span>
-      <span class="greeting-time" id="greetingTime">--:-- --</span>
     </div>
   </div>
   </div><!-- end header-content -->
@@ -6747,6 +6781,7 @@ window.addEventListener('resize', () => { positionFillAllWidget(); positionNowWi
 // Between slot changes, only reposition the fill-all widget (cheap).
 let _lastTrackedSlot = null;
 setInterval(() => {
+  autoAppendIfClockPassedEnd();
   const newSlot = currentSlotTime();
   if (newSlot !== _lastTrackedSlot) {
     _lastTrackedSlot = newSlot;
@@ -6757,6 +6792,33 @@ setInterval(() => {
     updateLoadMoreBounce();
   }
 }, 250);
+
+function autoAppendIfClockPassedEnd() {
+  if (state.date !== todayStr()) return;
+  if (!state.rows.length) return;
+  // Don't surprise the user mid-interaction
+  if (document.getElementById('alarmOverlay')) return;
+  if (document.getElementById('gapFillOverlay')) return;
+  if (document.getElementById('fillAllOverlay')) return;
+  if (document.querySelector('.score-modal-overlay')) return;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;
+  // Respect the cap
+  if ((state.extraSlots | 0) >= loadMoreMax()) return;
+  // Only act when the clock has crossed past the last row's slot
+  const lastTime = state.rows[state.rows.length - 1].time;
+  const lastMin = timeToMin(lastTime);
+  const n = new Date();
+  const nowMin = n.getHours() * 60 + n.getMinutes();
+  if (nowMin < lastMin + state.interval) return;
+  // Append exactly one row at the next interval slot (skip midnight wrap)
+  const nextMin = lastMin + state.interval;
+  if (nextMin >= 1440) return;
+  state.extraSlots = (state.extraSlots | 0) + 1;
+  state.rows.push(blankRow(minToTime(nextMin)));
+  saveData();
+  renderTable();
+}
 
 function openFillAllUI(idxs) {
   // Accept the specific group's idxs from the clicked widget so each
@@ -7732,7 +7794,8 @@ function renderStats() {
   const chips = sorted.map(([label, min]) => {
     const cat = getCat(label);
     if (!cat) return '';
-    return `<div class="stat-item"><span class="stat-dot" style="background:${cat.color}"></span><span class="stat-label">${_esc(cat.label)}</span><span class="stat-value">${fmtMin(min)}</span></div>`;
+    const dotColor = cat.label === 'Distracted' ? '#FF5A5F' : '#ffffff';
+    return `<div class="stat-item"><span class="stat-dot" style="background:${dotColor}"></span><span class="stat-label">${_esc(cat.label)}</span><span class="stat-value">${fmtMin(min)}</span></div>`;
   }).filter(Boolean);
 
   statsEl.innerHTML = chips.join('');
@@ -8723,33 +8786,48 @@ function openScoreModal() {
     const heroDec = '.' + totalHours.toFixed(1).split('.')[1];
     const numCats = Object.keys(catCounts).length;
 
-    // Category breakdown sorted descending
-    const catEntries = Object.entries(catCounts)
-      .map(([name, count]) => ({
-        name,
-        hours: (count * interval / 60).toFixed(1),
-        color: (CATEGORIES.find(c => c.label === name) || {}).color || '#9aa0aa'
-      }))
-      .sort((a, b) => parseFloat(b.hours) - parseFloat(a.hours));
+    // Activity breakdown — group by activity name, color-coded by category.
+    // Falls back to category name when activity name is missing, so nothing is dropped.
+    const actAgg = {};
+    rows.forEach(r => {
+      const raw = (r.activity || '').trim();
+      if (!raw && !r.category) return;
+      const key = raw ? raw.toLowerCase() : `__cat__${r.category}`;
+      const display = raw || r.category;
+      if (!actAgg[key]) {
+        actAgg[key] = { display, category: r.category || '', count: 0 };
+      }
+      actAgg[key].count++;
+    });
 
-    const catRowsHTML = catEntries.map(c =>
-      `<div class="c-cat-row"><span class="lbl"><span class="dot" style="background:${c.color}"></span>${_esc(c.name)}</span><span class="v">${c.hours}h</span></div>`
+    const actEntries = Object.values(actAgg)
+      .map(a => ({
+        name: a.display,
+        minutes: a.count * interval,
+        color: a.category === 'Distracted' ? '#FF5A5F' : '#ffffff'
+      }))
+      .sort((a, b) => b.minutes - a.minutes);
+
+    const actRowsHTML = actEntries.map(a =>
+      `<div class="c-cat-row"><span class="lbl"><span class="dot" style="background:${a.color}"></span>${_esc(a.name)}</span><span class="v">${fmtMin(a.minutes)}</span></div>`
     ).join('');
 
-    // Energy percentages
-    const ePct = l => pct(energyTotals[l], totalEnergy);
+    // Energy bars scale against the same 10-hour daily target used by the week pill scores.
+    const eMin = l => energyTotals[l] * interval;
     const energyHTML = [
       { key: 'High', label: 'High', cls: 'h' },
       { key: 'Medium', label: 'Med', cls: 'm' },
       { key: 'Low', label: 'Low', cls: 'l' }
-    ].map(e =>
-      `<div class="c-energy-line ${e.cls}"><span class="name">${e.label}</span><span class="track"><span class="fill" style="width:${ePct(e.key)}%"></span></span><span class="pct">${ePct(e.key)}%</span></div>`
-    ).join('');
+    ].map(e => {
+      const min = eMin(e.key);
+      const barWidth = Math.min(100, Math.round((min / (DEEP_WORK_TARGET_HOURS * 60)) * 100));
+      return `<div class="c-energy-line ${e.cls}"><span class="name">${e.label}</span><span class="track"><span class="fill" style="width:${barWidth}%"></span></span><span class="pct">${fmtMin(min)}</span></div>`;
+    }).join('');
 
     // Distracted callout
-    const distractedH = ((catCounts['Distracted'] || 0) * interval / 60).toFixed(1);
-    const questionHTML = parseFloat(distractedH) > 0
-      ? `<div class="c-question"><span>Distracted</span><span><b>${distractedH}h</b></span></div>`
+    const distractedMin = (catCounts['Distracted'] || 0) * interval;
+    const questionHTML = distractedMin > 0
+      ? `<div class="c-question"><span>Distracted</span><span><b>${fmtMin(distractedMin)}</b></span></div>`
       : '';
 
     // Peak hour callout
@@ -8811,9 +8889,9 @@ function openScoreModal() {
           <div class="c-panel">
             <div class="c-panel-label">
               <span>Your hours</span>
-              <span class="c-panel-meta">${numCats} cat${numCats === 1 ? '' : 's'}</span>
+              <span class="c-panel-meta">${actEntries.length} ${actEntries.length === 1 ? 'activity' : 'activities'}</span>
             </div>
-            ${catRowsHTML || '<div style="font-size:12px;color:var(--text-muted);font-style:italic">No categories logged yet</div>'}
+            ${actRowsHTML || '<div style="font-size:12px;color:var(--text-muted);font-style:italic">Nothing logged yet</div>'}
           </div>
           <div class="c-panel">
             <div class="c-panel-label">
@@ -8827,14 +8905,9 @@ function openScoreModal() {
         </div>
         ${questionHTML}
         ${peakHTML}
-        <div class="c-footer">
-          <button class="c-export" id="scoreExportBtn">Download Card →</button>
-        </div>
+        <div class="c-footer"><button class="c-download">Download Data ↓</button></div>
       </div>
     `;
-
-    // Wire download card button
-    document.getElementById('scoreExportBtn')?.addEventListener('click', downloadScoreCard);
 
     // Wire step pill clicks
     wrap.querySelectorAll('.c-step[data-score-date]').forEach(pill => {
@@ -8849,6 +8922,11 @@ function openScoreModal() {
         }
         renderScoreContent(target);
       });
+    });
+
+    // Download Data — downloads a CSV of the viewed day's logged activities.
+    wrap.querySelector('.c-download')?.addEventListener('click', () => {
+      exportCSV(_scoreDate);
     });
   }
 
@@ -8866,50 +8944,22 @@ function openScoreModal() {
   overlay.addEventListener('click', e => { if (e.target === overlay) closeScore(); });
 }
 
-async function downloadScoreCard() {
-  const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
-  if (!isPro) { openUpgradeModal(); return; }
-
-  const card = document.querySelector('#scoreModalOverlay .score-modal-card');
-  if (!card) return;
-  if (typeof html2canvas !== 'function') {
-    console.warn('html2canvas not loaded yet');
-    return;
-  }
-
-  const btn = document.getElementById('scoreExportBtn');
-  const originalText = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
-
-  try {
-    const canvas = await html2canvas(card, {
-      scale: 4,
-      backgroundColor: '#0a0a0a',
-      useCORS: true,
-      allowTaint: true,
-      logging: false,
-    });
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-    if (!blob) throw new Error('Failed to create PNG blob');
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `blinders_score_${state.date}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  } catch (err) {
-    console.error('Download card failed:', err);
-  } finally {
-    if (btn) { btn.textContent = originalText; btn.disabled = false; }
-  }
-}
-
-function exportCSV() {
+function exportCSV(dateStr) {
   // Pro gate (belt-and-suspenders — the modal that calls this is also gated).
   const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
   if (!isPro) { openUpgradeModal(); return; }
+
+  const targetDate = dateStr || state.date;
+  // Pull rows for the requested date: current day from state, past days from localStorage.
+  let rows;
+  if (targetDate === state.date) {
+    rows = state.rows;
+  } else {
+    const raw = localStorage.getItem(storageKey(targetDate));
+    if (raw) {
+      try { rows = JSON.parse(raw).rows || []; } catch { rows = []; }
+    } else { rows = []; }
+  }
 
   const esc = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
   const fmt12h = t => {
@@ -8924,21 +8974,36 @@ function exportCSV() {
   };
 
   const PROD_CATS = new Set(['Deep Work','Learning','Movement']);
-  const totalCat = state.rows.filter(r => r.category).length;
-  const prodCnt  = state.rows.filter(r => PROD_CATS.has(r.category)).length;
+  const totalCat = rows.filter(r => r.category).length;
+  const prodCnt  = rows.filter(r => PROD_CATS.has(r.category)).length;
   const productivityPct = totalCat > 0 ? Math.round((prodCnt / totalCat) * 100) : 0;
 
-  const lines = [];
-  lines.push(esc('Blinders Time Audit'));
-  lines.push(esc(formatDate(state.date)));
-  lines.push(esc(`Productivity: ${productivityPct}%`));
-  lines.push('');
-  lines.push(['Date','Time','Activity','Category','Energy'].join(','));
+  // Each filled time slot = state.interval minutes (default 15).
+  const interval = state.interval || 15;
+  const fmtDuration = mins => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h === 0) return `${m}m`;
+    if (m === 0) return `${h}h`;
+    return `${h}h ${m}m`;
+  };
+  const catTotals = {};
+  rows.forEach(r => {
+    if (!r.category) return;
+    catTotals[r.category] = (catTotals[r.category] || 0) + interval;
+  });
+  // Sort categories by time spent, descending.
+  const catTotalRows = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
 
-  state.rows.forEach(r => {
+  const lines = [];
+  lines.push([esc('Date'), esc(formatDate(targetDate))].join(','));
+  lines.push([esc('Productivity'), esc(`${productivityPct}%`)].join(','));
+  lines.push('');
+  lines.push(['Time','Activity','Category','Energy'].join(','));
+
+  rows.forEach(r => {
     if (!r.activity && !r.category && !r.energy) return;
     lines.push([
-      esc(state.date),
       esc(fmt12h(r.time)),
       esc(r.activity),
       esc(r.category),
@@ -8946,11 +9011,19 @@ function exportCSV() {
     ].join(','));
   });
 
+  if (catTotalRows.length > 0) {
+    lines.push('');
+    lines.push(esc('Category Totals'));
+    catTotalRows.forEach(([cat, mins]) => {
+      lines.push([esc(cat), esc(fmtDuration(mins))].join(','));
+    });
+  }
+
   const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `moziminute_${state.date}.csv`;
+  a.download = `blinders-${targetDate}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -9108,23 +9181,6 @@ function initGreeting() {
     if (e.key === 'Escape') { nameEl.textContent = localStorage.getItem('timeaudit_name') || 'King'; nameEl.blur(); }
   });
 
-  // Timezone / city
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-    const city = tz.split('/').pop().replace(/_/g, ' ');
-    document.getElementById('greetingTz').innerHTML = `📍&nbsp;${city}`;
-  } catch(e) {
-    document.getElementById('greetingTz').textContent = '';
-  }
-
-  // Live clock
-  function tick() {
-    document.getElementById('greetingTime').textContent = new Date().toLocaleTimeString('en-US', {
-      hour: 'numeric', minute: '2-digit', hour12: true
-    });
-  }
-  tick();
-  setInterval(tick, 1000);
 }
 
 // ================================================================
@@ -9657,70 +9713,6 @@ function init() {
   }
   wireUpgradeNudge('stripUpgradeNudge');
   wireUpgradeNudge('popupUpgradeNudge');
-
-  // Export Backup — downloads a JSON file containing all logs + settings so the
-  // user has a safety copy if they clear browser data or switch devices.
-  document.getElementById('popupExportBackupBtn')?.addEventListener('click', () => {
-    closeProfilePopup();
-    const data = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (!key) continue;
-      if (key === 'blinders_access') continue; // plan is restored via email
-      if (key.startsWith('timeaudit_') || key.startsWith('mozimin_')) {
-        data[key] = localStorage.getItem(key);
-      }
-    }
-    const payload = {
-      app: 'blinders',
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      data,
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const today = new Date().toISOString().slice(0, 10);
-    a.href = url;
-    a.download = `blinders-backup-${today}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast?.('Backup downloaded.');
-  });
-
-  // Import Backup — file picker → confirm → restore + reload.
-  document.getElementById('popupImportBackupBtn')?.addEventListener('click', () => {
-    closeProfilePopup();
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'application/json,.json';
-    fileInput.onchange = e => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        let payload;
-        try { payload = JSON.parse(ev.target.result); } catch (err) {
-          alert('That file is not a valid Blinders backup.'); return;
-        }
-        if (!payload || payload.app !== 'blinders' || !payload.data) {
-          alert('That file is not a valid Blinders backup.'); return;
-        }
-        const keys = Object.keys(payload.data).filter(
-          k => k !== 'blinders_access' && (k.startsWith('timeaudit_') || k.startsWith('mozimin_'))
-        );
-        const when = payload.exportedAt ? new Date(payload.exportedAt).toLocaleString() : 'unknown date';
-        if (!confirm(`This will replace your current data with ${keys.length} entries from this backup (${when}). Continue?`)) return;
-        keys.forEach(k => localStorage.setItem(k, payload.data[k]));
-        alert('Backup restored. Reloading…');
-        location.reload();
-      };
-      reader.readAsText(file);
-    };
-    fileInput.click();
-  });
 
   // Settings: Wake Up / Log Off time pickers
   document.getElementById('popupSettingsBtn')?.addEventListener('click', () => {
@@ -10894,9 +10886,6 @@ document.addEventListener('DOMContentLoaded', () => {
     <input class="popup-edit-name-input" id="popupEditNameInput" type="text" placeholder="Enter your name…">
   </div>
   <div class="popup-menu-item" id="popupSettingsBtn">Settings</div>
-  <div class="popup-divider"></div>
-  <div class="popup-menu-item" id="popupExportBackupBtn">Export Backup</div>
-  <div class="popup-menu-item" id="popupImportBackupBtn">Import Backup</div>
   <div class="popup-divider"></div>
   <div class="popup-menu-item" id="popupUpgradeBtn">Upgrade Plan</div>
 </div>
