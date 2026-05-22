@@ -24,12 +24,33 @@
   }
   function clearStored() { try { localStorage.removeItem(KEY); } catch (e) {} }
 
+  // Dev unlock: visiting any URL with ?unlock=<DEV_UNLOCK_TOKEN> persists a flag that
+  // promotes this browser to lifetime locally. Lets King test paid features on his own
+  // machine without affecting real users. Not a security boundary — see file header.
+  // To revert: DevTools → Application → Local Storage → delete `blinders_dev_unlock`.
+  var DEV_KEY = 'blinders_dev_unlock';
+  var DEV_UNLOCK_TOKEN = 'king-blinders-2026-x9q';
+  function devUnlocked() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('unlock') === DEV_UNLOCK_TOKEN) {
+        localStorage.setItem(DEV_KEY, '1');
+      }
+      return localStorage.getItem(DEV_KEY) === '1';
+    } catch (e) { return false; }
+  }
+  var IS_DEV = devUnlocked();
+
   // Current plan used synchronously by feature gates. Seed from cache, refine via server.
   var current = 'free';
-  var cached = read();
-  if (cached && cached.plan &&
-      (cached.plan === 'lifetime' || (Date.now() - (cached.ts || 0)) < GRACE_MS)) {
-    current = cached.plan;
+  if (IS_DEV) {
+    current = 'lifetime';
+  } else {
+    var cached = read();
+    if (cached && cached.plan &&
+        (cached.plan === 'lifetime' || (Date.now() - (cached.ts || 0)) < GRACE_MS)) {
+      current = cached.plan;
+    }
   }
 
   function isPro() { return current === 'pro' || current === 'lifetime'; }
@@ -65,6 +86,7 @@
 
   // Re-verify on load using whatever identifier we stored.
   async function refresh() {
+    if (IS_DEV) return; // dev unlock pins this browser to lifetime; skip server check
     var c = read();
     if (!c || !c.ref) return;
     var payload = {};
