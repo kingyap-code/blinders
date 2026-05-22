@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Blinders">
   <link rel="icon" type="image/png" href="asstes/petals-box.png">
+  <link rel="preload" as="image" href="asstes/petals-circle.png">
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Blinders%22%2C%22short_name%22%3A%22Blinders%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ffffff%22%2C%22theme_color%22%3A%22%237C4DFF%22%2C%22description%22%3A%22Where+does+your+time+actually+go%3F%22%7D">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +40,12 @@
       --text-muted: #7a7f8a;
       --success: #3DDC97;
       --danger: #FF5A5F;
+      --danger-soft: rgba(255,90,95,0.10);
+      --danger-border: rgba(255,90,95,0.30);
+      --bg-sunken: #1c1e23;
+      --border-soft: rgba(255,255,255,0.06);
+      --accent-border: rgba(61,220,151,0.35);
+      --tier-blue: #6981ED;
       --header-h: 68px;
       --stats-h: 52px;
     }
@@ -210,9 +217,96 @@
     .export-btn:hover { background: #5ae5b0; transform: translateY(-1px); }
     .export-btn:active { transform: translateY(0); }
 
+    /* ===================== WEEK NAV BLOCK (pills + date + metrics) ===================== */
+    .week-nav-block {
+      padding: 10px 40px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .week-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .week-arrow {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 50%;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s ease;
+      padding: 0;
+    }
+    .week-arrow:hover { border-color: var(--accent); color: var(--accent); }
+    .week-arrow svg { width: 14px; height: 14px; }
+    .week-arrow.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+    .week-pills {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 999px;
+      padding: 5px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .week-pill {
+      min-width: 36px; height: 32px;
+      padding: 0 12px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative;
+      user-select: none;
+      background: transparent;
+      border: 0;
+      font-family: inherit;
+    }
+    .week-pill:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+    .week-pill.today {
+      background: rgba(61,220,151,0.15);
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px rgba(61,220,151,0.35);
+    }
+    .week-pill.future { cursor: default; pointer-events: none; }
+    .week-pill.locked { opacity: 0.55; }
+    .week-pill.locked::after {
+      content: '';
+      position: absolute; top: 4px; right: 4px;
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--text-muted);
+    }
+    .week-pill.has-data::before {
+      content: '';
+      position: absolute; bottom: 3px; left: 50%;
+      transform: translateX(-50%);
+      width: 3px; height: 3px; border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .week-date-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
     /* ===================== STATS BAR ===================== */
     .stats-bar {
-      height: var(--stats-h);
+      min-height: var(--stats-h);
       background: transparent;
       backdrop-filter: none;
       border-bottom: none;
@@ -220,42 +314,62 @@
       align-items: center;
       justify-content: center;
       padding: 0 40px;
-      gap: 6px;
+      gap: 0;
       overflow-x: auto;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
+      width: 100%;
     }
 
     .stat-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 7px;
       white-space: nowrap;
       flex-shrink: 0;
+      padding: 4px 18px;
+      font-size: 13px;
+    }
+    .stat-item + .stat-item { border-left: 1px solid rgba(255,255,255,0.06); }
+
+    .stat-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex: 0 0 7px;
     }
 
     .stat-emoji { font-size: 14px; }
 
     .stat-label {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-secondary);
       font-weight: 500;
     }
 
     .stat-value {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
     }
 
     .stat-divider {
-      color: #4a4d57;
-      margin: 0 8px;
-      font-size: 14px;
+      display: none;
     }
 
     .stat-empty {
       font-size: 12px;
       color: var(--text-muted);
       font-style: italic;
+    }
+
+    /* On narrow screens, pills shrink and arrows hide */
+    @media (max-width: 600px) {
+      .week-nav-block { padding: 8px 12px 0; }
+      .week-pill { min-width: 30px; padding: 0 8px; font-size: 11px; }
+      .week-arrow { width: 28px; height: 28px; }
+      .stats-bar { padding: 0 12px; }
+      .stat-item + .stat-item { border-left: 0; }
+      .stat-item { padding: 4px 10px; }
     }
 
     /* ===================== GREETING ===================== */
@@ -2301,194 +2415,110 @@
     .score-btn:hover { background: #5b21b6; transform: translateY(-1px); }
     .score-btn:active { transform: translateY(0); }
 
-    /* ===================== SCORE MODAL ===================== */
+    /* ===================== SCORE MODAL (Variant C) ===================== */
     .score-modal-card {
-      position: relative;
-      background: #0F0F10;
-      border: 0.5px solid rgba(111,111,111,0.6);
-      border-radius: 16px;
-      width: 560px;
-      max-width: 92vw;
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 26px 26px 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
       max-height: 88vh;
       overflow-y: auto;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 26px;
-      color: #ffffff;
     }
-    .score-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .c-wrap { position: relative; width: 420px; max-width: 92vw; }
+    @media (max-width: 960px) { .c-wrap { width: 380px; } }
+    @media (max-width: 500px) { .c-wrap { width: 320px; } }
+    .c-steps {
+      display: flex; align-items: center; gap: 6px; justify-content: center;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border-soft);
+      border-radius: 999px; padding: 6px 10px;
+      width: fit-content; margin: 0 auto -10px;
+      position: relative; z-index: 2;
     }
-    .score-date {
-      font-size: 13px;
-      color: rgba(255,255,255,0.7);
-      font-weight: 400;
-    }
-    .score-logo-wrap { display: flex; align-items: center; }
-    .score-logo-img { width: 38px; height: 38px; display: block; }
-    .score-close {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.4);
-      cursor: pointer;
-      font-size: 18px;
-      padding: 6px 10px;
-      border-radius: 6px;
-      line-height: 1;
-    }
-    .score-close:hover { color: #fff; background: rgba(255,255,255,0.06); }
-
-    .score-section { display: flex; flex-direction: column; gap: 10px; }
-    .score-section-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: #ffffff;
-      letter-spacing: 0;
-    }
-    .score-section-sub {
-      font-size: 13px;
-      color: rgba(255,255,255,0.7);
-      font-weight: 400;
-      line-height: 1.5;
-    }
-    .score-daily-value {
-      font-size: 48px;
-      font-weight: 800;
-      color: #ffffff;
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
-
-    .score-cat-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .score-cat-bar-wrap {
-      flex: 1;
-      height: 8px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-    .score-cat-bar {
-      height: 100%;
-      border-radius: 100px;
-      background: #3DDC97;
-      transition: width 0.4s ease;
-    }
-    .score-cat-pct {
-      font-size: 13px;
-      color: rgba(255,255,255,0.9);
-      font-weight: 500;
-      min-width: 38px;
-      text-align: right;
-      white-space: nowrap;
-    }
-
-    .score-stack-bar {
-      display: flex;
-      width: 100%;
-      height: 8px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 100px;
-      overflow: hidden;
-    }
-    .score-stack-seg { height: 100%; }
-    .score-legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 16px;
-      margin-top: 6px;
-    }
-    .score-legend-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.7);
-    }
-    .score-legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .score-prod-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-    .score-prod-pill {
-      border: 0.5px solid rgba(111,111,111,0.6);
-      border-radius: 10px;
-      padding: 14px 12px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 500;
+    .c-step {
+      width: 28px; height: 28px; border-radius: 50%;
       background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: var(--text-muted); font-weight: 600;
+      letter-spacing: 0.04em; cursor: pointer; transition: color .15s, background .15s;
     }
-    .score-prod-pill.tier-high   { color: #3DDC97; border-color: rgba(61,220,151,0.55); }
-    .score-prod-pill.tier-medium { color: #6981ED; border-color: rgba(105,129,237,0.55); }
-    .score-prod-pill.tier-low    { color: #FF5A5F; border-color: rgba(255,90,95,0.55); }
-
-    .score-focus-card {
-      border: 0.5px solid rgba(61,220,151,0.55);
-      border-radius: 10px;
-      padding: 14px 18px;
-      text-align: center;
-      color: #3DDC97;
-      font-size: 14px;
-      line-height: 1.4;
+    .c-step:hover:not(.active):not(.future) { color: var(--text-secondary); background: rgba(255,255,255,0.04); }
+    .c-step.future { cursor: default; }
+    .c-step.has-data::after {
+      content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+      width: 3px; height: 3px; border-radius: 50%; background: var(--accent);
     }
-    .score-focus-card.empty {
-      border-color: rgba(111,111,111,0.6);
-      color: rgba(255,255,255,0.5);
+    .c-step { position: relative; }
+    .c-step.active {
+      background: var(--accent-soft); color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent-border);
+      width: auto; padding: 0 12px; border-radius: 999px; gap: 6px;
     }
-
-    .score-footer {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      margin-top: 2px;
+    .c-step.active .c-step-label { font-size: 11px; }
+    .c-card { padding-top: 30px; }
+    .c-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .c-tabs { display: flex; align-items: baseline; gap: 16px; }
+    .c-tab { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; cursor: pointer; }
+    .c-tab.active { color: var(--text-primary); }
+    .c-tab.inactive { color: var(--text-muted); font-weight: 500; }
+    .c-header-logo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; opacity: 0.9; }
+    .c-hero { text-align: center; padding: 8px 0 20px; }
+    .c-hero-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+    .c-hero-num { font-size: 68px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+    .c-hero-int { color: var(--text-primary); }
+    .c-hero-dec { color: rgba(255,255,255,0.30); }
+    .c-hero-unit { font-size: 16px; color: var(--text-secondary); margin-left: 6px; font-weight: 500; }
+    .c-hero-sub { font-size: 12.5px; color: var(--text-muted); margin-top: 10px; }
+    .c-hero-date { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
+    .c-panels { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .c-panel {
+      background: var(--bg-sunken); border: 1px solid var(--border-soft);
+      border-radius: 14px; padding: 14px;
     }
-    .score-skip {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      color: rgba(255,255,255,0.65);
-      font-size: 13px;
-      line-height: 1.3;
+    .c-panel-label { font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .c-panel-meta { font-size: 11px; color: var(--text-muted); text-transform: none; letter-spacing: 0; }
+    .c-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .c-cat-row .lbl { display: flex; align-items: center; gap: 8px; color: var(--text-primary); }
+    .c-cat-row .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .c-cat-row .v { font-weight: 600; color: var(--text-primary); }
+    .c-energy-stack { display: flex; flex-direction: column; gap: 7px; }
+    .c-energy-line { display: flex; align-items: center; gap: 8px; }
+    .c-energy-line .name { font-size: 11px; color: var(--text-secondary); width: 44px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .c-energy-line .track { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; display: block; }
+    .c-energy-line .fill { height: 100%; border-radius: 3px; min-width: 2px; display: block; }
+    .c-energy-line .pct { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; width: 34px; text-align: right; }
+    .c-energy-line.h .fill { background: #3DDC97; } .c-energy-line.h .pct { color: #3DDC97; }
+    .c-energy-line.m .fill { background: #6981ED; } .c-energy-line.m .pct { color: #6981ED; }
+    .c-energy-line.l .fill { background: #FF5A5F; } .c-energy-line.l .pct { color: #FF5A5F; }
+    .c-question {
+      margin-top: 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border-radius: 14px;
+      background: var(--bg-sunken); border: 1px solid var(--border-soft);
+      font-size: 13px; color: var(--text-secondary);
     }
-    .score-skip-label { font-weight: 400; }
-    .score-skip-val { color: rgba(255,255,255,0.5); }
-    .score-export-ghost {
-      background: transparent;
-      border: 0.5px solid rgba(111,111,111,0.6);
-      border-radius: 8px;
-      color: rgba(255,255,255,0.85);
-      font-family: inherit;
-      font-size: 13px;
-      padding: 8px 18px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    .c-question b { color: var(--text-primary); font-weight: 600; }
+    .c-peak {
+      margin-top: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border-radius: 14px;
+      background: var(--bg-sunken); border: 1px solid var(--border-soft);
+      font-size: 13px; color: var(--text-secondary);
     }
-    .score-export-ghost:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.35);
-      color: #ffffff;
+    .c-peak-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .c-peak-time { font-size: 13px; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .c-footer { display: flex; justify-content: flex-end; margin-top: 16px; }
+    .c-export {
+      padding: 9px 16px; border-radius: 9px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-secondary); font-size: 13px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s ease;
     }
-    .score-empty { font-size: 13px; color: rgba(255,255,255,0.45); font-style: italic; }
+    .c-export:hover { border-color: var(--accent-border); color: var(--accent); }
+    @media (max-width: 500px) {
+      .c-hero-num { font-size: 52px; }
+    }
 
     /* ===================== INSIGHTS SYSTEM ===================== */
     /* Daily Insights Card */
@@ -4018,7 +4048,12 @@
 
   /* Logo spin animation when timer alert is active */
   .header-logo-img {
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.15s ease;
+    opacity: 0;
+  }
+
+  .header-logo-img.loaded {
+    opacity: 1;
   }
 
   .header-logo-img.logo-spin {
@@ -4030,6 +4065,15 @@
     to { transform: rotate(360deg); }
   }
 
+  .header-logo-img.logo-pulse {
+    animation: logoPulse 0.4s ease-in-out;
+  }
+
+  @keyframes logoPulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 1; }
+  }
 
   /* Play button: small square with thin border */
   #playPauseBtn {
@@ -5239,8 +5283,29 @@
     font-weight: 600;
   }
   </style>
+  <script src="asstes/lib/html2canvas.min.js" defer></script>
 </head>
-<body>
+<body class="onboarding">
+<script>
+  // Anti-flash: body starts with .onboarding class so the existing CSS hides the
+  // app shell. For returning users (already onboarded, or has tracker data),
+  // strip the class before first paint so the app renders normally.
+  (function() {
+    try {
+      var onboarded = localStorage.getItem('mozimin_onboarded') === '1';
+      if (onboarded) { document.body.classList.remove('onboarding'); return; }
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf('timeaudit_') === 0 && k !== 'timeaudit_custom_options') {
+          document.body.classList.remove('onboarding');
+          return;
+        }
+      }
+    } catch (e) {
+      document.body.classList.remove('onboarding');
+    }
+  })();
+</script>
 
 <!-- ===== ONBOARDING ===== -->
 <div class="onb-overlay" id="onbOverlay" hidden>
@@ -5342,14 +5407,9 @@
   <!-- ===== HEADER ===== -->
   <header class="header">
     <div class="header-logo">
-      <img src="asstes/petals-circle.png" class="header-logo-img" alt="Blinders logo">
+      <img src="asstes/petals-circle.png" class="header-logo-img" alt="Blinders logo" onload="this.classList.add('loaded')">
       <span class="logo-mark">Blinders</span>
       <span class="logo-sub">Where does your time actually go?</span>
-    </div>
-    <div class="header-center">
-      <button class="nav-btn" id="prevDay" aria-label="Previous day">← Prev</button>
-      <div class="date-display" id="dateDisplay">Loading...</div>
-      <button class="nav-btn" id="nextDay" aria-label="Next day">Next →</button>
     </div>
     <div class="header-right">
       <a href="moziminute-landingpage.html" class="nav-btn" style="text-decoration:none;font-size:12px;padding:5px 12px;opacity:0.6;" title="Back to homepage">← Home</a>
@@ -5357,9 +5417,21 @@
     </div>
   </header>
 
-  <!-- ===== STATS BAR ===== -->
-  <div class="stats-bar" id="statsBar">
-    <div class="stats-hormozi">Based on Alex Hormozi's time audit — every 15 min, log what you're doing. The timer will remind you. Click any row to start.</div>
+  <!-- ===== WEEK NAV + DATE + METRICS (unified top block) ===== -->
+  <div class="week-nav-block">
+    <div class="week-row">
+      <button class="week-arrow" id="weekPrev" aria-label="Previous week">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="week-pills" id="weekPills"></div>
+      <button class="week-arrow" id="weekNext" aria-label="Next week">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="week-date-sub" id="dateDisplay"></div>
+    <div class="stats-bar" id="statsBar">
+      <div class="stats-hormozi">Based on Alex Hormozi's time audit — every 15 min, log what you're doing. The timer will remind you. Click any row to start.</div>
+    </div>
   </div>
 
   <!-- ===== TIMER WIDGET ===== -->
@@ -7660,12 +7732,10 @@ function renderStats() {
   const chips = sorted.map(([label, min]) => {
     const cat = getCat(label);
     if (!cat) return '';
-    return `<div class="stat-item">${cat.emoji ? `<span class="stat-emoji">${cat.emoji}</span>` : ''}<span class="stat-label">${_esc(cat.label)}:</span><span class="stat-value" style="color:${cat.color}">${fmtMin(min)}</span></div>`;
+    return `<div class="stat-item"><span class="stat-dot" style="background:${cat.color}"></span><span class="stat-label">${_esc(cat.label)}</span><span class="stat-value">${fmtMin(min)}</span></div>`;
   }).filter(Boolean);
 
-  const sep = '<span class="stat-divider">|</span>';
-  let html = chips.join(sep);
-  statsEl.innerHTML = html;
+  statsEl.innerHTML = chips.join('');
 
   // Keep weekly sidebar in sync if open
   if (document.getElementById('weeklySidebar')?.classList.contains('open')) {
@@ -8588,122 +8658,204 @@ function generateWeeklyInsights(offsetWeeks = 0) {
 // ================================================================
 
 function openScoreModal() {
-  // Pro gate: daily score breakdown (insights, focus quality, CSV export) is a paid feature.
   const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
   if (!isPro) { openUpgradeModal(); return; }
-
   document.getElementById('scoreModalOverlay')?.remove();
-
-  const totalRows = state.rows.length;
-  const loggedRows = state.rows.filter(r => r.activity || r.category || r.energy).length;
-  const interval = state.interval || 15;
-  const skipMin = (totalRows - loggedRows) * interval;
-
-  const energyTotals = { High: 0, Medium: 0, Low: 0 };
-  let totalEnergy = 0;
-  const catCounts = {};
-  let totalCat = 0;
-  state.rows.forEach(r => {
-    if (r.category) {
-      catCounts[r.category] = (catCounts[r.category] || 0) + 1;
-      totalCat++;
-    }
-    if (r.energy && energyTotals[r.energy] !== undefined) {
-      energyTotals[r.energy]++;
-      totalEnergy++;
-    }
-  });
-
-  // Longest consecutive Deep Work streak
-  let best = 0, cur = 0, bStart = -1, bEnd = -1, cStart = -1;
-  state.rows.forEach((r, i) => {
-    if (r.category === 'Deep Work') {
-      if (cur === 0) cStart = i;
-      cur++;
-      if (cur > best) { best = cur; bStart = cStart; bEnd = i; }
-    } else { cur = 0; }
-  });
-
-  const pct = (n, t) => t > 0 ? Math.round((n/t)*100) : 0;
-
-  // Daily score = (Deep Work hours + Movement hours) / 10 × 100, capped at 100.
-  const dwMinTotal = (catCounts['Deep Work'] || 0) * interval;
-  const mvMinTotal = (catCounts['Movement']  || 0) * interval;
-  const dwHours = dwMinTotal / 60;
-  const mvHours = mvMinTotal / 60;
-  const qualifyingHours = dwHours + mvHours;
-  const dailyScore = Math.min(100, Math.round((qualifyingHours / 10) * 100));
-  const fmtH = h => h.toFixed(1);
-  const timeBreakdownText = `${fmtH(dwHours)}hrs Deep Work + ${fmtH(mvHours)}hrs Movement = ${fmtH(qualifyingHours)}hrs total`;
-
-  const focusCard = best > 0
-    ? `<div class="score-focus-card">Your sharpest focus window was ${state.rows[bStart].time} – ${state.rows[bEnd].time}</div>`
-    : `<div class="score-focus-card empty">No deep work logged yet today.</div>`;
-
-  const tierKey = { High: 'tier-high', Medium: 'tier-medium', Low: 'tier-low' };
-  const prodPills = ['High','Medium','Low'].map(l => {
-    const p = pct(energyTotals[l], totalEnergy);
-    return `<div class="score-prod-pill ${tierKey[l]}">${l} ${p}%</div>`;
-  }).join('');
-
-  const stripLogo = document.getElementById('stripLogoImg');
-  const logoSrc = stripLogo && stripLogo.src ? stripLogo.src : '';
-  const logoHTML = logoSrc
-    ? `<img class="score-logo-img" src="${logoSrc}" alt="Blinders">`
-    : '';
-
-  // Generate daily insight
-  const insight = generateDailyInsight(state.rows, interval);
-  const insightHTML = insight
-    ? `
-    <div class="insight-card">
-      <div class="insight-header">
-        <span>Focus Tip</span>
-      </div>
-      <div class="insight-message">${_esc(insight.message)}</div>
-      <div class="insight-meta">
-        <span class="insight-badge">${insight.hours}h</span>
-        <span>${_esc(insight.category)}</span>
-      </div>
-    </div>
-    `
-    : '';
 
   const overlay = document.createElement('div');
   overlay.id = 'scoreModalOverlay';
   overlay.className = 'notes-popup-overlay';
-  overlay.setAttribute('role','dialog');
-  overlay.setAttribute('aria-modal','true');
-  overlay.setAttribute('aria-label',"Today\'s Score");
-  overlay.innerHTML = `
-    <div class="score-modal-card">
-      <div class="score-header">
-        <div class="score-date">${formatDate(state.date)}</div>
-        <div class="score-logo-wrap">${logoHTML}</div>
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', "Today's Score");
+
+  const wrap = document.createElement('div');
+  wrap.className = 'c-wrap';
+  overlay.appendChild(wrap);
+
+  let _scoreDate = state.date;
+
+  function renderScoreContent(dateStr) {
+    _scoreDate = dateStr;
+    const interval = state.interval || 15;
+    const isCurrentDay = dateStr === state.date;
+
+    // Load rows for the target date
+    let rows;
+    if (isCurrentDay) {
+      rows = state.rows;
+    } else {
+      const raw = localStorage.getItem(storageKey(dateStr));
+      if (raw) {
+        try { rows = JSON.parse(raw).rows || []; } catch { rows = []; }
+      } else { rows = []; }
+    }
+
+    // Aggregate
+    const energyTotals = { High: 0, Medium: 0, Low: 0 };
+    let totalEnergy = 0;
+    const catCounts = {};
+    let totalCat = 0;
+    rows.forEach(r => {
+      if (r.category) {
+        catCounts[r.category] = (catCounts[r.category] || 0) + 1;
+        totalCat++;
+      }
+      if (r.energy && energyTotals[r.energy] !== undefined) {
+        energyTotals[r.energy]++;
+        totalEnergy++;
+      }
+    });
+
+    // Peak hour (longest Deep Work streak)
+    let best = 0, cur = 0, bStart = -1, bEnd = -1, cStart = -1;
+    rows.forEach((r, i) => {
+      if (r.category === 'Deep Work') {
+        if (cur === 0) cStart = i;
+        cur++;
+        if (cur > best) { best = cur; bStart = cStart; bEnd = i; }
+      } else { cur = 0; }
+    });
+
+    const pct = (n, t) => t > 0 ? Math.round((n / t) * 100) : 0;
+    const totalHours = (totalCat * interval) / 60;
+    const heroInt = Math.floor(totalHours);
+    const heroDec = '.' + totalHours.toFixed(1).split('.')[1];
+    const numCats = Object.keys(catCounts).length;
+
+    // Category breakdown sorted descending
+    const catEntries = Object.entries(catCounts)
+      .map(([name, count]) => ({
+        name,
+        hours: (count * interval / 60).toFixed(1),
+        color: (CATEGORIES.find(c => c.label === name) || {}).color || '#9aa0aa'
+      }))
+      .sort((a, b) => parseFloat(b.hours) - parseFloat(a.hours));
+
+    const catRowsHTML = catEntries.map(c =>
+      `<div class="c-cat-row"><span class="lbl"><span class="dot" style="background:${c.color}"></span>${_esc(c.name)}</span><span class="v">${c.hours}h</span></div>`
+    ).join('');
+
+    // Energy percentages
+    const ePct = l => pct(energyTotals[l], totalEnergy);
+    const energyHTML = [
+      { key: 'High', label: 'High', cls: 'h' },
+      { key: 'Medium', label: 'Med', cls: 'm' },
+      { key: 'Low', label: 'Low', cls: 'l' }
+    ].map(e =>
+      `<div class="c-energy-line ${e.cls}"><span class="name">${e.label}</span><span class="track"><span class="fill" style="width:${ePct(e.key)}%"></span></span><span class="pct">${ePct(e.key)}%</span></div>`
+    ).join('');
+
+    // Distracted callout
+    const distractedH = ((catCounts['Distracted'] || 0) * interval / 60).toFixed(1);
+    const questionHTML = parseFloat(distractedH) > 0
+      ? `<div class="c-question"><span>Distracted</span><span><b>${distractedH}h</b></span></div>`
+      : '';
+
+    // Peak hour callout
+    const peakHTML = best > 0
+      ? `<div class="c-peak"><span class="c-peak-label">Peak hour</span><span class="c-peak-time">${rows[bStart].time} – ${rows[bEnd].time}</span></div>`
+      : '';
+
+    // Day-of-week step pills
+    const viewedDate = _parseDate(dateStr);
+    const dayOfWeek = viewedDate.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(viewedDate);
+    monday.setDate(viewedDate.getDate() + mondayOffset);
+    const dayLabels = ['M','T','W','T','F','S','S'];
+    const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const todayDate = todayStr();
+    let stepsHTML = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      const ds = _fmtDate(d);
+      const isActive = ds === dateStr;
+      const isFuture = ds > todayDate;
+      const hasData = !isFuture && !isActive && _hasData(ds);
+      const classes = ['c-step'];
+      if (isActive) classes.push('active');
+      if (isFuture) classes.push('future');
+      if (hasData) classes.push('has-data');
+      const label = isActive ? `<span class="c-step-label">${dayNames[i]}</span>` : dayLabels[i];
+      stepsHTML += `<div class="${classes.join(' ')}" data-score-date="${ds}">${label}</div>`;
+    }
+
+    // Logo
+    const logoEl = document.querySelector('.header-logo-img');
+    const logoSrc = logoEl ? logoEl.src : '';
+    const logoHTML = logoSrc ? `<img class="c-header-logo" src="${logoSrc}" alt="Blinders">` : '';
+
+    // Hero label adapts to which day
+    const heroLabel = isCurrentDay ? 'Where today went' : 'Where the day went';
+
+    wrap.innerHTML = `
+      <div class="c-steps">${stepsHTML}</div>
+      <div class="score-modal-card c-card">
+        <div class="c-header">
+          <div class="c-tabs">
+            <span class="c-tab active">Today</span>
+          </div>
+          ${logoHTML}
+        </div>
+        <div class="c-hero">
+          <div class="c-hero-label">${heroLabel}</div>
+          <div class="c-hero-num">
+            <span class="c-hero-int">${heroInt}</span><span class="c-hero-dec">${heroDec}</span><span class="c-hero-unit">hrs</span>
+          </div>
+          <div class="c-hero-sub">Logged across ${numCats} categor${numCats === 1 ? 'y' : 'ies'}</div>
+          <div class="c-hero-date">${formatDate(dateStr)}</div>
+        </div>
+        <div class="c-panels">
+          <div class="c-panel">
+            <div class="c-panel-label">
+              <span>Your hours</span>
+              <span class="c-panel-meta">${numCats} cat${numCats === 1 ? '' : 's'}</span>
+            </div>
+            ${catRowsHTML || '<div style="font-size:12px;color:var(--text-muted);font-style:italic">No categories logged yet</div>'}
+          </div>
+          <div class="c-panel">
+            <div class="c-panel-label">
+              <span>Your energy</span>
+              <span class="c-panel-meta">self-rated</span>
+            </div>
+            <div class="c-energy-stack">
+              ${energyHTML}
+            </div>
+          </div>
+        </div>
+        ${questionHTML}
+        ${peakHTML}
+        <div class="c-footer">
+          <button class="c-export" id="scoreExportBtn">Download Card →</button>
+        </div>
       </div>
-      <div class="score-section">
-        <div class="score-section-title">Your Daily Score</div>
-        <div class="score-daily-value">${dailyScore}%</div>
-      </div>
-      ${insightHTML}
-      <div class="score-section">
-        <div class="score-section-title">Time Breakdown</div>
-        <div class="score-section-sub">${timeBreakdownText}</div>
-      </div>
-      <div class="score-section">
-        <div class="score-section-title">Focus Quality</div>
-        <div class="score-section-sub">Shows your energy level during focus sessions</div>
-        <div class="score-prod-row">${prodPills}</div>
-      </div>
-      ${focusCard}
-      <div class="score-footer">
-        <button class="score-export-ghost" id="scoreExportBtn">Export CSV</button>
-      </div>
-    </div>
-  `;
+    `;
+
+    // Wire download card button
+    document.getElementById('scoreExportBtn')?.addEventListener('click', downloadScoreCard);
+
+    // Wire step pill clicks
+    wrap.querySelectorAll('.c-step[data-score-date]').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const target = pill.dataset.scoreDate;
+        if (pill.classList.contains('future')) return;
+        if (target === _scoreDate) return;
+        if (!_isPro()) {
+          const td = new Date(); td.setHours(0,0,0,0);
+          const diff = Math.round((td - _parseDate(target)) / 86400000);
+          if (diff > 7) { openUpgradeModal(); return; }
+        }
+        renderScoreContent(target);
+      });
+    });
+  }
+
+  renderScoreContent(state.date);
   document.body.appendChild(overlay);
   requestAnimationFrame(() => overlay.classList.add('open'));
-  // Close: click outside the card OR press Escape (X button removed by spec).
+
   const escHandler = e => { if (e.key === 'Escape') closeScore(); };
   const closeScore = () => {
     overlay.classList.remove('open');
@@ -8711,8 +8863,47 @@ function openScoreModal() {
     setTimeout(() => overlay.remove(), 200);
   };
   document.addEventListener('keydown', escHandler);
-  document.getElementById('scoreExportBtn').addEventListener('click', exportCSV);
   overlay.addEventListener('click', e => { if (e.target === overlay) closeScore(); });
+}
+
+async function downloadScoreCard() {
+  const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
+  if (!isPro) { openUpgradeModal(); return; }
+
+  const card = document.querySelector('#scoreModalOverlay .score-modal-card');
+  if (!card) return;
+  if (typeof html2canvas !== 'function') {
+    console.warn('html2canvas not loaded yet');
+    return;
+  }
+
+  const btn = document.getElementById('scoreExportBtn');
+  const originalText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = 'Generating…'; btn.disabled = true; }
+
+  try {
+    const canvas = await html2canvas(card, {
+      scale: 4,
+      backgroundColor: '#0a0a0a',
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+    });
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('Failed to create PNG blob');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `blinders_score_${state.date}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (err) {
+    console.error('Download card failed:', err);
+  } finally {
+    if (btn) { btn.textContent = originalText; btn.disabled = false; }
+  }
 }
 
 function exportCSV() {
@@ -8774,31 +8965,64 @@ function updateDateUI() {
   document.getElementById('dateDisplay').textContent = formatDate(state.date);
 }
 
-function navigateDay(dir) {
-  const [y, m, day] = state.date.split('-').map(Number);
-  const d = new Date(y, m - 1, day);
-  d.setDate(d.getDate() + dir);
-  // Block forward navigation past today — there's nothing in the future to view.
-  if (dir > 0) {
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    if (d > today) return;
-  }
-  // Gate: free users can view today + the past 7 days only. History beyond that is Pro.
-  if (dir < 0) {
-    const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
-    if (!isPro) {
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      const diffDays = Math.round((today - d) / 86400000);
-      if (diffDays > 7) { openUpgradeModal(); return; }
-    }
-  }
-  state.date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+// Shared helpers used by pill click, week arrows, and the existing prev/next API.
+function _fmtDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function _parseDate(dateStr) {
+  const [y, m, day] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, day);
+}
+function _isPro() { return !window.BlindersPlan || window.BlindersPlan.isPro(); }
+
+// Single point where date actually changes — keeps the cascade in one place.
+function _applyDate(dateStr) {
+  state.date = dateStr;
   loadData(state.date, state.interval);
   updateDateUI();
   syncIntervalUI();
   renderTable();
-  updateNavDataIndicators();
+  renderWeekPills();
   if (state.date === todayStr()) setTimeout(scrollToCurrent, 150);
+}
+
+// Public: navigate by ±N days (kept for back-compat with anything else that calls it).
+function navigateDay(dir) {
+  const d = _parseDate(state.date);
+  d.setDate(d.getDate() + dir);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  if (d > today) return; // forward block
+  if (dir < 0 && !_isPro()) {
+    const diffDays = Math.round((today - d) / 86400000);
+    if (diffDays > 7) { openUpgradeModal(); return; }
+  }
+  _applyDate(_fmtDate(d));
+}
+
+// Public: jump directly to a specific date (used by pill clicks).
+function navigateToDate(dateStr) {
+  if (dateStr === state.date) return;
+  const d = _parseDate(dateStr);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  if (d > today) return; // future blocked
+  if (!_isPro()) {
+    const diffDays = Math.round((today - d) / 86400000);
+    if (diffDays > 7) { openUpgradeModal(); return; }
+  }
+  _applyDate(dateStr);
+}
+
+// Public: move the pill view ±1 week. Lands on same day-of-week; clamped to today.
+function navigateWeek(dir) {
+  const d = _parseDate(state.date);
+  d.setDate(d.getDate() + (dir * 7));
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  if (d > today) { _applyDate(todayStr()); return; }
+  if (dir < 0 && !_isPro()) {
+    const diffDays = Math.round((today - d) / 86400000);
+    if (diffDays > 7) { openUpgradeModal(); return; }
+  }
+  _applyDate(_fmtDate(d));
 }
 
 function syncIntervalUI() {
@@ -8935,25 +9159,73 @@ document.addEventListener('mousedown', e => {
 // ================================================================
 
 // ================================================================
-// NAV DATA INDICATORS
+// WEEK PILLS (renders Mon-Sun for the week containing state.date)
 // ================================================================
 
-function updateNavDataIndicators() {
-  function hasData(dateStr) {
-    const raw = localStorage.getItem(storageKey(dateStr));
-    if (!raw) return false;
-    try {
-      const d = JSON.parse(raw);
-      return (d.rows || []).some(r => r.category || r.activity);
-    } catch { return false; }
-  }
-  const [y, m, day] = state.date.split('-').map(Number);
-  const prev = new Date(y, m - 1, day - 1);
-  const next = new Date(y, m - 1, day + 1);
-  const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  document.getElementById('prevDay')?.classList.toggle('has-data', hasData(fmt(prev)));
-  document.getElementById('nextDay')?.classList.toggle('has-data', hasData(fmt(next)));
+function _hasData(dateStr) {
+  const raw = localStorage.getItem(storageKey(dateStr));
+  if (!raw) return false;
+  try {
+    const d = JSON.parse(raw);
+    return (d.rows || []).some(r => r.category || r.activity);
+  } catch { return false; }
 }
+
+function renderWeekPills() {
+  const host = document.getElementById('weekPills');
+  if (!host) return;
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const sel = _parseDate(state.date);
+
+  // Find Monday of the week containing the selected date (treat Sunday as end of week).
+  const dayOfWeek = (sel.getDay() + 6) % 7; // Mon=0 ... Sun=6
+  const monday = new Date(sel);
+  monday.setDate(sel.getDate() - dayOfWeek);
+
+  const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const isPro = _isPro();
+  const pieces = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const ds = _fmtDate(d);
+    const isToday = ds === todayStr();
+    const isFuture = d > today;
+    const diffDays = Math.round((today - d) / 86400000);
+    const isLocked = !isPro && diffDays > 7;
+    const isSelected = ds === state.date;
+    const hasData = _hasData(ds);
+
+    const classes = ['week-pill'];
+    if (isSelected) classes.push('today'); // active styling reused for selected day
+    if (isFuture) classes.push('future');
+    if (isLocked) classes.push('locked');
+    if (hasData) classes.push('has-data');
+
+    const label = isSelected ? (isToday ? 'Today' : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]) : labels[i];
+    pieces.push(`<button type="button" class="${classes.join(' ')}" data-date="${ds}" aria-label="${formatDate(ds)}">${label}</button>`);
+  }
+  host.innerHTML = pieces.join('');
+
+  // Disable the › arrow when next week would go past today.
+  const nextWeekStart = new Date(monday);
+  nextWeekStart.setDate(monday.getDate() + 7);
+  document.getElementById('weekNext')?.classList.toggle('disabled', nextWeekStart > today);
+
+  // Disable the ‹ arrow when previous week is fully locked for free users.
+  if (!isPro) {
+    const lastDayPrevWeek = new Date(monday);
+    lastDayPrevWeek.setDate(monday.getDate() - 1);
+    const diffDays = Math.round((today - lastDayPrevWeek) / 86400000);
+    document.getElementById('weekPrev')?.classList.toggle('disabled', diffDays > 7);
+  } else {
+    document.getElementById('weekPrev')?.classList.toggle('disabled', false);
+  }
+}
+
+// Back-compat shim — anything still calling updateNavDataIndicators now redraws the pills.
+function updateNavDataIndicators() { renderWeekPills(); }
 
 // ================================================================
 // FOCUS MODE
@@ -9098,10 +9370,18 @@ function init() {
   });
   customIntervalInput.addEventListener('blur', applyCustomInterval);
 
-  // Day navigation
-  document.getElementById('prevDay').addEventListener('click', () => navigateDay(-1));
-  document.getElementById('nextDay').addEventListener('click', () => navigateDay(1));
-  updateNavDataIndicators();
+  // Day navigation — week pills + week arrows replace the old Prev/Next buttons.
+  document.getElementById('weekPills')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.week-pill');
+    if (!btn) return;
+    if (btn.classList.contains('future')) return;
+    if (btn.classList.contains('locked')) { openUpgradeModal(); return; }
+    const ds = btn.dataset.date;
+    if (ds) navigateToDate(ds);
+  });
+  document.getElementById('weekPrev')?.addEventListener('click', () => navigateWeek(-1));
+  document.getElementById('weekNext')?.addEventListener('click', () => navigateWeek(1));
+  renderWeekPills();
 
   // Load More — append 10 extra rows past 11:45 PM
   document.getElementById('loadMoreBtn')?.addEventListener('click', addExtraRows);
@@ -10346,11 +10626,22 @@ function runOnboarding(onDone) {
   showStep(0);
 }
 
+function triggerLogoPulse() {
+  const logo = document.querySelector('.header-logo-img');
+  if (logo) {
+    if (logo.complete && logo.naturalWidth > 0) logo.classList.add('loaded');
+    logo.classList.remove('logo-pulse');
+    void logo.offsetWidth;
+    logo.classList.add('logo-pulse');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (onboardingNeeded()) {
     runOnboarding(init);
   } else {
     init();
+    triggerLogoPulse();
   }
 });
 
