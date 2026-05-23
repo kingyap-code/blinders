@@ -115,11 +115,6 @@ body {
   0%,100%{ box-shadow: 0 0 0 0 rgba(61,220,151,0.6), 0 0 6px 2px rgba(61,220,151,0.4); transform: scale(1); }
   50%{ box-shadow: 0 0 0 5px rgba(61,220,151,0.1), 0 0 12px 5px rgba(61,220,151,0.65); transform: scale(1.2); }
 }
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
 /* ──────────────────────────────────────────
    DEMO PLACEHOLDER — replaces all UI screenshots
 ────────────────────────────────────────── */
@@ -480,43 +475,6 @@ body {
 }
 
 /* ──────────────────────────────────────────
-   SOCIAL PROOF TICKER
-────────────────────────────────────────── */
-.ticker-section {
-  background: var(--bg-s);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 0;
-  overflow: hidden;
-  margin-top: 96px;
-  position: relative;
-  z-index: 2;
-}
-.ticker-track {
-  display: flex;
-  align-items: center;
-  gap: 52px;
-  animation: ticker 38s linear infinite;
-  width: max-content;
-}
-.ticker-item {
-  font-size: 12px;
-  color: var(--text3);
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.ticker-item b { color: var(--accent); font-weight: 600; }
-.ticker-sep {
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  background: var(--text3);
-  opacity: 0.4;
-  flex-shrink: 0;
-}
-
-/* ──────────────────────────────────────────
    INTRO SECTION
    Linear: statement left + description right + 3 feature cards below
 ────────────────────────────────────────── */
@@ -620,6 +578,15 @@ body {
   padding: 96px 0 0;
   border-top: 1px solid var(--border2);
 }
+
+/* ── FEAT 1 copy swap: shows "Log faster" headline + body by default,
+   switches to "Turn every 30 minutes" copy after the user submits the
+   alarm popup. The .feat-header fades out, copy swaps, fades back in. */
+#features [data-copy="after"]  { display: none; }
+#features.feat1-switched [data-copy="before"] { display: none; }
+#features.feat1-switched [data-copy="after"]  { display: revert; }
+#features .feat-header { transition: opacity 260ms ease; }
+#features.feat1-fading .feat-header { opacity: 0; }
 
 .feat-header {
   display: grid;
@@ -1393,14 +1360,14 @@ footer {
 }
 .lp-alarm-feat2 .lp-alarm-log { border-radius: 5px; }
 
-/* ── FEATURE 2 ALARM POPUP BACKDROP — soft warm organic glow with film grain ── */
-#lpDemoGrid2 .lp-alarm-ov {
+/* ── ALARM POPUP BACKDROP — soft warm organic glow with film grain ── */
+#lpDemoGrid .lp-alarm-ov {
   background: #000000;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   overflow: hidden;
 }
-#lpDemoGrid2 .lp-alarm-ov::before {
+#lpDemoGrid .lp-alarm-ov::before {
   content: '';
   position: absolute;
   inset: -25%;
@@ -1415,7 +1382,7 @@ footer {
   z-index: 0;
   pointer-events: none;
 }
-#lpDemoGrid2 .lp-alarm-ov::after {
+#lpDemoGrid .lp-alarm-ov::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1425,7 +1392,7 @@ footer {
   pointer-events: none;
   mix-blend-mode: overlay;
 }
-#lpDemoGrid2 .lp-alarm-ov .lp-alarm-card {
+#lpDemoGrid .lp-alarm-ov .lp-alarm-card {
   position: relative;
   z-index: 2;
 }
@@ -2040,47 +2007,6 @@ footer {
 </section>
 
 <!-- ══════════════════════════════════════
-     SOCIAL PROOF TICKER
-══════════════════════════════════════ -->
-<div class="ticker-section" aria-hidden="true">
-  <div class="ticker-track">
-    <span class="ticker-item">Check-in every <b>15, 30, 45, or 60 min</b> — your interval, your rhythm</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">Log <b>activity + category + energy</b> in under 3 seconds</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item"><b>Daily score</b> tells you exactly how productive the day was</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">See your <b>peak performance window</b> — the hours you're actually sharp</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item"><b>Weekly summary</b> — score trends, best day, drift vs last week</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">Categories: <b>Deep Work · Admin · Meetings · Rest · Personal</b></span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">Energy levels logged: <b>High · Medium · Low</b> — spot your drain patterns</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">7 days free — <b>full history unlocked</b> on Pro</span>
-    <span class="ticker-sep"></span>
-    <!-- duplicate for seamless loop -->
-    <span class="ticker-item">Check-in every <b>15, 30, 45, or 60 min</b> — your interval, your rhythm</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">Log <b>activity + category + energy</b> in under 3 seconds</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item"><b>Daily score</b> tells you exactly how productive the day was</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">See your <b>peak performance window</b> — the hours you're actually sharp</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item"><b>Weekly summary</b> — score trends, best day, drift vs last week</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">Categories: <b>Deep Work · Admin · Meetings · Rest · Personal</b></span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">Energy levels logged: <b>High · Medium · Low</b> — spot your drain patterns</span>
-    <span class="ticker-sep"></span>
-    <span class="ticker-item">7 days free — <b>full history unlocked</b> on Pro</span>
-    <span class="ticker-sep"></span>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════
      HOW IT WORKS
 ══════════════════════════════════════ -->
 <section style="padding:96px 0;border-top:1px solid var(--border2)" id="how-it-works" aria-labelledby="how-h">
@@ -2137,7 +2063,7 @@ footer {
       <div class="feat-meta">
         <div class="feat-label">Time logging</div>
         <h2 class="feat-h2" id="feat1-h">
-          Turn every 30 minutes<br>into measurable data
+          <span data-copy="before">Log faster than<br>you can think</span><span data-copy="after">Turn every 30 minutes<br>into measurable data</span>
         </h2>
         <a href="app.html" class="feat-more">
           Try it free
@@ -2145,8 +2071,14 @@ footer {
         </a>
       </div>
       <div class="feat-body">
-        <p>An alarm fires. You open Blinders. You log what you just did, pick a category, rate your energy. 3 seconds later, you're back to work.</p>
-        <p>See your energy patterns. Now you know exactly when you're most productive — and can schedule deep work during your peak hours.</p>
+        <div data-copy="before">
+          <p>When the timer goes off, you spend 3 seconds answering three questions: What did you do? What category was it? What was your energy level?</p>
+          <p>No friction. Just honest logging, every interval.</p>
+        </div>
+        <div data-copy="after">
+          <p>An alarm fires. You open Blinders. You log what you just did, pick a category, rate your energy. 3 seconds later, you're back to work.</p>
+          <p>See your energy patterns. Now you know exactly when you're most productive — and can schedule deep work during your peak hours.</p>
+        </div>
       </div>
     </div>
     <div class="feat-visual reveal">
@@ -2187,73 +2119,6 @@ footer {
             </div>
             <table class="lp-tracker-table" id="lpTrackerTable">
               <tbody id="lpTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════
-     FEATURE 2 — "Define the product direction"
-     → "A score that moves. A number you can't stop chasing."
-══════════════════════════════════════ -->
-<section class="feat-section" aria-labelledby="feat2-h">
-  <div class="container">
-    <div class="feat-header reveal">
-      <div class="feat-meta">
-        <div class="feat-label">Friction-free logging</div>
-        <h2 class="feat-h2" id="feat2-h">
-          Log faster than<br>you can think
-        </h2>
-        <a href="app.html" class="feat-more">
-          Try it free
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-      </div>
-      <div class="feat-body">
-        <p>When the timer goes off, you spend 3 seconds answering three questions: What did you do? What category was it? What was your energy level?</p>
-        <p>No friction. Just honest logging, every interval.</p>
-      </div>
-    </div>
-    <div class="feat-visual reveal">
-      <div class="lp-demo-box" id="lpDemoGrid2">
-        <!-- Greeting bar -->
-        <div class="lp-greeting-section">
-          <div class="lp-greeting-headline">Good morning, <span class="lp-greeting-name">King</span></div>
-          <div class="lp-greeting-meta">
-            <span>Palo Alto</span>
-            <span class="lp-greeting-meta-sep">·</span>
-            <span class="lp-greeting-time" id="lpGreetingTime2">6:30 AM</span>
-          </div>
-        </div>
-        <!-- Table -->
-        <div class="lp-tbl-area">
-          <div class="lp-tbl-scroll-wrap" id="lpTblWrap2">
-            <div class="lp-timer-widget" id="lpTimerWidget2">
-              <div class="lp-timer-ring-container">
-                <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <filter id="lpRingGlow2" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-                      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                    </filter>
-                  </defs>
-                  <circle class="lp-ring-track" cx="60" cy="60" r="45"/>
-                  <circle class="lp-ring-blue-glow" cx="60" cy="60" r="45"/>
-                  <circle class="lp-ring-progress" cx="60" cy="60" r="45"/>
-                  <text x="60" y="60" text-anchor="middle" class="lp-timer-text" dominant-baseline="central">30:00</text>
-                </svg>
-              </div>
-              <button class="lp-timer-play-solo">⏸</button>
-              <div class="lp-timer-buttons">
-                <button class="lp-timer-wide-btn">30 min</button>
-                <button class="lp-timer-wide-btn">Notif 1</button>
-              </div>
-            </div>
-            <table class="lp-tracker-table" id="lpTrackerTable2">
-              <tbody id="lpTableBody2"></tbody>
             </table>
           </div>
         </div>
@@ -2648,13 +2513,6 @@ footer {
   );
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  // Ticker pause on hover
-  const track = document.querySelector('.ticker-track');
-  if (track) {
-    track.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
-    track.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
-  }
-
   // Smooth anchor scroll
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
@@ -2727,8 +2585,7 @@ footer {
   function getCat(label)    { return CATS.find(c => c.label === label) || null; }
   function getEnergy(label) { return ENERGY.find(e => e.label === label) || null; }
 
-  // ── FIXED DEMO ROWS — 30-min interval, current = 8:00 AM ─────────
-  // Indices 3-5 (6:30-7:30 AM) are empty past rows → Fill All range
+  // ── FIXED DEMO ROWS — 30-min interval, current = 9:00 AM (index 8) ──
   const DEMO_ROWS = [
     { time:'5:00 AM',  activity:'Wake up',    category:'Movement',     energy:'Medium', isCur:false, disabled:false, isPast:true  },
     { time:'5:30 AM',  activity:'Workout',    category:'Movement',     energy:'High',   isCur:false, disabled:false, isPast:true  },
@@ -2737,11 +2594,11 @@ footer {
     { time:'7:00 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
     { time:'7:30 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
     { time:'8:00 AM',  activity:'Twitter',    category:'Distracted',   energy:'Low',    isCur:false, disabled:false, isPast:true  },
-    { time:'8:30 AM',  activity:'Breakfast',  category:'Meal/Break',   energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    { time:'9:00 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
-    { time:'9:30 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
-    { time:'10:00 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
-    { time:'10:30 AM', activity:'',           category:'',             energy:'',       isCur:true,  disabled:false, isPast:false },
+    { time:'8:30 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
+    { time:'9:00 AM',  activity:'',           category:'',             energy:'',       isCur:true,  disabled:false, isPast:false },
+    { time:'9:30 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'10:00 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'10:30 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
     { time:'11:00 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
     { time:'11:30 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
     { time:'12:00 PM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
@@ -2807,14 +2664,13 @@ footer {
     tbody.innerHTML = '';
     tbody.appendChild(frag);
     placeNowWidget();
-    placeFillWidget();
   }
 
-  // ── NOW WIDGET (current = 10:30 AM = index 11) ────────────────────
+  // ── NOW WIDGET (current = 9:00 AM = index 8) ─────────────────────
   function placeNowWidget() {
     const wrap = document.getElementById('lpTblWrap');
     if (!wrap) return;
-    const curRow = document.getElementById('lp-r-11');
+    const curRow = document.getElementById('lp-r-8');
     if (!curRow) return;
 
     let w = document.getElementById('lpNowWidget');
@@ -2823,67 +2679,13 @@ footer {
       w.id = 'lpNowWidget'; w.className = 'lp-now-widget';
       w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn">Now</button>`;
       wrap.appendChild(w);
-      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(11));
+      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(8));
     }
     w.style.top    = curRow.offsetTop + 'px';
     w.style.height = curRow.offsetHeight + 'px';
     w.style.left   = '0';
     w.style.width  = '100%';
     w.classList.add('visible');
-  }
-
-  // ── FILL-ALL WIDGET (spans empty past rows 9:00-10:00 AM = indices 8-10) ─
-  function placeFillWidget() {
-    const wrap = document.getElementById('lpTblWrap');
-    if (!wrap) return;
-
-    // Hide widget once all fill-range rows have been filled
-    const fillIndices = [8, 9, 10];
-    const allFilled = fillIndices.every(i => DEMO_ROWS[i].activity);
-    if (allFilled) {
-      const existing = document.getElementById('lpFillWidget');
-      if (existing) existing.remove();
-      return;
-    }
-
-    const firstRow = document.getElementById('lp-r-8');
-    const lastRow  = document.getElementById('lp-r-10');
-    if (!firstRow || !lastRow) return;
-
-    let w = document.getElementById('lpFillWidget');
-    if (!w) {
-      w = document.createElement('div');
-      w.id = 'lpFillWidget'; w.className = 'lp-fill-widget';
-      w.innerHTML = `
-        <div class="lp-fill-vline"></div>
-        <div class="lp-fill-hline"></div>
-        <button class="lp-fill-btn" id="lpFillBtn">Fill all</button>
-        <div class="lp-fill-callout" id="lpFillCallout">
-          <p class="lp-fill-callout-text">Stepped away?<br>Fill all at once</p>
-          <svg class="lp-fill-arrow-svg" viewBox="0 0 12 62" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="6" y1="1" x2="6" y2="52" stroke="#FF5A5F" stroke-width="2.5" stroke-linecap="round"/>
-            <polygon points="1.5,50 6,62 10.5,50" fill="#FF5A5F"/>
-          </svg>
-        </div>`;
-      wrap.appendChild(w);
-      document.getElementById('lpFillBtn').addEventListener('click', () => openFillAllPopup());
-    }
-    const top    = firstRow.offsetTop;
-    const height = lastRow.offsetTop + lastRow.offsetHeight - firstRow.offsetTop;
-    w.style.top = top + 'px'; w.style.left = '0';
-    w.style.width = '100%'; w.style.height = height + 'px';
-    w.classList.add('visible');
-    requestAnimationFrame(() => {
-      const btn     = document.getElementById('lpFillBtn');
-      const callout = document.getElementById('lpFillCallout');
-      if (!btn || !callout) return;
-      const btnW = btn.offsetWidth, btnH = btn.offsetHeight;
-      const cW   = callout.offsetWidth, cH = callout.offsetHeight;
-      // Center callout horizontally over button (both share same right anchor)
-      callout.style.right = (w.offsetWidth + 36 + btnW / 2 - cW / 2) + 'px';
-      // Position callout just above button (button center = 50% of widget)
-      callout.style.top   = (w.offsetHeight / 2 - btnH / 2 - cH - 6) + 'px';
-    });
   }
 
   // ── DROPDOWN ─────────────────────────────────────────────────────
@@ -3294,13 +3096,40 @@ footer {
   else { render(); updateGreetingTime(); window.scrollTo(0, 0); }
   setInterval(updateGreetingTime, 60000);
 
+  // ── PUBLIC API — called by FEAT 1's alarm popup after the user submits.
+  // Injects the user's input into the 8:30 AM row and swaps the headline +
+  // body copy from "Log faster…" to "Turn every 30 minutes…".
+  window.__blindersFeat1 = {
+    injectLog(activity, category, energy) {
+      const idx = DEMO_ROWS.findIndex(r => r.time === '8:30 AM');
+      if (idx < 0) return;
+      DEMO_ROWS[idx].activity = activity || '';
+      DEMO_ROWS[idx].category = category || '';
+      DEMO_ROWS[idx].energy   = energy   || '';
+      render();
+    },
+    switchCopy() {
+      const section = document.getElementById('features');
+      if (!section || section.classList.contains('feat1-switched')) return;
+      section.classList.add('feat1-fading');
+      setTimeout(() => {
+        section.classList.add('feat1-switched');
+        section.classList.remove('feat1-fading');
+      }, 260);
+    }
+  };
+
 })();
 </script>
 
+
 <script>
 /* ================================================================
-   MOZIMINUTE LANDING PAGE — Live Time-Logging Demo (Feature 2)
-   Always-open popup on load. Logging advances Now from 6:30→7:00 AM.
+   FEATURE 1 ALARM POPUP — exact duplicate of FEAT 2's popup logic
+   (always-open popup with hover-dropdowns, gold-glow validation,
+   "Same as last", autoCat from input, Log It / Skip / backdrop).
+   Layered on top of FEAT 1's demo box (#lpDemoGrid). All element
+   IDs use the `F1` suffix to avoid clashes with FEAT 2's `2` suffix.
 ================================================================ */
 (function () {
   'use strict';
@@ -3333,219 +3162,40 @@ footer {
   function getCat(label)    { return CATS.find(c => c.label === label) || null; }
   function getEnergy(label) { return ENERGY.find(e => e.label === label) || null; }
 
-  // ── DEMO ROWS — current = 6:30 AM (index 3) ──────────────────────
+  // Single popup row context — FEAT 1's actual table is rendered by its own
+  // script and is not modified by this popup.
   const DEMO_ROWS = [
-    { time:'5:00 AM',  activity:'Wake up', category:'Movement', energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    { time:'5:30 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'6:00 AM',  activity:'Gym',     category:'Movement', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'6:30 AM',  activity:'',        category:'',         energy:'',       isCur:true,  disabled:false, isPast:false },
-    { time:'7:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'7:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'8:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'8:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'9:00 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'9:30 AM',  activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'10:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'10:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'11:00 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'11:30 AM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'12:00 PM', activity:'',        category:'',         energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'6:30 AM',  activity:'',  category:'',  energy:'',  isCur:true,  disabled:false, isPast:false },
   ];
-
-  let initialPopupOpened = false;
-
-  // ── RENDER ───────────────────────────────────────────────────────
-  function render() {
-    const tbody = document.getElementById('lpTableBody2');
-    if (!tbody) return;
-    const frag = document.createDocumentFragment();
-
-    DEMO_ROWS.forEach((row, idx) => {
-      const cat = getCat(row.category);
-      const eng = getEnergy(row.energy);
-
-      const tr = document.createElement('tr');
-      let cls = 'lp-table-row';
-      if (row.isCur)    cls += ' lp-cur-row';
-      if (row.disabled) cls += ' lp-row-disabled';
-      if (row.isPast)   cls += ' lp-row-past';
-      tr.className = cls;
-      tr.id = `lp2r${idx}`;
-      tr.style.setProperty('--lp-row-accent', 'transparent');
-
-      const tdTime = document.createElement('td');
-      tdTime.className = 'lp-cell-time';
-      tdTime.innerHTML = `<span>${row.time}</span>`;
-
-      const tdAct = document.createElement('td');
-      tdAct.className = 'lp-cell-editable';
-      tdAct.innerHTML = '<span class="lp-act-empty"></span>';
-      if (row.activity) tdAct.querySelector('.lp-act-empty').textContent = row.activity;
-      tdAct.addEventListener('click', () => openAlarmPopup(idx));
-
-      const tdCat = document.createElement('td');
-      tdCat.style.textAlign = 'center';
-      if (cat) {
-        tdCat.innerHTML = `<span class="lp-category-pill has-color" style="--pill-color:${cat.color}">${cat.label} <span class="lp-dd-arrow">▾</span></span>`;
-      } else {
-        tdCat.innerHTML = `<span class="lp-dd-trigger">Category <span class="lp-dd-arrow">▾</span></span>`;
-      }
-      tdCat.addEventListener('click', () => openDropdown('category', idx, tdCat));
-
-      const tdEng = document.createElement('td');
-      tdEng.style.textAlign = 'center';
-      if (eng) {
-        tdEng.innerHTML = `<span class="lp-status-pill has-color" style="--pill-color:${eng.color}">${eng.label} <span class="lp-dd-arrow">▾</span></span>`;
-      } else {
-        tdEng.innerHTML = `<span class="lp-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></span>`;
-      }
-      if (row.category !== 'Sleep/Rest') {
-        tdEng.addEventListener('click', () => openDropdown('energy', idx, tdEng));
-      }
-
-      tr.append(tdTime, tdAct, tdCat, tdEng);
-      frag.appendChild(tr);
-    });
-
-    tbody.innerHTML = '';
-    tbody.appendChild(frag);
-    placeNowWidget();
-
-  }
-
-  // ── NOW WIDGET — dynamic, finds isCur row each render ────────────
-  function placeNowWidget() {
-    const wrap = document.getElementById('lpTblWrap2');
-    if (!wrap) return;
-    const curIdx = DEMO_ROWS.findIndex(r => r.isCur);
-    if (curIdx < 0) return;
-    const curRow = document.getElementById(`lp2r${curIdx}`);
-    if (!curRow) return;
-
-    // Recreate so click listener always targets the correct index
-    const old = document.getElementById('lpNowWidget2');
-    if (old) old.remove();
-
-    const w = document.createElement('div');
-    w.id = 'lpNowWidget2'; w.className = 'lp-now-widget';
-    w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn2">Now</button>`;
-    wrap.appendChild(w);
-    document.getElementById('lpNowBtn2').addEventListener('click', () => openAlarmPopup(curIdx));
-
-    w.style.top    = curRow.offsetTop + 'px';
-    w.style.height = curRow.offsetHeight + 'px';
-    w.style.left   = '0';
-    w.style.width  = '100%';
-    w.classList.add('visible');
-  }
-
-  // ── DROPDOWN (table cells) ────────────────────────────────────────
-  let _ddRemove = null, _ddScrollClose = null;
-  function closeDropdown() {
-    const p = document.getElementById('lpDdPanel2');
-    if (p) { p.classList.remove('lp-dd-open'); setTimeout(() => p.remove(), 160); }
-    if (_ddRemove) { document.removeEventListener('click', _ddRemove); _ddRemove = null; }
-    if (_ddScrollClose) { window.removeEventListener('scroll', _ddScrollClose); _ddScrollClose = null; }
-  }
-
-  function openDropdown(colType, rowIdx, anchor) {
-    closeDropdown();
-    const opts = colType === 'category' ? CATS : ENERGY;
-
-    const panel = document.createElement('div');
-    panel.id = 'lpDdPanel2'; panel.className = 'lp-dd-panel';
-
-    const searchWrap = document.createElement('div');
-    searchWrap.className = 'lp-dd-search-wrap';
-    const search = document.createElement('input');
-    search.type = 'text'; search.className = 'lp-dd-search';
-    search.placeholder = colType === 'category' ? 'Search categories...' : 'Search energy...';
-    searchWrap.appendChild(search);
-
-    const optList = document.createElement('div');
-    optList.className = 'lp-dd-opts';
-
-    function buildOpts(filter) {
-      optList.innerHTML = '';
-      opts.filter(o => !filter || o.label.toLowerCase().includes(filter.toLowerCase()))
-        .forEach(opt => {
-          const d = document.createElement('div');
-          d.className = 'lp-dd-opt';
-          d.textContent = opt.label;
-          d.addEventListener('click', e => { e.stopPropagation(); pick(opt.label); });
-          optList.appendChild(d);
-        });
-    }
-    buildOpts('');
-    search.addEventListener('input', () => buildOpts(search.value));
-
-    panel.appendChild(searchWrap); panel.appendChild(optList);
-    if (colType === 'category') {
-      const editBtn = document.createElement('button');
-      editBtn.className = 'lp-dd-clear';
-      editBtn.style.cssText = 'text-align:right;padding-right:14px;';
-      editBtn.textContent = 'Edit options';
-      editBtn.addEventListener('click', e => { e.stopPropagation(); closeDropdown(); });
-      panel.appendChild(editBtn);
-    }
-    document.body.appendChild(panel);
-
-    const rect = anchor.getBoundingClientRect();
-    const pw = 210, ph = 300;
-    let top = rect.bottom + 6, left = rect.left;
-    if (top + ph > window.innerHeight) top = rect.top - ph - 6;
-    if (left + pw > window.innerWidth) left = window.innerWidth - pw - 8;
-    panel.style.top = top + 'px'; panel.style.left = left + 'px';
-    requestAnimationFrame(() => panel.classList.add('lp-dd-open'));
-    setTimeout(() => search.focus(), 80);
-
-    function pick(label) {
-      if (colType === 'category') {
-        DEMO_ROWS[rowIdx].category = label;
-        if (label === 'Sleep/Rest') DEMO_ROWS[rowIdx].energy = 'Charging';
-        else if (DEMO_ROWS[rowIdx].energy === 'Charging') DEMO_ROWS[rowIdx].energy = '';
-      } else {
-        DEMO_ROWS[rowIdx].energy = label;
-      }
-      closeDropdown(); render();
-    }
-
-    setTimeout(() => {
-      _ddRemove = e => { if (!panel.contains(e.target)) closeDropdown(); };
-      document.addEventListener('click', _ddRemove);
-      _ddScrollClose = () => closeDropdown();
-      window.addEventListener('scroll', _ddScrollClose, { passive: true });
-    }, 10);
-  }
 
   // ── ALARM POPUP ──────────────────────────────────────────────────
   function openAlarmPopup(rowIdx) {
-    if (document.getElementById('lpAlarmOv2')) return; // prevent duplicate
+    if (document.getElementById('lpAlarmOvF1')) return; // prevent duplicate
 
     const row = DEMO_ROWS[rowIdx];
     const logoSrc = document.querySelector('.nav-brand img')?.src || '';
 
     const ov = document.createElement('div');
-    ov.className = 'lp-alarm-ov lp-alarm-feat2'; ov.id = 'lpAlarmOv2';
+    ov.className = 'lp-alarm-ov lp-alarm-feat2'; ov.id = 'lpAlarmOvF1';
     ov.innerHTML = `
       <div class="lp-alarm-card">
         <img class="lp-alarm-logo" src="${logoSrc}" alt="Blinders">
         <div class="lp-alarm-time">${row.time}</div>
-        <button class="lp-alarm-same" id="lpAlSame2">◄ Same as last</button>
+        <button class="lp-alarm-same" id="lpAlSameF1">◄ Same as last</button>
         <div class="lp-alarm-all-row">
-          <input type="text" class="lp-alarm-input" id="lpAlAct2"
+          <input type="text" class="lp-alarm-input" id="lpAlActF1"
                  placeholder="e.g. Writing report..." value="${row.activity}">
-          <button id="lpAlCat2" class="lp-al-dd-trigger">Category <span class="lp-dd-arrow">▾</span></button>
-          <button id="lpAlEng2" class="lp-al-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></button>
+          <button id="lpAlCatF1" class="lp-al-dd-trigger">Category <span class="lp-dd-arrow">▾</span></button>
+          <button id="lpAlEngF1" class="lp-al-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></button>
         </div>
-        <button class="lp-alarm-log" id="lpAlLog2">Log It</button>
-        <button class="lp-alarm-skip" id="lpAlSkip2">Skip</button>
+        <button class="lp-alarm-log" id="lpAlLogF1">Log It</button>
+        <button class="lp-alarm-skip" id="lpAlSkipF1">Skip</button>
       </div>`;
-    document.getElementById('lpDemoGrid2').appendChild(ov);
+    document.getElementById('lpDemoGrid').appendChild(ov);
     requestAnimationFrame(() => ov.classList.add('open'));
 
-    const alCatBtn = document.getElementById('lpAlCat2');
-    const alEngBtn = document.getElementById('lpAlEng2');
+    const alCatBtn = document.getElementById('lpAlCatF1');
+    const alEngBtn = document.getElementById('lpAlEngF1');
     let alCat = row.category, alEng = row.energy;
 
     function syncPills() {
@@ -3581,15 +3231,14 @@ footer {
       openAlarmDd('energy', alEngBtn, val => { alEng = val; syncPills(); checkAndUpdateGlow(); });
     });
 
-    document.getElementById('lpAlSame2').addEventListener('click', () => {
+    document.getElementById('lpAlSameF1').addEventListener('click', () => {
       const prev = DEMO_ROWS.slice(0, rowIdx).reverse().find(r => r.activity);
       if (prev) {
-        document.getElementById('lpAlAct2').value = prev.activity;
+        document.getElementById('lpAlActF1').value = prev.activity;
         alCat = prev.category; alEng = prev.energy; syncPills();
       }
     });
 
-    // Gold gradient ring on empty boxes — persists until box is filled
     function showHighlight(elIds) {
       elIds.forEach(id => {
         const el = document.getElementById(id);
@@ -3601,30 +3250,29 @@ footer {
     }
 
     function checkAndUpdateGlow() {
-      const anyGlowing = ['lpAlAct2','lpAlCat2','lpAlEng2'].some(id =>
+      const anyGlowing = ['lpAlActF1','lpAlCatF1','lpAlEngF1'].some(id =>
         document.getElementById(id)?.classList.contains('lp-box-glow-active')
       );
       if (!anyGlowing) return;
-      const actVal = document.getElementById('lpAlAct2')?.value.trim() || '';
-      if (actVal) document.getElementById('lpAlAct2')?.classList.remove('lp-box-glow-active');
-      if (alCat)  document.getElementById('lpAlCat2')?.classList.remove('lp-box-glow-active');
-      if (alEng)  document.getElementById('lpAlEng2')?.classList.remove('lp-box-glow-active');
+      const actVal = document.getElementById('lpAlActF1')?.value.trim() || '';
+      if (actVal) document.getElementById('lpAlActF1')?.classList.remove('lp-box-glow-active');
+      if (alCat)  document.getElementById('lpAlCatF1')?.classList.remove('lp-box-glow-active');
+      if (alEng)  document.getElementById('lpAlEngF1')?.classList.remove('lp-box-glow-active');
     }
 
-    // Returns true if all filled, else flashes empties and returns false
     function validateOrHighlight() {
-      const actVal = document.getElementById('lpAlAct2')?.value.trim() || '';
+      const actVal = document.getElementById('lpAlActF1')?.value.trim() || '';
       const emptyIds = [];
-      if (!actVal) emptyIds.push('lpAlAct2');
-      if (!alCat)  emptyIds.push('lpAlCat2');
-      if (!alEng)  emptyIds.push('lpAlEng2');
+      if (!actVal) emptyIds.push('lpAlActF1');
+      if (!alCat)  emptyIds.push('lpAlCatF1');
+      if (!alEng)  emptyIds.push('lpAlEngF1');
       if (emptyIds.length) { showHighlight(emptyIds); return false; }
       return true;
     }
 
     function doLog() {
       if (!validateOrHighlight()) return;
-      const actVal = document.getElementById('lpAlAct2').value.trim();
+      const actVal = document.getElementById('lpAlActF1').value.trim();
       DEMO_ROWS[rowIdx].activity = actVal;
       DEMO_ROWS[rowIdx].category = alCat;
       DEMO_ROWS[rowIdx].energy   = alEng;
@@ -3632,15 +3280,16 @@ footer {
         const cid = autoCat(actVal);
         DEMO_ROWS[rowIdx].category = CATS.find(c => c.id === cid)?.label || '';
       }
-      // Advance current time slot: 6:30 AM → 7:00 AM
-      DEMO_ROWS[rowIdx].isCur  = false;
-      DEMO_ROWS[rowIdx].isPast = true;
-      if (rowIdx + 1 < DEMO_ROWS.length) DEMO_ROWS[rowIdx + 1].isCur = true;
+      // Inject into FEAT 1's 8:30 AM row and swap the headline + side copy
+      // from "Log faster…" to "Turn every 30 minutes…".
+      const finalCat = DEMO_ROWS[rowIdx].category;
+      window.__blindersFeat1?.injectLog(actVal, finalCat, alEng);
+      window.__blindersFeat1?.switchCopy();
       close();
     }
 
     function clearGlow() {
-      ['lpAlAct2','lpAlCat2','lpAlEng2'].forEach(id => {
+      ['lpAlActF1','lpAlCatF1','lpAlEngF1'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.remove('lp-box-glow-active');
       });
@@ -3651,40 +3300,34 @@ footer {
       ov.classList.remove('open');
       setTimeout(() => ov.remove(), 200);
       closeAlarmDd();
-      render();
     }
 
-    document.getElementById('lpAlLog2').addEventListener('click', doLog);
+    document.getElementById('lpAlLogF1').addEventListener('click', doLog);
 
-    // Skip: clear form and any glow, keep popup open
-    document.getElementById('lpAlSkip2').addEventListener('click', () => {
+    document.getElementById('lpAlSkipF1').addEventListener('click', () => {
       clearGlow();
-      document.getElementById('lpAlAct2').value = '';
+      document.getElementById('lpAlActF1').value = '';
       alCat = ''; alEng = '';
       syncPills();
     });
 
-    // Backdrop click: flash empty boxes, never close
     ov.addEventListener('click', e => { if (e.target === ov) validateOrHighlight(); });
 
-    const actInput = document.getElementById('lpAlAct2');
+    const actInput = document.getElementById('lpAlActF1');
     actInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLog(); });
     actInput.addEventListener('input', () => {
       const catId = autoCat(actInput.value.trim());
       if (catId) { const label = CATS.find(c => c.id === catId)?.label || ''; if (label && label !== alCat) { alCat = label; syncPills(); } }
       checkAndUpdateGlow();
     });
-    // Always-on: show gold glow immediately on any empty box when popup opens
     requestAnimationFrame(() => {
       const emptyIds = [];
-      if (!actInput.value.trim()) emptyIds.push('lpAlAct2');
-      if (!alCat) emptyIds.push('lpAlCat2');
-      if (!alEng) emptyIds.push('lpAlEng2');
+      if (!actInput.value.trim()) emptyIds.push('lpAlActF1');
+      if (!alCat) emptyIds.push('lpAlCatF1');
+      if (!alEng) emptyIds.push('lpAlEngF1');
       if (emptyIds.length) showHighlight(emptyIds);
     });
-    // Auto-open dropdown on hover if field is empty (Feature 2 alarm popup only)
-    // Switching buttons closes previous dropdown and opens the new one
-    [['lpAlCat2', () => alCat], ['lpAlEng2', () => alEng]].forEach(([id, getVal]) => {
+    [['lpAlCatF1', () => alCat], ['lpAlEngF1', () => alEng]].forEach(([id, getVal]) => {
       const btn = document.getElementById(id);
       if (!btn) return;
       let _ht = null;
@@ -3692,7 +3335,7 @@ footer {
         if (getVal()) return;
         _ht = setTimeout(() => {
           if (getVal()) return;
-          if (document.getElementById('lpAlDdPanel2')) closeAlarmDd();
+          if (document.getElementById('lpAlDdPanelF1')) closeAlarmDd();
           btn.click();
         }, 150);
       });
@@ -3704,7 +3347,7 @@ footer {
   // ── ALARM DROPDOWN ───────────────────────────────────────────────
   let _alDdRemove = null;
   function closeAlarmDd() {
-    const p = document.getElementById('lpAlDdPanel2');
+    const p = document.getElementById('lpAlDdPanelF1');
     if (p) { p.classList.remove('lp-dd-open'); setTimeout(() => p.remove(), 160); }
     if (_alDdRemove) { document.removeEventListener('click', _alDdRemove); _alDdRemove = null; }
   }
@@ -3712,7 +3355,7 @@ footer {
     closeAlarmDd();
     const opts = colType === 'category' ? CATS : ENERGY;
     const panel = document.createElement('div');
-    panel.id = 'lpAlDdPanel2'; panel.className = 'lp-dd-panel';
+    panel.id = 'lpAlDdPanelF1'; panel.className = 'lp-dd-panel';
     panel.style.zIndex = '100002';
 
     const optList = document.createElement('div');
@@ -3760,22 +3403,10 @@ footer {
     }, 10);
   }
 
-  // ── GREETING CLOCK ────────────────────────────────────────────────
-  function updateGreetingTime() {
-    const el = document.getElementById('lpGreetingTime2');
-    if (!el) return;
-    const now = new Date();
-    const h = now.getHours(), m = now.getMinutes();
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const h12 = h % 12 || 12;
-    el.textContent = `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
-  }
-
   // ── INIT ─────────────────────────────────────────────────────────
-  function init2() { render(); updateGreetingTime(); window.scrollTo(0, 0); setTimeout(() => openAlarmPopup(3), 120); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init2);
-  else init2();
-  setInterval(updateGreetingTime, 60000);
+  function initF1() { setTimeout(() => openAlarmPopup(0), 120); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initF1);
+  else initF1();
 
 })();
 </script>
@@ -3825,7 +3456,6 @@ footer {
 
   function init() {
     makeTimer('lpTimerWidget',  true);
-    makeTimer('lpTimerWidget2', true);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
