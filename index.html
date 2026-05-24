@@ -689,9 +689,9 @@ body {
 
 .pricing-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  max-width: 1060px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 760px;
 }
 .p-card.lifetime {
   border-color: rgba(245,166,35,0.25);
@@ -1965,8 +1965,7 @@ footer {
       </ul>
     </div>
     <div class="nav-actions">
-      <a href="app.html" class="nav-login">Sign in</a>
-      <a href="app.html" class="nav-cta">Get started</a>
+      <a href="#pricing" class="nav-cta">Get started</a>
     </div>
   </div>
 </nav>
@@ -2065,8 +2064,8 @@ footer {
         <h2 class="feat-h2" id="feat1-h">
           <span data-copy="before">Log faster than<br>you can think</span><span data-copy="after">Turn every 30 minutes<br>into measurable data</span>
         </h2>
-        <a href="app.html" class="feat-more">
-          Try it free
+        <a href="#pricing" class="feat-more">
+          Start 3-day free trial
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>
       </div>
@@ -2372,29 +2371,9 @@ footer {
     <div class="pricing-meta reveal">
       <div class="pricing-label">Pricing</div>
       <h2 class="pricing-h2" id="pricing-h">Built for builders who refuse<br>to guess where their time went.</h2>
-      <p class="pricing-sub">7 days free. No credit card. Cancel anytime. By day 7, you'll see your real schedule — and you'll know if this is for you.</p>
+      <p class="pricing-sub">3-day free trial. Cancel anytime. 14-day money-back guarantee. By day 3, you'll see your real schedule — and you'll know if this is for you.</p>
     </div>
     <div class="pricing-cards reveal d1">
-      <!-- Free -->
-      <div class="p-card">
-        <div class="p-tier free">Free</div>
-        <div class="p-title">7-Day Trial</div>
-        <div class="p-price">$0 <span>/ 7 days</span></div>
-        <div class="p-framing">No credit card. See your full first week.</div>
-        <div class="p-hr"></div>
-        <ul class="p-list" role="list">
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Interval alarms: <strong>15, 30, 45, or 60 min</strong></li>
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Log <strong>activity + category + energy level</strong></li>
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Daily productivity score</strong> after every check-in</li>
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Today's <strong>peak hour</strong> snapshot</li>
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Streak counter</li>
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Last 7 days</strong> of history</li>
-          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>History beyond 7 days</li>
-          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Weekly score trends &amp; drift detection</li>
-          <li class="p-item locked"><svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Weekly performance summary</li>
-        </ul>
-        <a href="app.html" class="p-btn-free">Start logging free →</a>
-      </div>
       <!-- Pro -->
       <div class="p-card pro">
         <div class="p-tier pro">
@@ -2403,10 +2382,13 @@ footer {
         </div>
         <div class="p-title">Full Intelligence</div>
         <div class="p-price">$15 <span>/ month</span></div>
-        <div class="p-framing">The system founders use to find their hidden 10 hours a week.</div>
+        <div class="p-framing">3-day free trial. The system founders use to find their hidden 10 hours a week.</div>
         <div class="p-hr"></div>
         <ul class="p-list" role="list">
-          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Everything in Free</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Interval alarms: <strong>15, 30, 45, or 60 min</strong></li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Log <strong>activity + category + energy level</strong></li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Daily productivity score</strong> after every check-in</li>
+          <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Today's <strong>peak hour</strong> snapshot &amp; streak counter</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Unlimited history</strong> — every log, forever</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Weekly score trends</strong> — are you improving?</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Pattern drift detection</strong> — catch slumps early</li>
@@ -2414,8 +2396,8 @@ footer {
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><strong>Energy drain report</strong> — which categories cost you most</li>
           <li class="p-item"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
         </ul>
-        <a href="#" class="p-btn-pro" onclick="return blindersCheckout(this, 'pri_01ks1twfe0r7995nfbbte7nrw3');">Start free, upgrade anytime →</a>
-        <p class="p-foot">Cancel anytime. Your logs stay yours.</p>
+        <a href="#" class="p-btn-pro" onclick="return blindersCheckout(this, 'pri_01ks1twfe0r7995nfbbte7nrw3');">Start 3-day free trial →</a>
+        <p class="p-foot">Card required. Cancel anytime. 14-day money-back guarantee.</p>
       </div>
       <!-- Lifetime -->
       <div class="p-card lifetime">
@@ -2454,15 +2436,15 @@ footer {
     </div>
     <h2 class="cta-h2 reveal d1" id="cta-h">
       Day 1 is today.<br>
-      Day 7 is when<br>
+      Day 3 is when<br>
       you'll know for sure.
     </h2>
     <p class="cta-sub reveal d2">
-      Start free for 7 days. Build the habit. See your real schedule emerge. By the end of the week, you'll know if this is the tool that finally tells you where your time actually went.
+      Start your 3-day free trial. Build the habit. See your real schedule emerge. By the end of 3 days, you'll know if this is the tool that finally tells you where your time actually went.
     </p>
     <div class="cta-actions reveal d2">
-      <a href="app.html" class="cta-btn">
-        Start auditing my time — it's free
+      <a href="#" class="cta-btn" onclick="return blindersCheckout(this, 'pri_01ks1twfe0r7995nfbbte7nrw3');">
+        Start my 3-day free trial
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>

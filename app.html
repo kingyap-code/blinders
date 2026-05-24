@@ -7068,7 +7068,7 @@ function openUpgradeModal() {
         <span class="notes-popup-title">Upgrade your plan</span>
         <button class="notes-popup-close" id="upClose" aria-label="Close">✕</button>
       </div>
-      <p class="upgrade-sub">Built for builders who refuse to guess where their time went. 7 days free. Cancel anytime.</p>
+      <p class="upgrade-sub">Built for builders who refuse to guess where their time went. 3-day free trial. Cancel anytime.</p>
       <div class="upgrade-plans">
         <div class="upgrade-plan">
           <div class="upgrade-plan-tag">PRO · MOST POPULAR</div>
@@ -7081,8 +7081,8 @@ function openUpgradeModal() {
             <li>Energy drain report — which categories cost you most</li>
             <li>Priority support</li>
           </ul>
-          <button class="upgrade-plan-btn upgrade-btn-pro" id="upgradeBtnPro">Start free trial →</button>
-          <div class="upgrade-plan-foot">7 days free. Cancel anytime. Your logs stay yours.</div>
+          <button class="upgrade-plan-btn upgrade-btn-pro" id="upgradeBtnPro">Start 3-day free trial →</button>
+          <div class="upgrade-plan-foot">3 days free, then $15/mo. Cancel anytime. 14-day money-back.</div>
         </div>
         <div class="upgrade-plan upgrade-plan-lifetime">
           <div class="upgrade-plan-tag upgrade-plan-tag-gold">★ LIFETIME · ONE-TIME</div>
@@ -11105,6 +11105,49 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // Paywall: app requires a paid or trialing subscription.
+  // Trial is handled by Paddle (3 days), and BlindersPlan.isPro() returns true for trialing users.
+  (function () {
+    function isPaid() { return !!(window.BlindersPlan && window.BlindersPlan.isPro()); }
+    function lockModal() {
+      var closeBtn = document.getElementById('upClose');
+      if (closeBtn) closeBtn.style.display = 'none';
+      var overlay = document.getElementById('upgradeOverlay');
+      if (overlay) {
+        overlay.addEventListener('click', function (e) {
+          if (e.target === overlay) { e.stopPropagation(); e.preventDefault(); }
+        }, true);
+      }
+    }
+    function blockEscape(e) {
+      if (e.key === 'Escape' && document.getElementById('upgradeOverlay')) {
+        e.stopPropagation(); e.preventDefault();
+      }
+    }
+    function showPaywall() {
+      if (typeof openUpgradeModal === 'function') {
+        openUpgradeModal();
+        setTimeout(lockModal, 30);
+        document.addEventListener('keydown', blockEscape, true);
+      }
+    }
+    function checkAccess() {
+      if (isPaid()) return;
+      if (window.BlindersPlan && window.BlindersPlan.refresh) {
+        window.BlindersPlan.refresh().then(function () {
+          if (!isPaid()) showPaywall();
+        }).catch(function () { if (!isPaid()) showPaywall(); });
+      } else {
+        showPaywall();
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { setTimeout(checkAccess, 1200); });
+    } else {
+      setTimeout(checkAccess, 1200);
+    }
+  })();
 </script>
 
 <!-- Vercel Web Analytics — privacy-friendly, cookie-less page view tracking.
