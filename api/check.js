@@ -21,6 +21,31 @@ const LIFETIME_PRICE = 'pri_01ks1tzeg628mrqt3h9zgwrjfw'; // one-time lifetime
 
 const PADDLE_API = 'https://api.paddle.com';
 
+// ── Origins allowed to call this endpoint. Browsers send the real Origin header
+// automatically — attackers running curl/scripts can spoof it, so this isn't a
+// security boundary, just a cheap filter against drive-by abuse from random pages.
+const ALLOWED_HOST_SUFFIXES = ['blinders.pro', '.vercel.app', 'localhost', '127.0.0.1'];
+
+function originAllowed(req) {
+  const raw = req.headers.origin || req.headers.referer || '';
+  if (!raw) return false;
+  let host;
+  try { host = new URL(raw).hostname; } catch (e) { return false; }
+  return ALLOWED_HOST_SUFFIXES.some(
+    (s) => host === s || host.endsWith(s.startsWith('.') ? s : '.' + s) || host === s.replace(/^\./, '')
+  );
+}
+
+// ── Strict input shapes. Anything that doesn't look like a real Paddle id or a
+// real email gets rejected before we burn a Paddle API call on it.
+const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{1,30}$/;
+const TXN_RE = /^txn_[a-z0-9]{4,60}$/;
+const SUB_RE = /^sub_[a-z0-9]{4,60}$/;
+
+function validEmail(v) { return typeof v === 'string' && v.length <= 254 && EMAIL_RE.test(v); }
+function validTxn(v)   { return typeof v === 'string' && TXN_RE.test(v); }
+function validSub(v)   { return typeof v === 'string' && SUB_RE.test(v); }
+
 async function paddleGet(path, apiKey) {
   const res = await fetch(PADDLE_API + path, {
     headers: { Authorization: 'Bearer ' + apiKey },
@@ -55,6 +80,11 @@ export default async function handler(req, res) {
     return;
   }
 
+  if (!originAllowed(req)) {
+    res.status(403).json({ error: 'forbidden_origin' });
+    return;
+  }
+
   const apiKey = process.env.PADDLE_API_KEY;
   if (!apiKey) {
     // Backend not configured yet — tell the app so it can fail safe.
@@ -70,6 +100,7 @@ export default async function handler(req, res) {
   try {
     // ── Just after checkout: inspect the transaction to see what they bought. ──
     if (transactionId) {
+      if (!validTxn(transactionId)) { res.status(400).json({ error: 'bad_transaction_id' }); return; }
       const tx = await paddleGet('/transactions/' + encodeURIComponent(transactionId), apiKey);
       const data = tx?.data;
       if (data) {
@@ -88,6 +119,7 @@ export default async function handler(req, res) {
 
     // ── On app load: re-check the monthly subscription is still active. ──
     if (subscriptionId) {
+      if (!validSub(subscriptionId)) { res.status(400).json({ error: 'bad_subscription_id' }); return; }
       const result = await fromSubscription(subscriptionId, apiKey);
       res.status(200).json(result || { plan: 'free' });
       return;
@@ -95,6 +127,7 @@ export default async function handler(req, res) {
 
     // ── Restore access: find the customer by email, then their active plan. ──
     if (email) {
+      if (!validEmail(email)) { res.status(400).json({ error: 'bad_email' }); return; }
       const cust = await paddleGet('/customers?email=' + encodeURIComponent(email), apiKey);
       const customer = cust?.data?.[0];
       if (!customer) { res.status(200).json({ plan: 'free' }); return; }
