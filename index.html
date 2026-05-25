@@ -1640,6 +1640,19 @@ footer {
     box-sizing: border-box;
     cursor: default;
   }
+  .lp-btn-week {
+    width: 100%;
+    background: transparent;
+    border: 0.5px solid rgba(61,220,151,0.55);
+    color: #3DDC97;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: default;
+  }
 
   /* Week cards — identical to .week-card */
   .lp-week-card {
@@ -1944,6 +1957,286 @@ footer {
     .lp-score-preview .c-hero-num { font-size: 52px; }
   }
   /* ── end Score preview ──────────────────────────────────────────────── */
+
+  /* ──────────── Weekly Score showcase ──────────── */
+  .lp-week-showcase {
+    padding: 32px 16px;
+    display: flex;
+    justify-content: center;
+  }
+  .lp-week-preview {
+    width: 880px;
+    max-width: 100%;
+    pointer-events: none;
+    position: relative;
+  }
+  @media (max-width: 960px) {
+    .lp-week-preview { width: 720px; }
+  }
+  @media (max-width: 760px) {
+    .lp-week-preview { width: 100%; }
+  }
+
+  .lp-week-preview .score-modal-card {
+    width: 100%;
+    background: linear-gradient(160deg, #242424 0%, #131313 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 26px 26px 22px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
+    position: relative; overflow: hidden;
+  }
+  .lp-week-preview .score-modal-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+    border-radius: 18px 18px 0 0;
+    pointer-events: none; z-index: 0;
+  }
+  .lp-week-preview .score-modal-card > * { position: relative; z-index: 1; }
+  .lp-week-preview .c-wrap { position: relative; width: 100%; }
+
+  /* Glass pill row */
+  .lp-week-preview .c-steps {
+    display: flex; align-items: center; gap: 6px; justify-content: center;
+    background: linear-gradient(160deg, #242424 0%, #131313 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 999px; padding: 6px 10px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
+    width: fit-content; margin: 0 auto -10px;
+    position: relative; z-index: 2; overflow: hidden;
+  }
+  .lp-week-preview .c-steps::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%);
+    border-radius: 999px 999px 0 0;
+    pointer-events: none; z-index: 0;
+  }
+  .lp-week-preview .c-steps > * { position: relative; z-index: 1; }
+  .lp-week-preview .c-step {
+    width: auto; height: 28px;
+    padding: 0 11px;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--text-muted); font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    position: relative;
+  }
+  .lp-week-preview .c-step.has-data::after {
+    content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 3px; height: 3px; border-radius: 50%; background: #3DDC97;
+  }
+  .lp-week-preview .c-step.active {
+    background: linear-gradient(160deg, #3a3a3a 0%, #282828 100%);
+    color: var(--text-primary);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.2),
+      0 0 0 1px rgba(255,255,255,0.1),
+      0 2px 6px rgba(0,0,0,0.4);
+    padding: 0 14px;
+  }
+
+  /* Card chrome (mirrors lp-score-preview) */
+  .lp-week-preview .c-card { padding-top: 30px; }
+  .lp-week-preview .c-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .lp-week-preview .c-tabs { display: flex; align-items: baseline; gap: 16px; }
+  .lp-week-preview .c-tab { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+  .lp-week-preview .c-tab.active { color: var(--text-primary); }
+  .lp-week-preview .c-header-logo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; opacity: 0.9; }
+  .lp-week-preview .c-hero { text-align: center; padding: 8px 0 20px; }
+  .lp-week-preview .c-hero-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+  .lp-week-preview .c-hero-num { font-size: 68px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .lp-week-preview .c-hero-int { color: var(--text-primary); }
+  .lp-week-preview .c-hero-dec { color: rgba(255,255,255,0.30); }
+  .lp-week-preview .c-hero-unit { font-size: 16px; color: var(--text-secondary); margin-left: 6px; font-weight: 500; }
+  .lp-week-preview .c-hero-sub { font-size: 12.5px; color: var(--text-muted); margin-top: 10px; }
+  .lp-week-preview .c-hero-date { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; }
+
+  /* Panels */
+  .lp-week-preview .c-panels { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .lp-week-preview .c-panel {
+    background: #0F0F10; border: 1px solid var(--border-soft);
+    border-radius: 14px; padding: 14px;
+  }
+  .lp-week-preview .c-panel-narrow {
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+  .lp-week-preview .c-panel-label { font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .lp-week-preview .c-panel-meta { font-size: 11px; color: var(--text-muted); text-transform: none; letter-spacing: 0; }
+  .lp-week-preview .c-cat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+  .lp-week-preview .c-cat-row .lbl { display: flex; align-items: center; gap: 8px; }
+  .lp-week-preview .c-cat-row .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .lp-week-preview .c-cat-row .v { font-weight: 600; }
+
+  /* Even-split 2-column activities */
+  .lp-week-preview .c-cat-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .lp-week-preview .c-cat-cols .c-cat-col { display: flex; flex-direction: column; }
+  @media (max-width: 720px) {
+    .lp-week-preview .c-cat-cols { grid-template-columns: 1fr; gap: 0; }
+  }
+
+  /* 7-day bar chart */
+  .lp-week-preview .c-week-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6px;
+    height: 110px;
+    padding: 8px 2px 4px;
+  }
+  .lp-week-preview .c-week-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+  }
+  .lp-week-preview .c-week-bar-track {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .lp-week-preview .c-week-bar-fill {
+    width: 100%;
+    border-radius: 4px;
+    min-height: 0;
+  }
+  .lp-week-preview .c-week-bar.empty .c-week-bar-fill {
+    background: rgba(255,255,255,0.10);
+  }
+  .lp-week-preview .c-week-bar.today .c-week-bar-track {
+    box-shadow: 0 0 0 1px rgba(61,220,151,0.35) inset;
+  }
+  .lp-week-preview .c-week-bar-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1;
+  }
+  .lp-week-preview .c-week-bar.today .c-week-bar-label {
+    color: #3DDC97;
+    font-weight: 600;
+  }
+  /* ── end Weekly Score showcase ──────────────────────────────────────── */
+
+  /* ──────────── Mobile checkout warning popup ──────────── */
+  .mco-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.78);
+    z-index: 100000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mco-overlay.open { display: flex; }
+  .mco-card {
+    max-width: 360px;
+    width: 100%;
+    background: linear-gradient(160deg, #242424 0%, #131313 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.1);
+    padding: 32px 24px 24px;
+    text-align: center;
+    color: #ffffff;
+    position: relative;
+  }
+  .mco-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    display: block;
+    object-fit: cover;
+  }
+  .mco-h {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+  .mco-p {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #a1a1a8;
+    margin: 0 0 22px;
+  }
+  .mco-btn {
+    display: block;
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    margin-top: 10px;
+    box-sizing: border-box;
+    text-decoration: none;
+    -webkit-appearance: none;
+  }
+  .mco-btn.primary {
+    background: #3DDC97;
+    color: #0F0F10;
+    border: none;
+  }
+  .mco-btn.primary:active { background: #2cb87f; }
+  .mco-link {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #a1a1a8;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 6px;
+  }
+  .mco-link:active { color: #ffffff; }
+  .mco-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: #a1a1a8;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+  }
+  /* ── end Mobile checkout warning ───────────────────────────────────── */
   </style>
 </head>
 <body>
@@ -2154,10 +2447,11 @@ footer {
         <!-- Left: Day metrics sidebar -->
         <div class="lp-sidebar">
 
-          <!-- Action buttons (Focus / Today's Score) -->
+          <!-- Action buttons (Focus / Today's Score / Weekly Score) -->
           <div class="lp-strip-btns">
             <div class="lp-btn-focus">Focus</div>
             <div class="lp-btn-score">Today's Score</div>
+            <div class="lp-btn-week">Weekly Score</div>
           </div>
 
           <!-- Best Week card -->
@@ -2351,8 +2645,120 @@ footer {
                 <span class="c-peak-label">Peak hour</span>
                 <span class="c-peak-time">8:00 AM – 12:00 PM</span>
               </div>
-              <div class="c-footer">
-                <span class="c-download">Download Data ↓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     FEATURE 4 — Weekly Score showcase
+     "After 7 days, your real schedule becomes visible."
+══════════════════════════════════════ -->
+<section class="feat-section" style="padding-bottom:96px" aria-labelledby="feat4-h">
+  <div class="container">
+    <div class="feat-header reveal">
+      <div class="feat-meta">
+        <div class="feat-label">Your week, in one view</div>
+        <h2 class="feat-h2" id="feat4-h">
+          After 7 days,<br>your real schedule<br>becomes visible.
+        </h2>
+        <a href="app.html" class="feat-more">
+          See your weekly score
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="feat-body">
+        <p>Daily scores tell you about today. Weekly scores reveal the pattern. Which days you're sharpest. Which leak the most. Where 90 hours of your life actually went.</p>
+        <p>Switch between the last 4 weeks in one click. Compare against last week. Find the patterns hiding in plain sight.</p>
+        <p>By Friday, you know what to cut — and what to double down on.</p>
+      </div>
+    </div>
+    <div class="feat-visual reveal">
+      <div class="lp-week-showcase">
+        <div class="lp-week-preview">
+          <div class="c-wrap">
+            <!-- Glass pill selector — last 4 weeks -->
+            <div class="c-steps">
+              <div class="c-step has-data">Apr 27</div>
+              <div class="c-step has-data">May 4</div>
+              <div class="c-step has-data">May 11</div>
+              <div class="c-step active"><span class="c-step-label">May 18 – May 24</span></div>
+            </div>
+            <div class="score-modal-card c-card">
+              <div class="c-header">
+                <div class="c-tabs"><span class="c-tab active">This Week</span></div>
+                <img class="c-header-logo" src="asstes/petals-circle.png" alt="Blinders">
+              </div>
+              <div class="c-hero">
+                <div class="c-hero-label">Where your week went</div>
+                <div class="c-hero-num">
+                  <span class="c-hero-int">90</span><span class="c-hero-dec">.5</span><span class="c-hero-unit">hrs</span>
+                </div>
+                <div class="c-hero-sub">+7h vs last week</div>
+                <div class="c-hero-date">May 18 – May 24</div>
+              </div>
+              <div class="c-panels">
+                <!-- Daily breakdown — capped + centered -->
+                <div class="c-panel c-panel-narrow">
+                  <div class="c-panel-label">
+                    <span>Daily breakdown</span>
+                    <span class="c-panel-meta">Mon – Sun</span>
+                  </div>
+                  <div class="c-week-bars">
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:92%;background:#10b981"></div></div><div class="c-week-bar-label">M</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:78%;background:#10b981"></div></div><div class="c-week-bar-label">T</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:55%;background:#3b82f6"></div></div><div class="c-week-bar-label">W</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:88%;background:#10b981"></div></div><div class="c-week-bar-label">T</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:95%;background:#10b981"></div></div><div class="c-week-bar-label">F</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:32%;background:#ef4444"></div></div><div class="c-week-bar-label">S</div></div>
+                    <div class="c-week-bar empty"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:0%"></div></div><div class="c-week-bar-label">S</div></div>
+                  </div>
+                </div>
+                <!-- Your hours — 28 activities split 14/14 -->
+                <div class="c-panel">
+                  <div class="c-panel-label">
+                    <span>Your hours</span>
+                    <span class="c-panel-meta">28 activities</span>
+                  </div>
+                  <div class="c-cat-cols">
+                    <div class="c-cat-col">
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Building product</span><span class="v">22h</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Customer calls</span><span class="v">9h 30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Marketing</span><span class="v">7h 15m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Sales outreach</span><span class="v">6h</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Investor updates</span><span class="v">5h</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Cofounder sync</span><span class="v">4h 15m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Product strategy</span><span class="v">4h</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>User research</span><span class="v">3h 45m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Hiring</span><span class="v">3h 30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Email</span><span class="v">3h</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Stand-ups</span><span class="v">2h 45m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Pitch deck</span><span class="v">2h 30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Onboarding calls</span><span class="v">2h 15m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Roadmap planning</span><span class="v">2h</span></div>
+                    </div>
+                    <div class="c-cat-col">
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Workout</span><span class="v">1h 45m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Reading</span><span class="v">1h 30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Design review</span><span class="v">1h 30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Walking</span><span class="v">1h 15m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Eating</span><span class="v">1h</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Slack</span><span class="v">1h</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Coffee</span><span class="v">45m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Demo prep</span><span class="v">45m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Office hours</span><span class="v">45m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#FF5A5F"></span>Twitter</span><span class="v">45m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Stretching</span><span class="v">30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#FF5A5F"></span>LinkedIn</span><span class="v">30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#FF5A5F"></span>HackerNews</span><span class="v">30m</span></div>
+                      <div class="c-cat-row"><span class="lbl"><span class="dot" style="background:#ffffff"></span>Advisor call</span><span class="v">15m</span></div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -3666,9 +4072,9 @@ footer {
       b.style.pointerEvents = '';
     });
   }
-  function blindersCheckout(btn, priceId) {
+  function _openPaddleNow(btn, priceId) {
     if (btn) {
-      if (btn.dataset.coLoading === '1') return false;
+      if (btn.dataset.coLoading === '1') return;
       btn.dataset.coLabel = btn.innerHTML;
       btn.dataset.coLoading = '1';
       btn.innerHTML = 'Opening checkout…';
@@ -3677,6 +4083,64 @@ footer {
     }
     Paddle.Checkout.open({ items: [{ priceId: priceId, quantity: 1 }] });
     setTimeout(blindersResetCheckoutBtns, 12000);
+  }
+  function blindersCheckout(btn, priceId) {
+    // On mobile, show the laptop-first warning before opening Paddle.
+    // Soft warning, not a block — the popup has a "Pay on mobile anyway" path.
+    var SKIP_KEY = 'blinders_mco_skip';
+    var isMobile = window.innerWidth <= 768;
+    var skipped = false;
+    try { skipped = !!sessionStorage.getItem(SKIP_KEY); } catch (e) {}
+    if (!isMobile || skipped) {
+      _openPaddleNow(btn, priceId);
+      return false;
+    }
+    var overlay = document.getElementById('mcoOverlay');
+    if (!overlay) {
+      _openPaddleNow(btn, priceId);
+      return false;
+    }
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    var copyBtn = document.getElementById('mcoCopyBtn');
+    var payBtn  = document.getElementById('mcoPayBtn');
+    var closeBtn = document.getElementById('mcoCloseBtn');
+    function cleanup() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      copyBtn.onclick = null; payBtn.onclick = null; closeBtn.onclick = null;
+      overlay.onclick = null;
+    }
+    if (copyBtn) {
+      copyBtn.textContent = 'Copy link';
+      copyBtn.onclick = function () {
+        var url = window.location.origin + window.location.pathname;
+        var done = function () {
+          copyBtn.textContent = 'Copied ✓ — open on your laptop';
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done).catch(fallback);
+        } else { fallback(); }
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = url;
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      };
+    }
+    if (payBtn) {
+      payBtn.onclick = function () {
+        try { sessionStorage.setItem(SKIP_KEY, '1'); } catch (e) {}
+        cleanup();
+        _openPaddleNow(btn, priceId);
+      };
+    }
+    if (closeBtn) closeBtn.onclick = cleanup;
+    overlay.onclick = function (e) { if (e.target === overlay) cleanup(); };
     return false;
   }
   Paddle.Environment.set("production");
@@ -3709,6 +4173,18 @@ footer {
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+
+<!-- ──────────── Mobile checkout warning popup (shown when <768px) ──────────── -->
+<div id="mcoOverlay" class="mco-overlay" role="dialog" aria-modal="true" aria-labelledby="mcoTitle">
+  <div class="mco-card">
+    <button id="mcoCloseBtn" class="mco-close" type="button" aria-label="Close">×</button>
+    <img src="asstes/petals-circle.png" alt="Blinders" class="mco-logo">
+    <h2 id="mcoTitle" class="mco-h">Built for your laptop</h2>
+    <p class="mco-p">Blinders works best on a bigger screen. Open this link on your computer for the full experience — then sign up there.</p>
+    <button id="mcoCopyBtn" class="mco-btn primary" type="button">Copy link</button>
+    <button id="mcoPayBtn" class="mco-link" type="button">Continue checkout on mobile →</button>
+  </div>
+</div>
 
 </body>
 </html>

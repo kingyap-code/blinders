@@ -2456,6 +2456,74 @@
     .c-wrap { position: relative; width: 420px; max-width: 92vw; }
     @media (max-width: 960px) { .c-wrap { width: 380px; } }
     @media (max-width: 500px) { .c-wrap { width: 320px; } }
+
+    /* ---- Weekly modal: wide variant + side-by-side panels ---- */
+    .c-wrap.c-wrap-wide { width: 880px; max-width: 94vw; }
+    @media (max-width: 960px) { .c-wrap.c-wrap-wide { width: 720px; } }
+    @media (max-width: 760px) { .c-wrap.c-wrap-wide { width: 94vw; } }
+
+    .c-panels.c-panels-side {
+      grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .c-panels.c-panels-side { grid-template-columns: 1fr; }
+    }
+
+    /* Daily breakdown stays compact and centered inside the wide weekly modal */
+    .c-wrap-wide .c-panel-narrow {
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    /* Activity list — flows into 2 columns when long */
+    .c-cat-list-multi {
+      column-count: 2;
+      column-gap: 24px;
+      column-rule: 1px solid rgba(255,255,255,0.04);
+    }
+    .c-cat-list-multi .c-cat-row {
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    @media (max-width: 720px) {
+      .c-cat-list-multi { column-count: 1; }
+    }
+
+    /* Even-split 2-column activity list (used when 16+ activities) */
+    .c-cat-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .c-cat-cols .c-cat-col {
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 720px) {
+      .c-cat-cols { grid-template-columns: 1fr; gap: 0; }
+    }
+
+    /* Week-pill selector (mirrors .c-steps glass style, but wider pills) */
+    .c-steps-week .c-step {
+      width: auto;
+      height: 28px;
+      padding: 0 11px;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .c-steps-week .c-step.active {
+      padding: 0 14px;
+    }
+    .c-steps-week .c-step .c-step-label {
+      font-size: 11px;
+    }
     .c-steps {
       display: flex; align-items: center; gap: 6px; justify-content: center;
       background: linear-gradient(160deg, #242424 0%, #131313 100%);
@@ -3260,6 +3328,72 @@
   }
   .strip-action-score:hover {
     background: #2cb87f !important;
+  }
+  .strip-action-week {
+    width: 100% !important;
+    background: transparent !important;
+    border: 0.5px solid rgba(61,220,151,0.55) !important;
+    color: #3DDC97 !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 8px 12px !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+  .strip-action-week:hover {
+    background: rgba(61,220,151,0.10) !important;
+    border-color: rgba(61,220,151,0.85) !important;
+  }
+
+  /* ---- Weekly Score: 7-day bar chart ---- */
+  .c-week-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 6px;
+    height: 110px;
+    padding: 8px 2px 4px;
+  }
+  .c-week-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    cursor: default;
+  }
+  .c-week-bar-track {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .c-week-bar-fill {
+    width: 100%;
+    background: #3DDC97;
+    border-radius: 4px;
+    transition: height .45s ease;
+    min-height: 0;
+  }
+  .c-week-bar.empty .c-week-bar-fill {
+    background: rgba(255,255,255,0.10);
+  }
+  .c-week-bar.today .c-week-bar-track {
+    box-shadow: 0 0 0 1px rgba(61,220,151,0.35) inset;
+  }
+  .c-week-bar-label {
+    font-size: 11px;
+    color: var(--text-muted, #a1a1a8);
+    line-height: 1;
+  }
+  .c-week-bar.today .c-week-bar-label {
+    color: #3DDC97;
+    font-weight: 600;
   }
 
   /* ---- Scrollable body ---- */
@@ -5322,9 +5456,144 @@
     color: #3DDC97;
     font-weight: 600;
   }
+
+  /* ──────────── Mobile splash (Blinders is built for laptop) ──────────── */
+  .mobile-block {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #0D0D0D;
+    z-index: 100000;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mobile-block-card {
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+  }
+  .mobile-block-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    display: block;
+    object-fit: cover;
+  }
+  .mobile-block h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+  .mobile-block p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: #a1a1a8;
+    margin: 0 0 24px;
+  }
+  .mobile-block-btn {
+    display: block;
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    margin-top: 10px;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+  .mobile-block-btn.primary {
+    background: #3DDC97;
+    color: #0F0F10;
+    border: none;
+  }
+  .mobile-block-btn.primary:active { background: #2cb87f; }
+  .mobile-block-link {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 13px;
+    color: #a1a1a8;
+    text-decoration: none;
+    padding: 6px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .mobile-block-link:active { color: #ffffff; }
+  @media (max-width: 768px) {
+    body.has-mobile-block { overflow: hidden; }
+    body.has-mobile-block .mobile-block { display: flex; }
+  }
   </style>
 </head>
 <body class="onboarding">
+
+<!-- ──────────── Mobile splash: encourages laptop use, not a hard block ──────────── -->
+<div id="mobileBlock" class="mobile-block" role="dialog" aria-modal="true" aria-labelledby="mobileBlockTitle">
+  <div class="mobile-block-card">
+    <img src="asstes/petals-circle.png" alt="Blinders" class="mobile-block-logo">
+    <h2 id="mobileBlockTitle">Best on your laptop</h2>
+    <p>Blinders is built for tracking your full work day — interval alarms, hourly logging, weekly review. It works best on a bigger screen.</p>
+    <button id="mobileCopyBtn" class="mobile-block-btn primary" type="button">Copy link</button>
+    <button id="mobileContinueBtn" class="mobile-block-link" type="button">Continue on mobile anyway →</button>
+  </div>
+</div>
+
+<script>
+  // Mobile splash controller — shows when viewport <768px, dismissible per session.
+  (function () {
+    var KEY = 'blinders_mobile_dismissed';
+    function maybeShow() {
+      if (window.innerWidth > 768) return;
+      if (sessionStorage.getItem(KEY)) return;
+      document.body.classList.add('has-mobile-block');
+    }
+    function wire() {
+      var copyBtn = document.getElementById('mobileCopyBtn');
+      var contBtn = document.getElementById('mobileContinueBtn');
+      if (contBtn) contBtn.addEventListener('click', function () {
+        try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+        document.body.classList.remove('has-mobile-block');
+      });
+      if (copyBtn) copyBtn.addEventListener('click', function () {
+        var url = window.location.href;
+        var done = function () {
+          copyBtn.textContent = 'Copied ✓';
+          setTimeout(function () { copyBtn.textContent = 'Copy link'; }, 2000);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done).catch(fallback);
+        } else { fallback(); }
+        function fallback() {
+          var ta = document.createElement('textarea');
+          ta.value = url;
+          ta.style.position = 'fixed'; ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      });
+    }
+    maybeShow();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', wire);
+    } else { wire(); }
+  })();
+</script>
+
 <script>
   // Anti-flash: body starts with .onboarding class so the existing CSS hides the
   // app shell. For returning users (already onboarded, or has tracker data),
@@ -8944,6 +9213,272 @@ function openScoreModal() {
   overlay.addEventListener('click', e => { if (e.target === overlay) closeScore(); });
 }
 
+// ================================================================
+// WEEKLY SCORE MODAL
+// Mirrors openScoreModal styling. Shows: total hours, week-over-week
+// delta, 7-day bar chart (Mon–Sun), and activities list (hours + %).
+// ================================================================
+
+function openWeekModal() {
+  if (!_isPro()) { openUpgradeModal(); return; }
+  document.getElementById('weekModalOverlay')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'weekModalOverlay';
+  overlay.className = 'notes-popup-overlay';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', 'Weekly Score');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'c-wrap';
+  overlay.appendChild(wrap);
+
+  const interval = state.interval || 15;
+  const todayDate = todayStr();
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const fmtShort = d => `${monthNames[d.getMonth()]} ${d.getDate()}`;
+
+  function getMondayOf(dateStr) {
+    const d = _parseDate(dateStr);
+    const dow = d.getDay();
+    const off = dow === 0 ? -6 : 1 - dow;
+    const m = new Date(d);
+    m.setDate(d.getDate() + off);
+    return m;
+  }
+  function addDays(d, n) {
+    const x = new Date(d);
+    x.setDate(d.getDate() + n);
+    return x;
+  }
+  function loadWeekRows(startDate) {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(startDate, i);
+      const ds = _fmtDate(d);
+      let rows;
+      if (ds === state.date) {
+        rows = state.rows;
+      } else {
+        const raw = localStorage.getItem(storageKey(ds));
+        if (raw) {
+          try { rows = JSON.parse(raw).rows || []; } catch { rows = []; }
+        } else { rows = []; }
+      }
+      days.push({ date: ds, rows });
+    }
+    return days;
+  }
+
+  // 3-color tier system: green (high) / blue (medium) / red (low).
+  const barColor = (score) => {
+    if (score >= 70) return '#10b981'; // high
+    if (score >= 40) return '#3b82f6'; // medium
+    return '#ef4444';                   // low
+  };
+
+  const todayMon = getMondayOf(todayDate);
+  const initialMonday = getMondayOf(state.date);
+
+  function renderWeekContent(monday) {
+    const prevMonday = addDays(monday, -7);
+    const thisWeek = loadWeekRows(monday);
+    const lastWeek = loadWeekRows(prevMonday);
+
+    const dayCounts = thisWeek.map(d => d.rows.filter(r => r.category).length);
+    const totalSlots = dayCounts.reduce((a, b) => a + b, 0);
+    const lastWeekSlots = lastWeek.reduce(
+      (acc, d) => acc + d.rows.filter(r => r.category).length, 0
+    );
+
+    const totalHours = (totalSlots * interval) / 60;
+    const lastWeekHours = (lastWeekSlots * interval) / 60;
+    const deltaHours = totalHours - lastWeekHours;
+
+    // Activity aggregation across the 7 days
+    const actAgg = {};
+    thisWeek.forEach(day => {
+      day.rows.forEach(r => {
+        const raw = (r.activity || '').trim();
+        if (!raw && !r.category) return;
+        const key = raw ? raw.toLowerCase() : `__cat__${r.category}`;
+        const display = raw || r.category;
+        if (!actAgg[key]) {
+          actAgg[key] = { display, category: r.category || '', count: 0 };
+        }
+        actAgg[key].count++;
+      });
+    });
+    const actEntries = Object.values(actAgg)
+      .map(a => ({
+        name: a.display,
+        minutes: a.count * interval,
+        color: a.category === 'Distracted' ? '#FF5A5F' : '#ffffff'
+      }))
+      .sort((a, b) => b.minutes - a.minutes);
+    const numActs = actEntries.length;
+
+    const rowHTML = a =>
+      `<div class="c-cat-row"><span class="lbl"><span class="dot" style="background:${a.color}"></span>${_esc(a.name)}</span><span class="v">${fmtMin(a.minutes)}</span></div>`;
+
+    // 7-day bars — green/blue/red only
+    const dayScores = thisWeek.map(d => dailyScoreForDate(d.date));
+    const dayNamesFull = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const dayLabels = ['M','T','W','T','F','S','S'];
+    let barsHTML = '';
+    for (let i = 0; i < 7; i++) {
+      const ds = thisWeek[i].date;
+      const c = dayCounts[i];
+      const score = dayScores[i];
+      const pct = score > 0 ? Math.max(6, Math.round(score)) : 0;
+      const color = score > 0 ? barColor(score) : null;
+      const classes = ['c-week-bar'];
+      if (c === 0) classes.push('empty');
+      if (ds === todayDate) classes.push('today');
+      const fillStyle = `height:${pct}%${color ? `;background:${color}` : ''}`;
+      const tip = c > 0
+        ? `${dayNamesFull[i]} · ${fmtMin(c * interval)} logged · ${Math.round(score)}% score`
+        : `${dayNamesFull[i]} · no logs`;
+      barsHTML += `
+        <div class="${classes.join(' ')}" title="${tip}">
+          <div class="c-week-bar-track">
+            <div class="c-week-bar-fill" style="${fillStyle}"></div>
+          </div>
+          <div class="c-week-bar-label">${dayLabels[i]}</div>
+        </div>`;
+    }
+
+    // Hero number — H.D format
+    const heroInt = Math.floor(totalHours);
+    const heroDec = '.' + totalHours.toFixed(1).split('.')[1];
+
+    // Delta line
+    let deltaText;
+    if (lastWeekSlots === 0 && totalSlots === 0) {
+      deltaText = 'Log this week to see your trend';
+    } else if (lastWeekSlots === 0) {
+      deltaText = 'First tracked week — keep going';
+    } else {
+      const sign = deltaHours >= 0 ? '+' : '−';
+      const abs = Math.abs(deltaHours).toFixed(1).replace(/\.0$/, '');
+      deltaText = `${sign}${abs}h vs last week`;
+    }
+
+    const sunday = addDays(monday, 6);
+    const rangeLabel = `${fmtShort(monday)} – ${fmtShort(sunday)}`;
+
+    // Adaptive layout: ≥16 activities → wide modal + even half/half split.
+    // ≤15 → narrow modal + single-col list. Even split avoids the 14+1 look
+    // CSS columns produce when content heights differ.
+    const useWide = numActs >= 16;
+    wrap.classList.toggle('c-wrap-wide', useWide);
+
+    let activitiesHTML;
+    if (numActs === 0) {
+      activitiesHTML = '<div style="font-size:12px;color:var(--text-muted);font-style:italic">Nothing logged this week yet</div>';
+    } else if (useWide) {
+      const half = Math.ceil(numActs / 2);
+      const left = actEntries.slice(0, half).map(rowHTML).join('');
+      const right = actEntries.slice(half).map(rowHTML).join('');
+      activitiesHTML = `<div class="c-cat-cols"><div class="c-cat-col">${left}</div><div class="c-cat-col">${right}</div></div>`;
+    } else {
+      activitiesHTML = actEntries.map(rowHTML).join('');
+    }
+
+    // Week-pill selector — 4 most recent weeks ending at the current week.
+    // Active pill shows full range; inactive pills show just the Monday date.
+    const mondayKey = _fmtDate(monday);
+    const todayMonKey = _fmtDate(todayMon);
+    let pillsHTML = '';
+    for (let i = 3; i >= 0; i--) {
+      const m = addDays(todayMon, -7 * i);
+      const ms = _fmtDate(m);
+      const sun = addDays(m, 6);
+      const isActive = ms === mondayKey;
+      const isCurrent = ms === todayMonKey;
+      let hasData = false;
+      for (let k = 0; k < 7; k++) {
+        if (_hasData(_fmtDate(addDays(m, k)))) { hasData = true; break; }
+      }
+      const classes = ['c-step'];
+      if (isActive) classes.push('active');
+      if (hasData && !isActive) classes.push('has-data');
+      const label = isActive
+        ? `<span class="c-step-label">${isCurrent ? 'This week' : `${fmtShort(m)} – ${fmtShort(sun)}`}</span>`
+        : fmtShort(m);
+      pillsHTML += `<div class="${classes.join(' ')}" data-week-mon="${ms}">${label}</div>`;
+    }
+
+    // Logo
+    const logoEl = document.querySelector('.header-logo-img');
+    const logoSrc = logoEl ? logoEl.src : '';
+    const logoHTML = logoSrc ? `<img class="c-header-logo" src="${logoSrc}" alt="Blinders">` : '';
+
+    wrap.innerHTML = `
+      <div class="c-steps c-steps-week">${pillsHTML}</div>
+      <div class="score-modal-card c-card">
+        <div class="c-header">
+          <div class="c-tabs"><span class="c-tab active">This Week</span></div>
+          ${logoHTML}
+        </div>
+        <div class="c-hero">
+          <div class="c-hero-label">Where your week went</div>
+          <div class="c-hero-num">
+            <span class="c-hero-int">${heroInt}</span><span class="c-hero-dec">${heroDec}</span><span class="c-hero-unit">hrs</span>
+          </div>
+          <div class="c-hero-sub">${deltaText}</div>
+          <div class="c-hero-date">${rangeLabel}</div>
+        </div>
+        <div class="c-panels">
+          <div class="c-panel${useWide ? ' c-panel-narrow' : ''}">
+            <div class="c-panel-label">
+              <span>Daily breakdown</span>
+              <span class="c-panel-meta">Mon – Sun</span>
+            </div>
+            <div class="c-week-bars">${barsHTML}</div>
+          </div>
+          <div class="c-panel">
+            <div class="c-panel-label">
+              <span>Your hours</span>
+              <span class="c-panel-meta">${numActs} ${numActs === 1 ? 'activity' : 'activities'}</span>
+            </div>
+            ${activitiesHTML}
+          </div>
+        </div>
+        <div class="c-footer"><button class="c-download">Download Data ↓</button></div>
+      </div>
+    `;
+
+    // Wire pill clicks → re-render with new week
+    wrap.querySelectorAll('.c-step[data-week-mon]').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const ms = pill.dataset.weekMon;
+        if (ms === _fmtDate(monday)) return;
+        renderWeekContent(_parseDate(ms));
+      });
+    });
+
+    // Wire Download Data → exports the currently viewed week as a CSV
+    wrap.querySelector('.c-download')?.addEventListener('click', () => {
+      exportWeekCSV(monday);
+    });
+  }
+
+  renderWeekContent(initialMonday);
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => overlay.classList.add('open'));
+
+  const closeWeek = () => {
+    overlay.classList.remove('open');
+    document.removeEventListener('keydown', escHandler);
+    setTimeout(() => overlay.remove(), 200);
+  };
+  const escHandler = e => { if (e.key === 'Escape') closeWeek(); };
+  document.addEventListener('keydown', escHandler);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeWeek(); });
+}
+
 function exportCSV(dateStr) {
   // Pro gate (belt-and-suspenders — the modal that calls this is also gated).
   const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
@@ -9024,6 +9559,138 @@ function exportCSV(dateStr) {
   const a = document.createElement('a');
   a.href = url;
   a.download = `blinders-${targetDate}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ================================================================
+// WEEK CSV EXPORT
+// Mirrors exportCSV but spans all 7 days of the week starting at
+// `monday`. CSV layout: header, daily summary, detailed rows with
+// a Day column, then category totals across the whole week.
+// ================================================================
+
+function exportWeekCSV(monday) {
+  const isPro = !window.BlindersPlan || window.BlindersPlan.isPro();
+  if (!isPro) { openUpgradeModal(); return; }
+
+  const interval = state.interval || 15;
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  function addDays(d, n) {
+    const x = new Date(d);
+    x.setDate(d.getDate() + n);
+    return x;
+  }
+
+  // Load all 7 days for the target week.
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(monday, i);
+    const ds = _fmtDate(d);
+    let rows;
+    if (ds === state.date) {
+      rows = state.rows;
+    } else {
+      const raw = localStorage.getItem(storageKey(ds));
+      if (raw) {
+        try { rows = JSON.parse(raw).rows || []; } catch { rows = []; }
+      } else { rows = []; }
+    }
+    days.push({ date: ds, dateObj: d, name: dayNames[i], rows });
+  }
+
+  const esc = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+  const fmt12h = t => {
+    if (!t) return '';
+    const m = /^(\d{1,2}):(\d{2})$/.exec(t);
+    if (!m) return t;
+    let h = parseInt(m[1], 10);
+    const min = m[2];
+    const ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; if (h === 0) h = 12;
+    return `${h}:${min} ${ap}`;
+  };
+  const fmtDuration = mins => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h === 0) return `${m}m`;
+    if (m === 0) return `${h}h`;
+    return `${h}h ${m}m`;
+  };
+
+  const PROD_CATS = new Set(['Deep Work','Learning','Movement']);
+  let totalSlots = 0, prodSlots = 0;
+  const catTotals = {};
+  days.forEach(day => {
+    day.rows.forEach(r => {
+      if (r.category) {
+        totalSlots++;
+        if (PROD_CATS.has(r.category)) prodSlots++;
+        catTotals[r.category] = (catTotals[r.category] || 0) + interval;
+      }
+    });
+  });
+  const productivityPct = totalSlots > 0 ? Math.round((prodSlots / totalSlots) * 100) : 0;
+  const totalMin = totalSlots * interval;
+  const catTotalRows = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+
+  const sunday = addDays(monday, 6);
+  const rangeLabel = `${monthNames[monday.getMonth()]} ${monday.getDate()} – ${monthNames[sunday.getMonth()]} ${sunday.getDate()}, ${sunday.getFullYear()}`;
+
+  const lines = [];
+  lines.push([esc('Week'), esc(rangeLabel)].join(','));
+  lines.push([esc('Total tracked'), esc(fmtDuration(totalMin))].join(','));
+  lines.push([esc('Productivity'), esc(`${productivityPct}%`)].join(','));
+  lines.push('');
+
+  // Per-day summary
+  lines.push(esc('Daily Summary'));
+  lines.push(['Day','Date','Hours Tracked','Score'].join(','));
+  days.forEach(d => {
+    const dayMin = d.rows.filter(r => r.category).length * interval;
+    const score = Math.round(dailyScoreForDate(d.date));
+    lines.push([
+      esc(d.name),
+      esc(d.date),
+      esc(fmtDuration(dayMin)),
+      esc(`${score}%`)
+    ].join(','));
+  });
+  lines.push('');
+
+  // Detailed rows across the week
+  lines.push(['Day','Date','Time','Activity','Category','Energy'].join(','));
+  days.forEach(d => {
+    d.rows.forEach(r => {
+      if (!r.activity && !r.category && !r.energy) return;
+      lines.push([
+        esc(d.name),
+        esc(d.date),
+        esc(fmt12h(r.time)),
+        esc(r.activity),
+        esc(r.category),
+        esc(r.energy),
+      ].join(','));
+    });
+  });
+
+  if (catTotalRows.length > 0) {
+    lines.push('');
+    lines.push(esc('Category Totals (Week)'));
+    catTotalRows.forEach(([cat, mins]) => {
+      lines.push([esc(cat), esc(fmtDuration(mins))].join(','));
+    });
+  }
+
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `blinders-week-${_fmtDate(monday)}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -9445,6 +10112,9 @@ function init() {
   // Score modal
   document.getElementById('scoreBtn').addEventListener('click', openScoreModal);
 
+  // Weekly Score modal
+  document.getElementById('weekBtn')?.addEventListener('click', openWeekModal);
+
   // Weekly sidebar
   document.getElementById('weeklyBtn')?.addEventListener('click', openWeeklySidebar);
   document.getElementById('weeklySidebarClose').addEventListener('click', closeWeeklySidebar);
@@ -9476,7 +10146,8 @@ function init() {
     if (e.key === 't' || e.key === 'T') { e.preventDefault(); scrollToCurrent(); }
     if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFocusMode(); }
     if (e.key === 'e' || e.key === 'E') { e.preventDefault(); openScoreModal(); }
-    if (e.key === '?') { e.preventDefault(); showToast('⌨ T = scroll to now  ·  F = focus mode  ·  E = score  ·  ? = shortcuts', 5500); }
+    if (e.key === 'w' || e.key === 'W') { e.preventDefault(); openWeekModal(); }
+    if (e.key === '?') { e.preventDefault(); showToast('⌨ T = scroll to now  ·  F = focus mode  ·  E = today  ·  W = week  ·  ? = shortcuts', 5500); }
   });
 
   // Daily focus prompt — once per day
@@ -10814,6 +11485,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <div class="strip-action-btns">
     <button class="focus-mode-btn strip-action-focus" id="focusModeBtn" title="Focus mode (F)">Focus</button>
     <button class="score-btn strip-action-score" id="scoreBtn">Today's Score</button>
+    <button class="score-btn strip-action-week" id="weekBtn" title="Weekly Score (W)">Weekly Score</button>
   </div>
 
   <!-- Scrollable content -->
