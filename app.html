@@ -3395,6 +3395,37 @@
     color: #3DDC97;
     font-weight: 600;
   }
+  /* ── Color-matched outer glow + pixie dust on each bar (matches landing page).
+     --dust-color is set inline per bar in renderWeekContent(). Clipped by the
+     track's overflow:hidden so dust shimmers inside the bar shape. 6 sparkles
+     per bar, staggered 0.5s between bars so they don't pulse in sync. */
+  .c-week-bar { --dust-color: transparent; position: relative; }
+  .c-week-bar-track::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle 1.2px at 25% 78%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.4px at 65% 55%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.6px at 45% 30%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.0px at 80% 75%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.5px at 15% 45%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.1px at 60% 15%, var(--dust-color), transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+    animation: c-pixie-drift 3.6s ease-in-out infinite;
+  }
+  .c-week-bar:nth-child(2) .c-week-bar-track::before { animation-delay: -0.5s; }
+  .c-week-bar:nth-child(3) .c-week-bar-track::before { animation-delay: -1.0s; }
+  .c-week-bar:nth-child(4) .c-week-bar-track::before { animation-delay: -1.6s; }
+  .c-week-bar:nth-child(5) .c-week-bar-track::before { animation-delay: -2.2s; }
+  .c-week-bar:nth-child(6) .c-week-bar-track::before { animation-delay: -2.8s; }
+  .c-week-bar:nth-child(7) .c-week-bar-track::before { animation-delay: -3.2s; }
+  .c-week-bar.empty .c-week-bar-track::before { display: none; }
+  @keyframes c-pixie-drift {
+    0%, 100% { transform: translateY(2px); opacity: 0.25; }
+    50%      { transform: translateY(-3px); opacity: 0.7; }
+  }
 
   /* ---- Scrollable body ---- */
   .strip-scroll-body {
@@ -9336,12 +9367,16 @@ function openWeekModal() {
       const classes = ['c-week-bar'];
       if (c === 0) classes.push('empty');
       if (ds === todayDate) classes.push('today');
-      const fillStyle = `height:${pct}%${color ? `;background:${color}` : ''}`;
+      // Color-matched outer glow (two-layer) + --dust-color for the pixie-dust
+      // pseudo-element. Empty bars get neither (handled by .empty rule in CSS).
+      const glow = color ? `;box-shadow:0 0 12px ${color}55, 0 0 4px ${color}88` : '';
+      const fillStyle = `height:${pct}%${color ? `;background:${color}` : ''}${glow}`;
+      const barStyle = color ? ` style="--dust-color:${color}"` : '';
       const tip = c > 0
         ? `${dayNamesFull[i]} · ${fmtMin(c * interval)} logged · ${Math.round(score)}% score`
         : `${dayNamesFull[i]} · no logs`;
       barsHTML += `
-        <div class="${classes.join(' ')}" title="${tip}">
+        <div class="${classes.join(' ')}"${barStyle} title="${tip}">
           <div class="c-week-bar-track">
             <div class="c-week-bar-fill" style="${fillStyle}"></div>
           </div>

@@ -420,8 +420,113 @@ body {
   border: 1px solid var(--border);
   background: var(--card);
   position: relative;
-  z-index: 1;
+  z-index: 2; /* sit above .hero-video-dust (z:1) and the ::after gradient (z:0) */
   cursor: pointer;
+}
+
+/* ── Pixie dust over the hero video's green fade gradient. Sibling of the
+   video so it doesn't intercept clicks (pointer-events:none). Sits between
+   the gradient (z:0) and the video (z:2). 20 scattered green sparkles with
+   a slow drift + fade loop. Gradient ::after is intentionally untouched. */
+.hero-video-dust {
+  position: absolute;
+  top: 0;
+  bottom: -108px;
+  left: -25%;
+  right: -25%;
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    /* Bottom band (densest, where gradient is strongest) */
+    radial-gradient(circle 1.5px at 4%  94%, rgba(168,240,208,0.8),  transparent 70%),
+    radial-gradient(circle 1.2px at 6%  92%, rgba(122,229,176,0.75), transparent 70%),
+    radial-gradient(circle 1.8px at 9%  86%, rgba(61,220,151,0.7),   transparent 70%),
+    radial-gradient(circle 1.0px at 12% 95%, rgba(168,240,208,0.55), transparent 70%),
+    radial-gradient(circle 1.6px at 14% 78%, rgba(61,220,151,0.7),   transparent 70%),
+    radial-gradient(circle 1.3px at 17% 90%, rgba(122,229,176,0.7),  transparent 70%),
+    radial-gradient(circle 1.7px at 19% 84%, rgba(168,240,208,0.7),  transparent 70%),
+    radial-gradient(circle 1.1px at 22% 92%, rgba(61,220,151,0.65),  transparent 70%),
+    radial-gradient(circle 1.4px at 25% 88%, rgba(122,229,176,0.75), transparent 70%),
+    radial-gradient(circle 1.2px at 28% 94%, rgba(61,220,151,0.6),   transparent 70%),
+    radial-gradient(circle 1.5px at 31% 82%, rgba(168,240,208,0.7),  transparent 70%),
+    radial-gradient(circle 1.0px at 34% 90%, rgba(122,229,176,0.55), transparent 70%),
+    radial-gradient(circle 1.6px at 37% 86%, rgba(61,220,151,0.7),   transparent 70%),
+    radial-gradient(circle 1.3px at 40% 93%, rgba(168,240,208,0.75), transparent 70%),
+    radial-gradient(circle 1.7px at 43% 80%, rgba(122,229,176,0.7),  transparent 70%),
+    radial-gradient(circle 1.1px at 46% 88%, rgba(61,220,151,0.6),   transparent 70%),
+    radial-gradient(circle 1.5px at 49% 95%, rgba(168,240,208,0.65), transparent 70%),
+    radial-gradient(circle 1.2px at 52% 84%, rgba(122,229,176,0.7),  transparent 70%),
+    radial-gradient(circle 1.8px at 55% 90%, rgba(61,220,151,0.75),  transparent 70%),
+    radial-gradient(circle 1.0px at 58% 78%, rgba(168,240,208,0.5),  transparent 70%),
+    radial-gradient(circle 1.4px at 61% 92%, rgba(122,229,176,0.7),  transparent 70%),
+    radial-gradient(circle 1.3px at 64% 86%, rgba(61,220,151,0.65),  transparent 70%),
+    radial-gradient(circle 1.6px at 67% 94%, rgba(168,240,208,0.75), transparent 70%),
+    radial-gradient(circle 1.1px at 70% 82%, rgba(122,229,176,0.6),  transparent 70%),
+    radial-gradient(circle 1.5px at 73% 88%, rgba(61,220,151,0.7),   transparent 70%),
+    radial-gradient(circle 1.2px at 76% 95%, rgba(168,240,208,0.65), transparent 70%),
+    radial-gradient(circle 1.7px at 79% 80%, rgba(122,229,176,0.75), transparent 70%),
+    radial-gradient(circle 1.0px at 82% 90%, rgba(61,220,151,0.55),  transparent 70%),
+    radial-gradient(circle 1.4px at 85% 84%, rgba(168,240,208,0.7),  transparent 70%),
+    radial-gradient(circle 1.3px at 88% 92%, rgba(122,229,176,0.7),  transparent 70%),
+    radial-gradient(circle 1.6px at 91% 86%, rgba(61,220,151,0.7),   transparent 70%),
+    radial-gradient(circle 1.1px at 94% 94%, rgba(168,240,208,0.65), transparent 70%),
+    radial-gradient(circle 1.5px at 97% 88%, rgba(122,229,176,0.75), transparent 70%),
+    /* Middle band */
+    radial-gradient(circle 1.2px at 3%  70%, rgba(61,220,151,0.55),  transparent 70%),
+    radial-gradient(circle 1.4px at 8%  62%, rgba(122,229,176,0.6),  transparent 70%),
+    radial-gradient(circle 1.0px at 13% 56%, rgba(168,240,208,0.5),  transparent 70%),
+    radial-gradient(circle 1.5px at 18% 68%, rgba(61,220,151,0.6),   transparent 70%),
+    radial-gradient(circle 1.3px at 23% 60%, rgba(122,229,176,0.55), transparent 70%),
+    radial-gradient(circle 1.6px at 28% 72%, rgba(168,240,208,0.65), transparent 70%),
+    radial-gradient(circle 1.1px at 33% 54%, rgba(61,220,151,0.5),   transparent 70%),
+    radial-gradient(circle 1.4px at 38% 66%, rgba(122,229,176,0.6),  transparent 70%),
+    radial-gradient(circle 1.2px at 43% 58%, rgba(168,240,208,0.55), transparent 70%),
+    radial-gradient(circle 1.7px at 48% 70%, rgba(61,220,151,0.65),  transparent 70%),
+    radial-gradient(circle 1.0px at 53% 52%, rgba(122,229,176,0.45), transparent 70%),
+    radial-gradient(circle 1.5px at 58% 64%, rgba(168,240,208,0.6),  transparent 70%),
+    radial-gradient(circle 1.3px at 63% 72%, rgba(61,220,151,0.6),   transparent 70%),
+    radial-gradient(circle 1.6px at 68% 56%, rgba(122,229,176,0.55), transparent 70%),
+    radial-gradient(circle 1.1px at 73% 68%, rgba(168,240,208,0.5),  transparent 70%),
+    radial-gradient(circle 1.4px at 78% 60%, rgba(61,220,151,0.6),   transparent 70%),
+    radial-gradient(circle 1.2px at 83% 72%, rgba(122,229,176,0.55), transparent 70%),
+    radial-gradient(circle 1.5px at 88% 54%, rgba(168,240,208,0.5),  transparent 70%),
+    radial-gradient(circle 1.0px at 93% 66%, rgba(61,220,151,0.45),  transparent 70%),
+    radial-gradient(circle 1.3px at 97% 58%, rgba(122,229,176,0.55), transparent 70%),
+    /* Upper-middle / top band (sparser, gradient is weakest here) */
+    radial-gradient(circle 1.2px at 5%  44%, rgba(168,240,208,0.45), transparent 70%),
+    radial-gradient(circle 1.0px at 12% 38%, rgba(61,220,151,0.4),   transparent 70%),
+    radial-gradient(circle 1.4px at 19% 46%, rgba(122,229,176,0.5),  transparent 70%),
+    radial-gradient(circle 1.1px at 26% 32%, rgba(168,240,208,0.4),  transparent 70%),
+    radial-gradient(circle 1.3px at 33% 42%, rgba(61,220,151,0.45),  transparent 70%),
+    radial-gradient(circle 1.5px at 40% 36%, rgba(122,229,176,0.45), transparent 70%),
+    radial-gradient(circle 1.0px at 47% 44%, rgba(168,240,208,0.4),  transparent 70%),
+    radial-gradient(circle 1.2px at 54% 30%, rgba(61,220,151,0.35),  transparent 70%),
+    radial-gradient(circle 1.4px at 61% 42%, rgba(122,229,176,0.45), transparent 70%),
+    radial-gradient(circle 1.1px at 68% 34%, rgba(168,240,208,0.4),  transparent 70%),
+    radial-gradient(circle 1.3px at 75% 44%, rgba(61,220,151,0.45),  transparent 70%),
+    radial-gradient(circle 1.5px at 82% 36%, rgba(122,229,176,0.5),  transparent 70%),
+    radial-gradient(circle 1.0px at 89% 42%, rgba(168,240,208,0.4),  transparent 70%),
+    radial-gradient(circle 1.2px at 95% 32%, rgba(61,220,151,0.35),  transparent 70%),
+    /* Very top (faintest, just a few stragglers) */
+    radial-gradient(circle 1.0px at 15% 22%, rgba(122,229,176,0.3),  transparent 70%),
+    radial-gradient(circle 1.1px at 32% 18%, rgba(168,240,208,0.32), transparent 70%),
+    radial-gradient(circle 1.0px at 49% 24%, rgba(61,220,151,0.28),  transparent 70%),
+    radial-gradient(circle 1.2px at 66% 18%, rgba(122,229,176,0.3),  transparent 70%),
+    radial-gradient(circle 1.0px at 83% 22%, rgba(168,240,208,0.28), transparent 70%),
+    /* Extra fill to hit exactly 4× the original 20 = 80 sparkles total */
+    radial-gradient(circle 1.3px at 7%  76%, rgba(168,240,208,0.55), transparent 70%),
+    radial-gradient(circle 1.1px at 21% 50%, rgba(61,220,151,0.5),   transparent 70%),
+    radial-gradient(circle 1.4px at 36% 76%, rgba(122,229,176,0.55), transparent 70%),
+    radial-gradient(circle 1.2px at 51% 48%, rgba(168,240,208,0.45), transparent 70%),
+    radial-gradient(circle 1.5px at 65% 76%, rgba(61,220,151,0.55),  transparent 70%),
+    radial-gradient(circle 1.1px at 78% 50%, rgba(122,229,176,0.5),  transparent 70%),
+    radial-gradient(circle 1.3px at 91% 76%, rgba(168,240,208,0.55), transparent 70%),
+    radial-gradient(circle 1.0px at 99% 50%, rgba(61,220,151,0.4),   transparent 70%);
+  animation: hero-dust-drift 5s ease-in-out infinite;
+}
+@keyframes hero-dust-drift {
+  0%, 100% { transform: translateY(3px);  opacity: 0.55; }
+  50%      { transform: translateY(-4px); opacity: 0.95; }
 }
 
 
@@ -1895,6 +2000,39 @@ footer {
       0 2px 6px rgba(0,0,0,0.4);
     width: auto; padding: 0 12px; border-radius: 999px;
   }
+  /* Re-enable pointer events on the day pills (lp-score-preview wrapper has
+     pointer-events:none as a non-interactive showcase) so clicks reach the
+     handlers. Also enable cursor/hover styling. */
+  .lp-score-preview .c-steps,
+  .lp-score-preview .c-step { pointer-events: auto; }
+  .lp-score-preview .c-step:not(.active) {
+    cursor: pointer;
+    transition: color 140ms ease, background 140ms ease;
+  }
+  .lp-score-preview .c-step:not(.active):hover {
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.06);
+  }
+  /* Festival-lights chase across the 7 day pills (skips the active day). */
+  .lp-score-preview .c-step:not(.active) {
+    animation: lp-day-chase 7s ease-in-out infinite;
+  }
+  .lp-score-preview .c-steps .c-step:nth-child(1) { animation-delay: 0s;   }
+  .lp-score-preview .c-steps .c-step:nth-child(2) { animation-delay: 1s;   }
+  .lp-score-preview .c-steps .c-step:nth-child(3) { animation-delay: 2s;   }
+  .lp-score-preview .c-steps .c-step:nth-child(4) { animation-delay: 3s;   }
+  .lp-score-preview .c-steps .c-step:nth-child(5) { animation-delay: 4s;   }
+  .lp-score-preview .c-steps .c-step:nth-child(6) { animation-delay: 5s;   }
+  .lp-score-preview .c-steps .c-step:nth-child(7) { animation-delay: 6s;   }
+  @keyframes lp-day-chase {
+    /* 7 pill slots × 1s each in a 7s cycle. Each pill lit during ~3–12%
+       of its own timeline (~0.6s), dark for the remaining ~6.4s until
+       its turn comes round again. Strictly one at a time. */
+    0%        { background: transparent;             color: var(--text-muted); }
+    3%, 12%   { background: rgba(255,255,255,0.06);  color: var(--text-secondary); }
+    16%, 100% { background: transparent;             color: var(--text-muted); }
+  }
+  .lp-score-preview .c-step:not(.active):hover { animation: none; }
   .lp-score-preview .c-card { padding-top: 30px; }
   .lp-score-preview .c-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
   .lp-score-preview .c-tabs { display: flex; align-items: baseline; gap: 16px; }
@@ -2042,6 +2180,41 @@ footer {
       0 2px 6px rgba(0,0,0,0.4);
     padding: 0 14px;
   }
+  /* Clickable non-active pills (swap the week shown in the preview card).
+     The wrapping .lp-week-preview has pointer-events:none for the rest of
+     the card (it's a non-interactive showcase), so we re-enable it just on
+     the pill bar so clicks actually reach the handlers. */
+  .lp-week-preview .c-steps,
+  .lp-week-preview .c-step { pointer-events: auto; }
+  .lp-week-preview .c-step:not(.active) {
+    cursor: pointer;
+    transition: color 140ms ease, background 140ms ease;
+  }
+  .lp-week-preview .c-step:not(.active):hover {
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.04);
+  }
+  /* ── "Festival lights" chase on the inactive pills. Each pill briefly
+     adopts the hover style in sequence, then fades back. Signals "these
+     are clickable" without the user needing to hover. The active pill is
+     excluded via :not(.active) so it never gets the chase styling. */
+  .lp-week-preview .c-step:not(.active) {
+    animation: lp-pill-chase 6s ease-in-out infinite;
+  }
+  .lp-week-preview .c-steps .c-step:nth-child(1) { animation-delay: 0s;   }
+  .lp-week-preview .c-steps .c-step:nth-child(2) { animation-delay: 1.5s; }
+  .lp-week-preview .c-steps .c-step:nth-child(3) { animation-delay: 3s;   }
+  .lp-week-preview .c-steps .c-step:nth-child(4) { animation-delay: 4.5s; }
+  @keyframes lp-pill-chase {
+    /* Tight on/off window: each pill snaps lit during ~3–20% of its own
+       timeline, then stays dark until the cycle wraps. With 4 pill slots
+       at 1.5s each in a 6s cycle, this means only ONE pill is ever lit. */
+    0%        { background: transparent;             color: var(--text-muted); }
+    3%, 20%   { background: rgba(255,255,255,0.06);  color: var(--text-secondary); }
+    25%, 100% { background: transparent;             color: var(--text-muted); }
+  }
+  /* User-initiated hover always wins over the chase highlight. */
+  .lp-week-preview .c-step:not(.active):hover { animation: none; }
 
   /* Card chrome (mirrors lp-score-preview) */
   .lp-week-preview .c-card { padding-top: 30px; }
@@ -2126,6 +2299,37 @@ footer {
   }
   .lp-week-preview .c-week-bar.today .c-week-bar-track {
     box-shadow: 0 0 0 1px rgba(61,220,151,0.35) inset;
+  }
+  /* ── Pixie dust: 3 tiny sparkles per bar, color-matched to the bar via
+     --dust-color (set inline per bar in JS). Clipped by the track's
+     overflow:hidden so they shimmer inside the bar shape. Subtle, not loud. */
+  .lp-week-preview .c-week-bar { --dust-color: transparent; position: relative; }
+  .lp-week-preview .c-week-bar-track::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle 1.2px at 25% 78%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.4px at 65% 55%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.6px at 45% 30%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.0px at 80% 75%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.5px at 15% 45%, var(--dust-color), transparent 70%),
+      radial-gradient(circle 1.1px at 60% 15%, var(--dust-color), transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+    animation: lp-pixie-drift 3.6s ease-in-out infinite;
+  }
+  .lp-week-preview .c-week-bar:nth-child(2) .c-week-bar-track::before { animation-delay: -0.5s; }
+  .lp-week-preview .c-week-bar:nth-child(3) .c-week-bar-track::before { animation-delay: -1.0s; }
+  .lp-week-preview .c-week-bar:nth-child(4) .c-week-bar-track::before { animation-delay: -1.6s; }
+  .lp-week-preview .c-week-bar:nth-child(5) .c-week-bar-track::before { animation-delay: -2.2s; }
+  .lp-week-preview .c-week-bar:nth-child(6) .c-week-bar-track::before { animation-delay: -2.8s; }
+  .lp-week-preview .c-week-bar:nth-child(7) .c-week-bar-track::before { animation-delay: -3.2s; }
+  /* No dust on empty (Sunday-no-data) bars. */
+  .lp-week-preview .c-week-bar.empty .c-week-bar-track::before { display: none; }
+  @keyframes lp-pixie-drift {
+    0%, 100% { transform: translateY(2px); opacity: 0.25; }
+    50%      { transform: translateY(-3px); opacity: 0.7; }
   }
   .lp-week-preview .c-week-bar-label {
     font-size: 11px;
@@ -2287,6 +2491,7 @@ footer {
 
     <!-- Center: YouTube video embed with click-to-play -->
     <div class="hero-video-outer reveal d2">
+      <div class="hero-video-dust" aria-hidden="true"></div>
       <div class="hero-video" id="videoContainer">
         <img
           src="https://img.youtube.com/vi/JQLdWsR0f-E/maxresdefault.jpg"
@@ -2687,7 +2892,7 @@ footer {
               <div class="c-step has-data">Apr 27</div>
               <div class="c-step has-data">May 4</div>
               <div class="c-step has-data">May 11</div>
-              <div class="c-step active"><span class="c-step-label">May 18 – May 24</span></div>
+              <div class="c-step active">May 18 – May 24</div>
             </div>
             <div class="score-modal-card c-card">
               <div class="c-header">
@@ -4168,6 +4373,412 @@ footer {
     e.preventDefault();
     if (window.BlindersPlan) window.BlindersPlan.promptRestore();
   });
+</script>
+
+<!-- ──────────── Day preview: click M T W Thu F S S pills to swap days ────────
+     Mirrors the weekly preview's approach: 7 days of mock data for the same
+     founder persona, click any pill to swap hero / sub / date / activities /
+     energy stack / distracted line. Default = Thu (idx 3) — matches the
+     original hardcoded HTML so the page looks identical on load. -->
+<script>
+(function () {
+  var root = document.querySelector('.lp-score-preview');
+  if (!root) return;
+
+  function fmtMin(min) {
+    if (min === 0) return '0m';
+    var h = Math.floor(min / 60);
+    var m = min % 60;
+    if (h === 0) return m + 'm';
+    if (m === 0) return h + 'h';
+    return h + 'h ' + m + 'm';
+  }
+
+  // Same founder, 7 different days. Mon = heavy build, Tue = customer day,
+  // Wed = marketing, Thu = balanced default, Fri = investor/pitch, Sat = light,
+  // Sun = rest. Each act time also sums to (energy high+med+low) for the day.
+  var DAYS = [
+    { // Mon
+      label: 'Monday, April 7, 2026',
+      total: 11.0,
+      acts: [
+        { name: 'Building product', time: '7h 30m' },
+        { name: 'Stand-ups',        time: '1h' },
+        { name: 'Email',            time: '1h 15m' },
+        { name: 'Cofounder sync',   time: '45m' },
+        { name: 'Lunch',            time: '30m' }
+      ],
+      energy: { high: 480, med: 120, low: 60 },
+      distracted: 0
+    },
+    { // Tue
+      label: 'Tuesday, April 8, 2026',
+      total: 9.5,
+      acts: [
+        { name: 'Customer calls',   time: '4h' },
+        { name: 'Sales outreach',   time: '2h' },
+        { name: 'Email',            time: '1h 30m' },
+        { name: 'Cofounder sync',   time: '1h' },
+        { name: 'Lunch',            time: '1h' }
+      ],
+      energy: { high: 360, med: 150, low: 60 },
+      distracted: 15
+    },
+    { // Wed
+      label: 'Wednesday, April 9, 2026',
+      total: 8.5,
+      acts: [
+        { name: 'Marketing',        time: '3h 30m' },
+        { name: 'Posting content',  time: '1h 30m' },
+        { name: 'Email',            time: '1h 15m' },
+        { name: 'Stand-ups',        time: '45m' },
+        { name: 'Lunch',            time: '30m' },
+        { name: 'Twitter',          time: '1h',     red: true }
+      ],
+      energy: { high: 300, med: 120, low: 90 },
+      distracted: 60
+    },
+    { // Thu — DEFAULT (matches original HTML's hero values & 6 acts / 1 red)
+      label: 'Thursday, April 10, 2026',
+      total: 10.0,
+      acts: [
+        { name: 'Building product', time: '4h 30m' },
+        { name: 'Customer calls',   time: '2h' },
+        { name: 'Product strategy', time: '1h 30m' },
+        { name: 'Email',            time: '1h' },
+        { name: 'Lunch',            time: '30m' },
+        { name: 'Twitter',          time: '30m',    red: true }
+      ],
+      energy: { high: 390, med: 150, low: 60 },
+      distracted: 30
+    },
+    { // Fri
+      label: 'Friday, April 11, 2026',
+      total: 9.0,
+      acts: [
+        { name: 'Investor updates', time: '3h' },
+        { name: 'Pitch deck',       time: '2h 30m' },
+        { name: 'Email',            time: '1h 30m' },
+        { name: 'Cofounder sync',   time: '1h' },
+        { name: 'Lunch',            time: '1h' }
+      ],
+      energy: { high: 330, med: 150, low: 60 },
+      distracted: 0
+    },
+    { // Sat
+      label: 'Saturday, April 12, 2026',
+      total: 5.5,
+      acts: [
+        { name: 'Building product', time: '2h 30m' },
+        { name: 'Reading',          time: '1h' },
+        { name: 'Workout',          time: '1h' },
+        { name: 'Email',            time: '30m' },
+        { name: 'Coffee',           time: '30m' }
+      ],
+      energy: { high: 180, med: 120, low: 30 },
+      distracted: 0
+    },
+    { // Sun
+      label: 'Sunday, April 13, 2026',
+      total: 3.5,
+      acts: [
+        { name: 'Reading',          time: '1h' },
+        { name: 'Walking',          time: '45m' },
+        { name: 'Workout',          time: '45m' },
+        { name: 'Family time',      time: '30m' },
+        { name: 'LinkedIn',         time: '30m',    red: true }
+      ],
+      energy: { high: 60, med: 90, low: 60 },
+      distracted: 30
+    }
+  ];
+
+  function actRow(a) {
+    var color = a.red ? '#FF5A5F' : '#ffffff';
+    return '<div class="c-cat-row"><span class="lbl"><span class="dot" style="background:' + color + '"></span>' + a.name + '</span><span class="v">' + a.time + '</span></div>';
+  }
+
+  function render(idx) {
+    var d = DAYS[idx];
+
+    // Pills
+    var steps = root.querySelectorAll('.c-step');
+    steps.forEach(function (s, i) { s.classList.toggle('active', i === idx); });
+
+    // Hero
+    var intPart = Math.floor(d.total);
+    var decPart = '.' + d.total.toFixed(1).split('.')[1];
+    root.querySelector('.c-hero-int').textContent = intPart;
+    root.querySelector('.c-hero-dec').textContent = decPart;
+    // "Categories" = non-red activity count (matches original "5 categories" copy).
+    var catCount = d.acts.filter(function (a) { return !a.red; }).length;
+    root.querySelector('.c-hero-sub').textContent = 'Logged across ' + catCount + ' categories';
+    root.querySelector('.c-hero-date').textContent = d.label;
+
+    // Activities — remove old c-cat-row elements, append fresh
+    var yourHoursPanel = root.querySelectorAll('.c-panel')[0];
+    var meta = yourHoursPanel.querySelector('.c-panel-meta');
+    meta.textContent = d.acts.length + ' activities';
+    yourHoursPanel.querySelectorAll('.c-cat-row').forEach(function (r) { r.remove(); });
+    yourHoursPanel.insertAdjacentHTML('beforeend', d.acts.map(actRow).join(''));
+
+    // Energy stack — recompute %s + label values
+    var energyStack = root.querySelector('.c-energy-stack');
+    if (energyStack) {
+      var total = d.energy.high + d.energy.med + d.energy.low;
+      var pct = function (v) { return total > 0 ? Math.round(v / total * 100) : 0; };
+      energyStack.innerHTML =
+        '<div class="c-energy-line h"><span class="name">High</span><span class="track"><span class="fill" style="width:' + pct(d.energy.high) + '%"></span></span><span class="pct">' + fmtMin(d.energy.high) + '</span></div>' +
+        '<div class="c-energy-line m"><span class="name">Med</span><span class="track"><span class="fill" style="width:' + pct(d.energy.med) + '%"></span></span><span class="pct">' + fmtMin(d.energy.med) + '</span></div>' +
+        '<div class="c-energy-line l"><span class="name">Low</span><span class="track"><span class="fill" style="width:' + pct(d.energy.low) + '%"></span></span><span class="pct">' + fmtMin(d.energy.low) + '</span></div>';
+    }
+
+    // Distracted line
+    var distractedB = root.querySelector('.c-question b');
+    if (distractedB) distractedB.textContent = fmtMin(d.distracted);
+  }
+
+  // Wire clicks
+  root.querySelectorAll('.c-step').forEach(function (s, i) {
+    s.addEventListener('click', function () { render(i); });
+  });
+
+  // Initial render = Thu (idx 3) — preserves the page's load-time appearance.
+  render(3);
+})();
+</script>
+
+<!-- ──────────── Weekly preview: click the 4 pills to swap weeks ────────────
+     The pills (Apr 27 / May 4 / May 11 / May 18) above the weekly score card
+     are pre-rendered with the latest week visible. This IIFE wires click
+     handlers that swap hero total, delta, date, daily bars, activity list,
+     and activity count for each of 4 mock "founder" weeks. Same person, just
+     different totals — designed to feel like a real progression over a month.
+     Initial render = week index 3 (May 18) so the page looks identical to
+     before on load; the only new behavior is the click. -->
+<script>
+(function () {
+  var root = document.querySelector('.lp-week-preview');
+  if (!root) return;
+
+  // ── 4 weeks of mock data for the same founder. Activities mostly repeat
+  // week-to-week (it's the same person's routine), totals shift to show
+  // ramp-up: sparse start → steady → heavy build → peak week.
+  var WEEKS = [
+    {
+      label: 'Apr 27',
+      range: 'Apr 27 – May 3',
+      total: 37.0,
+      delta: 'First tracked week',
+      bars: [
+        { pct: 50, color: '#3b82f6' },
+        { pct: 60, color: '#10b981' },
+        { pct: 55, color: '#10b981' },
+        { pct: 65, color: '#10b981' },
+        { pct: 45, color: '#3b82f6' },
+        { pct: 35, color: '#ef4444' },
+        { pct: 20, color: '#ef4444' }
+      ],
+      acts: [
+        { name: 'Building product',   time: '14h' },
+        { name: 'Customer calls',     time: '3h 30m' },
+        { name: 'Marketing',          time: '2h 30m' },
+        { name: 'Product strategy',   time: '2h 30m' },
+        { name: 'Sales outreach',     time: '2h' },
+        { name: 'Cofounder sync',     time: '2h' },
+        { name: 'Email',              time: '2h' },
+        { name: 'Twitter',            time: '2h',     red: true },
+        { name: 'Workout',            time: '1h 15m' },
+        { name: 'Eating',             time: '1h 15m' },
+        { name: 'Stand-ups',          time: '1h 15m' },
+        { name: 'Reading',            time: '1h' },
+        { name: 'LinkedIn',           time: '1h',     red: true },
+        { name: 'Walking',            time: '45m' }
+      ]
+    },
+    {
+      label: 'May 4',
+      range: 'May 4 – May 10',
+      total: 54.0,
+      delta: '+17h vs last week',
+      bars: [
+        { pct: 75, color: '#10b981' },
+        { pct: 70, color: '#10b981' },
+        { pct: 65, color: '#10b981' },
+        { pct: 80, color: '#10b981' },
+        { pct: 60, color: '#3b82f6' },
+        { pct: 40, color: '#3b82f6' },
+        { pct: 30, color: '#3b82f6' }
+      ],
+      acts: [
+        { name: 'Building product',   time: '20h' },
+        { name: 'Customer calls',     time: '5h' },
+        { name: 'Marketing',          time: '3h 30m' },
+        { name: 'Product strategy',   time: '3h' },
+        { name: 'Sales outreach',     time: '2h 30m' },
+        { name: 'Investor updates',   time: '2h 30m' },
+        { name: 'Email',              time: '2h 30m' },
+        { name: 'Cofounder sync',     time: '2h' },
+        { name: 'User research',      time: '2h' },
+        { name: 'Stand-ups',          time: '1h 45m' },
+        { name: 'Roadmap planning',   time: '1h 15m' },
+        { name: 'Workout',            time: '2h' },
+        { name: 'Reading',            time: '1h 15m' },
+        { name: 'Eating',             time: '1h 15m' },
+        { name: 'Walking',            time: '1h' },
+        { name: 'Slack',              time: '1h' },
+        { name: 'Coffee',             time: '45m' },
+        { name: 'Twitter',            time: '30m',    red: true },
+        { name: 'LinkedIn',           time: '15m',    red: true }
+      ]
+    },
+    {
+      label: 'May 11',
+      range: 'May 11 – May 17',
+      total: 83.5,
+      delta: '+29.5h vs last week',
+      bars: [
+        { pct: 88, color: '#10b981' },
+        { pct: 82, color: '#10b981' },
+        { pct: 75, color: '#10b981' },
+        { pct: 92, color: '#10b981' },
+        { pct: 80, color: '#10b981' },
+        { pct: 60, color: '#3b82f6' },
+        { pct: 25, color: '#ef4444' }
+      ],
+      acts: [
+        { name: 'Building product',   time: '33h' },
+        { name: 'Investor updates',   time: '8h' },
+        { name: 'Customer calls',     time: '6h' },
+        { name: 'Pitch deck',         time: '5h' },
+        { name: 'Product strategy',   time: '4h 30m' },
+        { name: 'Marketing',          time: '4h' },
+        { name: 'Sales outreach',     time: '3h 30m' },
+        { name: 'Cofounder sync',     time: '3h' },
+        { name: 'Email',              time: '2h 30m' },
+        { name: 'User research',      time: '2h' },
+        { name: 'Stand-ups',          time: '2h' },
+        { name: 'Roadmap planning',   time: '1h 30m' },
+        { name: 'Workout',            time: '1h 15m' },
+        { name: 'Slack',              time: '1h 15m' },
+        { name: 'Eating',             time: '1h' },
+        { name: 'Hiring',             time: '1h' },
+        { name: 'Reading',            time: '1h' },
+        { name: 'Walking',            time: '45m' },
+        { name: 'Coffee',             time: '30m' },
+        { name: 'Demo prep',          time: '30m' },
+        { name: 'Twitter',            time: '30m',    red: true },
+        { name: 'Stretching',         time: '15m' },
+        { name: 'LinkedIn',           time: '15m',    red: true },
+        { name: 'HackerNews',         time: '15m',    red: true }
+      ]
+    },
+    {
+      label: 'May 18',
+      range: 'May 18 – May 24',
+      total: 90.5,
+      delta: '+7h vs last week',
+      bars: [
+        { pct: 92, color: '#10b981' },
+        { pct: 78, color: '#10b981' },
+        { pct: 55, color: '#3b82f6' },
+        { pct: 88, color: '#10b981' },
+        { pct: 95, color: '#10b981' },
+        { pct: 32, color: '#ef4444' },
+        { pct: 0,  color: '#10b981' }
+      ],
+      acts: [
+        { name: 'Building product',   time: '22h' },
+        { name: 'Customer calls',     time: '9h 30m' },
+        { name: 'Marketing',          time: '7h 15m' },
+        { name: 'Sales outreach',     time: '6h' },
+        { name: 'Investor updates',   time: '5h' },
+        { name: 'Cofounder sync',     time: '4h 15m' },
+        { name: 'Product strategy',   time: '4h' },
+        { name: 'User research',      time: '3h 45m' },
+        { name: 'Hiring',             time: '3h 30m' },
+        { name: 'Email',              time: '3h' },
+        { name: 'Stand-ups',          time: '2h 45m' },
+        { name: 'Pitch deck',         time: '2h 30m' },
+        { name: 'Onboarding calls',   time: '2h 15m' },
+        { name: 'Roadmap planning',   time: '2h' },
+        { name: 'Workout',            time: '1h 45m' },
+        { name: 'Reading',            time: '1h 30m' },
+        { name: 'Design review',      time: '1h 30m' },
+        { name: 'Walking',            time: '1h 15m' },
+        { name: 'Eating',             time: '1h' },
+        { name: 'Slack',              time: '1h' },
+        { name: 'Coffee',             time: '45m' },
+        { name: 'Demo prep',          time: '45m' },
+        { name: 'Office hours',       time: '45m' },
+        { name: 'Twitter',            time: '45m',    red: true },
+        { name: 'Stretching',         time: '30m' },
+        { name: 'LinkedIn',           time: '30m',    red: true },
+        { name: 'HackerNews',         time: '30m',    red: true },
+        { name: 'Advisor call',       time: '15m' }
+      ]
+    }
+  ];
+
+  var DAY_LABELS = ['M','T','W','T','F','S','S'];
+
+  function actRow(a) {
+    var color = a.red ? '#FF5A5F' : '#ffffff';
+    return '<div class="c-cat-row"><span class="lbl"><span class="dot" style="background:' + color + '"></span>' + a.name + '</span><span class="v">' + a.time + '</span></div>';
+  }
+
+  function render(idx) {
+    var w = WEEKS[idx];
+
+    // Pills — active class + has-data on the rest (preserves the green dot).
+    // Label expands to the full range when active, collapses to just the start
+    // date when inactive, so the user can see at a glance which week is loaded.
+    var steps = root.querySelectorAll('.c-step');
+    steps.forEach(function (s, i) {
+      s.classList.toggle('active', i === idx);
+      s.classList.toggle('has-data', i !== idx);
+      s.textContent = (i === idx) ? WEEKS[i].range : WEEKS[i].label;
+    });
+
+    // Hero: split int / decimal to match existing markup spans.
+    var intPart = Math.floor(w.total);
+    var decPart = '.' + w.total.toFixed(1).split('.')[1];
+    root.querySelector('.c-hero-int').textContent = intPart;
+    root.querySelector('.c-hero-dec').textContent = decPart;
+    root.querySelector('.c-hero-sub').textContent = w.delta;
+    root.querySelector('.c-hero-date').textContent = w.range;
+
+    // Daily breakdown bars. Each non-empty bar gets a color-matched outer
+    // glow (subtle box-shadow on the fill) and CSS-var --dust-color that
+    // feeds the pixie-dust pseudo-element defined in the stylesheet.
+    var barsHTML = w.bars.map(function (b, i) {
+      var empty = b.pct === 0;
+      var emptyCls = empty ? ' empty' : '';
+      var glow = empty ? '' : ';box-shadow:0 0 12px ' + b.color + '55, 0 0 4px ' + b.color + '88';
+      var dust = empty ? '' : ' style="--dust-color:' + b.color + '"';
+      return '<div class="c-week-bar' + emptyCls + '"' + dust + '><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:' + b.pct + '%;background:' + b.color + glow + '"></div></div><div class="c-week-bar-label">' + DAY_LABELS[i] + '</div></div>';
+    }).join('');
+    root.querySelector('.c-week-bars').innerHTML = barsHTML;
+
+    // Activities — even split (ceil left, floor right). Same trick as app.html.
+    var half = Math.ceil(w.acts.length / 2);
+    var cols = root.querySelectorAll('.c-cat-col');
+    cols[0].innerHTML = w.acts.slice(0, half).map(actRow).join('');
+    cols[1].innerHTML = w.acts.slice(half).map(actRow).join('');
+
+    // Activity count meta (the second .c-panel-meta is "Your hours").
+    var metas = root.querySelectorAll('.c-panel-meta');
+    if (metas[1]) metas[1].textContent = w.acts.length + ' activities';
+  }
+
+  // Wire click handlers on each pill.
+  root.querySelectorAll('.c-step').forEach(function (s, i) {
+    s.addEventListener('click', function () { render(i); });
+  });
+
+  // Initial render mirrors the hardcoded HTML (no visible change on load).
+  render(3);
+})();
 </script>
 
 <!-- Vercel Web Analytics — privacy-friendly, cookie-less page view tracking.
