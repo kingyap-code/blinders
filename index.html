@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com; media-src 'self' data: blob:; connect-src 'self' https://script.google.com https://*.paddle.com; frame-src https://*.paddle.com; frame-ancestors 'none';">
   <title>Blinders — Know Where Your Time Actually Goes</title>
   <meta name="description" content="Blinders logs where your time actually goes — every 30 minutes, automatically. See your peak hours, weekly score, and the exact moments you're at your best.">
   <meta property="og:title" content="Blinders — Know Where Your Time Actually Goes">
@@ -4062,6 +4063,9 @@ footer {
 </script>
 
 <script src="plan.js"></script>
+<!-- No SRI hash on this script: Paddle hot-patches paddle.js without versioning,
+     so pinning a hash would break checkout the next time they update it. CSP
+     restricts script-src to *.paddle.com to mitigate the trust-Paddle-CDN risk. -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
   function blindersResetCheckoutBtns() {

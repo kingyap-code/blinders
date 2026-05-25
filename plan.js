@@ -29,7 +29,7 @@
   // machine without affecting real users. Not a security boundary — see file header.
   // To revert: DevTools → Application → Local Storage → delete `blinders_dev_unlock`.
   var DEV_KEY = 'blinders_dev_unlock';
-  var DEV_UNLOCK_TOKEN = 'king-blinders-2026-x9q';
+  var DEV_UNLOCK_TOKEN = 'blinders-dev-Qm7K3pNvR4sT9xL1hZ6cF5bY8dV2wJaH';
   function devUnlocked() {
     try {
       var params = new URLSearchParams(window.location.search);

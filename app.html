@@ -2494,7 +2494,7 @@
       .c-cat-list-multi { column-count: 1; }
     }
 
-    /* Even-split 2-column activity list (used when 16+ activities) */
+    /* Even-split 2-column activity list (used when 10+ activities) */
     .c-cat-cols {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -9368,10 +9368,10 @@ function openWeekModal() {
     const sunday = addDays(monday, 6);
     const rangeLabel = `${fmtShort(monday)} – ${fmtShort(sunday)}`;
 
-    // Adaptive layout: ≥16 activities → wide modal + even half/half split.
-    // ≤15 → narrow modal + single-col list. Even split avoids the 14+1 look
+    // Adaptive layout: ≥10 activities → wide modal + even half/half split.
+    // ≤9 → narrow modal + single-col list. Even split avoids the 14+1 look
     // CSS columns produce when content heights differ.
-    const useWide = numActs >= 16;
+    const useWide = numActs >= 10;
     wrap.classList.toggle('c-wrap-wide', useWide);
 
     let activitiesHTML;
@@ -11737,6 +11737,9 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script src="plan.js"></script>
+<!-- No SRI hash on this script: Paddle hot-patches paddle.js without versioning,
+     so pinning a hash would break checkout the next time they update it. CSP
+     restricts script-src to *.paddle.com to mitigate the trust-Paddle-CDN risk. -->
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
   function blindersResetCheckoutBtns() {
