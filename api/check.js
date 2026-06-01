@@ -46,6 +46,44 @@ function validEmail(v) { return typeof v === 'string' && v.length <= 254 && EMAI
 function validTxn(v)   { return typeof v === 'string' && TXN_RE.test(v); }
 function validSub(v)   { return typeof v === 'string' && SUB_RE.test(v); }
 
+// ── Per-IP rate limiter. Real users hit this 1–2 times per session; we cap at
+// 20 requests/min/IP, which is generous enough to absorb retries and impossible
+// to hit organically. An attacker scripting /api/check gets 429'd after #20
+// and never reaches Paddle, so they can't drain our Paddle rate budget.
+//
+// Storage is in-memory (per warm serverless instance). Not perfectly accurate
+// across cold starts, but Vercel reuses warm instances for bursts from the
+// same client, so it works well as a first line of defense. Upgrade to Vercel
+// KV if/when this needs to be truly cross-instance.
+const RL_WINDOW_MS = 60 * 1000;
+const RL_MAX = 20;
+const rlBuckets = new Map(); // ip → [timestamps]
+
+function clientIp(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (typeof xff === 'string' && xff.length) return xff.split(',')[0].trim();
+  return req.socket?.remoteAddress || 'unknown';
+}
+
+function rateLimited(ip) {
+  const now = Date.now();
+  let arr = rlBuckets.get(ip) || [];
+  arr = arr.filter((t) => now - t < RL_WINDOW_MS);
+  if (arr.length >= RL_MAX) {
+    rlBuckets.set(ip, arr);
+    return true;
+  }
+  arr.push(now);
+  rlBuckets.set(ip, arr);
+  // Bounded cleanup so the Map can't grow unbounded over a warm instance's life.
+  if (rlBuckets.size > 5000) {
+    for (const [k, v] of rlBuckets) {
+      if (!v.length || now - v[v.length - 1] > RL_WINDOW_MS) rlBuckets.delete(k);
+    }
+  }
+  return false;
+}
+
 async function paddleGet(path, apiKey) {
   const res = await fetch(PADDLE_API + path, {
     headers: { Authorization: 'Bearer ' + apiKey },
@@ -82,6 +120,15 @@ export default async function handler(req, res) {
 
   if (!originAllowed(req)) {
     res.status(403).json({ error: 'forbidden_origin' });
+    return;
+  }
+
+  // Rate limit BEFORE we read Paddle, so attackers can't burn our Paddle
+  // budget. The 429 response keeps semantics consistent with real HTTP clients
+  // (browsers/curl/scripts all understand it).
+  if (rateLimited(clientIp(req))) {
+    res.setHeader('Retry-After', String(RL_WINDOW_MS / 1000));
+    res.status(429).json({ error: 'rate_limited' });
     return;
   }
 
