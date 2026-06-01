@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blinders</title>
   <meta name="theme-color" content="#3DDC97">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com; media-src 'self' data: blob:; connect-src 'self' https://script.google.com https://*.paddle.com; frame-src https://*.paddle.com;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com; media-src 'self' data: blob:; connect-src 'self' https://*.paddle.com; frame-src https://*.paddle.com;">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1021,25 +1021,7 @@
       color: rgba(255,255,255,0.85);
     }
 
-    /* Selected pill — solid fill, dark text for readability */
-    .category-pill.has-color,
-    .status-pill.has-color {
-      background: var(--pill-color);
-      border-color: var(--pill-color);
-      color: #000000;
-      font-weight: 600;
-      box-shadow: 0 0 8px color-mix(in srgb, var(--pill-color) 35%, transparent);
-    }
-    .category-pill.has-color .dd-arrow,
-    .status-pill.has-color .dd-arrow { color: #000000; opacity: 0.7; }
-    .category-pill.has-color:hover,
-    .status-pill.has-color:hover {
-      background: var(--pill-color);
-      border-color: var(--pill-color);
-      color: #000000;
-      filter: brightness(1.08);
-      box-shadow: 0 0 14px color-mix(in srgb, var(--pill-color) 55%, transparent);
-    }
+    /* Selected pill — intentionally neutral: same look as the unselected default. */
 
     .dd-arrow { font-size: 10px; opacity: 0.6; flex-shrink: 0; }
 
@@ -5567,6 +5549,465 @@
     body.has-mobile-block { overflow: hidden; }
     body.has-mobile-block .mobile-block { display: flex; }
   }
+
+  /* ============================================================
+     NEW-UI / MOCKUP-1 OVERRIDES — merged-blocks visual layer
+     These rules take the existing table DOM and re-skin it as a
+     vertical stack of rounded dark cards (mockup-1 design).
+     ============================================================ */
+
+  /* Dot-grid page background */
+  body {
+    background-color: #0D0D0D !important;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.036) 1px, transparent 1px) !important;
+    background-size: 22px 22px !important;
+  }
+
+  /* Drop the table chrome */
+  .tracker-table {
+    display: block !important;
+    width: 100% !important;
+    max-width: 760px !important;
+    margin: 0 auto !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    background: transparent !important;
+  }
+  .tracker-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    width: 100% !important;
+  }
+
+  /* Each row is a rounded card. Equal 22px gap between every column so the
+     visual spacing Activity↔Category matches Category↔Energy. */
+  .tracker-table tr.table-row {
+    display: grid !important;
+    /* All four columns fixed-width; grid is centered inside the card so
+       the whole row reads like a tidy aligned group, not stretched. */
+    grid-template-columns: 80px 108px 108px 88px !important;
+    gap: 22px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 10px 14px !important;
+    background: #161618 !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    border-left: 1px solid rgba(255,255,255,0.06) !important;
+    border-radius: 8px !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    transition: background .15s ease, border-color .15s ease !important;
+  }
+  .tracker-table tr.table-row:hover {
+    border-color: rgba(255,255,255,0.12) !important;
+    background: #1c1c1f !important;
+  }
+
+  /* Merged: tall block (no left accent stripe — King's call) */
+  .tracker-table tr.table-row.block-merged {
+    background: linear-gradient(180deg, #161618, #1a1a1c) !important;
+    border-left: 1px solid rgba(255,255,255,0.06) !important;
+    padding: 14px 14px 14px 14px !important;
+  }
+  .tracker-table tr.table-row.block-merged:hover {
+    background: linear-gradient(180deg, #1c1c1f, #1f1f22) !important;
+  }
+
+  /* Future rows render at full opacity — same look as the current row.
+     (King: don't fade times that haven't passed yet.) */
+  .tracker-table tr.table-row.future-row { opacity: 1 !important; }
+
+  /* All cells render as block; reset the original td widths */
+  .tracker-table tr.table-row > td {
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+    border: none !important;
+    height: auto !important;
+    background: transparent !important;
+    vertical-align: middle !important;
+    text-align: left !important;
+    color: inherit !important;
+  }
+
+  /* Time cell — MATCHES THE LANDING PAGE EXACTLY (King's "original size"
+     reference). Landing page: .lp-cell-time { font-size: 12.5px } +
+     .lp-time-range { font-size: 11px; color: #71717a; margin-top: 3px }.
+     The "→ end time" sub-line is restored for merged blocks so the cell
+     has the same two-line height as the landing-page version. */
+  .tracker-table tr.table-row .cell-time {
+    font-size: 12.5px !important;
+    color: #a1a1aa !important;
+    font-variant-numeric: tabular-nums !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+  }
+  .tracker-table tr.table-row .cell-time .time-text {
+    display: block !important;
+    text-align: center !important;
+  }
+  .tracker-table tr.table-row .cell-time .time-range {
+    display: block !important;
+    font-size: 11px !important;
+    color: #71717a !important;
+    font-weight: 400 !important;
+    margin-top: 3px !important;
+    text-align: center !important;
+  }
+
+  /* Activity — centered, no box (filled or empty) */
+  .tracker-table tr.table-row .cell-editable {
+    font-size: 14px !important;
+    color: #e4e4e7 !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    overflow: visible !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+  .tracker-table tr.table-row .cell-editable[data-col="activity"] {
+    text-align: center !important;
+  }
+  .tracker-table tr.table-row .cell-editable .activity-empty-state {
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    font-size: 14px !important;
+    color: #e4e4e7 !important;
+    line-height: 1.3 !important;
+    text-align: center !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+  .tracker-table tr.table-row .cell-editable:hover .activity-empty-state {
+    border: none !important;
+    background: transparent !important;
+  }
+  /* Empty activity → plain centered "—" text (no box, no border) */
+  .tracker-table tr.table-row .cell-editable .activity-empty-state:empty {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: center !important;
+    color: #52525b !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+  .tracker-table tr.table-row .cell-editable .activity-empty-state:empty::before {
+    content: '—' !important;
+    color: #52525b !important;
+  }
+  .tracker-table tr.table-row .cell-editable:hover .activity-empty-state:empty {
+    color: #a1a1aa !important;
+  }
+  /* Activity duration line centered too */
+  .tracker-table tr.table-row .activity-duration {
+    justify-content: center !important;
+  }
+  .tracker-table tr.table-row .activity-duration {
+    font-size: 11px !important;
+    color: #71717a !important;
+    font-weight: 500 !important;
+    margin-top: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+  }
+  .tracker-table tr.table-row .activity-duration::before {
+    content: '' !important;
+    width: 4px !important; height: 4px !important;
+    border-radius: 50% !important;
+    background: var(--block-accent, #3DDC97) !important;
+  }
+  .tracker-table tr.table-row .activity-duration.is-distracted { color: #FF5A5F !important; }
+  .tracker-table tr.table-row .activity-duration.is-distracted::before { background: #FF5A5F !important; }
+
+  /* Pills — label is CENTERED, arrow is absolutely positioned on the right
+     edge. Fixed widths so the pill stays the same shape no matter the label.
+     Empty triggers have NO border/fill — just centered text + green arrow. */
+  .tracker-table tr.table-row .category-pill,
+  .tracker-table tr.table-row .status-pill,
+  .tracker-table tr.table-row .dd-trigger {
+    display: block !important;
+    position: relative !important;
+    text-align: center !important;
+    padding: 5px 18px 5px 18px !important;
+    border-radius: 6px !important;
+    font-size: 11.5px !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+    line-height: 1.4 !important;
+  }
+  /* Fixed widths: tight but enough room for the longest label without
+     ellipsis. Category fits "Meal/Break" / "Distracted" / "Sleep/Rest";
+     Energy fits "Charging" / "Medium". Padding is symmetric so centered
+     text reads visually balanced. */
+  .tracker-table tr.table-row .cell-category .category-pill,
+  .tracker-table tr.table-row .cell-category .dd-trigger {
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+  }
+  .tracker-table tr.table-row .cell-energy .status-pill,
+  .tracker-table tr.table-row .cell-energy .dd-trigger {
+    width: 88px !important;
+    min-width: 88px !important;
+    max-width: 88px !important;
+  }
+  /* Arrow → absolute right edge so the label stays centered */
+  .tracker-table tr.table-row .category-pill .dd-arrow,
+  .tracker-table tr.table-row .status-pill .dd-arrow,
+  .tracker-table tr.table-row .dd-trigger .dd-arrow {
+    position: absolute !important;
+    right: 7px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+  }
+  /* Empty trigger (no selection): no border, no fill, label + GREEN arrow */
+  .tracker-table tr.table-row .dd-trigger {
+    background: transparent !important;
+    border: none !important;
+    color: #71717a !important;
+    font-size: 11px !important;
+    transition: color .15s ease !important;
+  }
+  .tracker-table tr.table-row .dd-trigger .dd-arrow {
+    color: #3DDC97 !important;
+    opacity: 1 !important;
+  }
+  /* Hover on empty Category/Energy → label turns green (matches the "+"
+     hover-glow on Activity). No scale change — just the color shift. */
+  .tracker-table tr.table-row .cell-dropdown:hover .dd-trigger {
+    color: #3DDC97 !important;
+  }
+  /* Filled pill — NO colored fill, NO border. Plain white text + green
+     dropdown arrow, identical look to the Activity column ("Coding").
+     The category/energy color is conveyed by the stat dots in the header,
+     not by the inline pill anymore. */
+  .tracker-table tr.table-row .category-pill.has-color,
+  .tracker-table tr.table-row .status-pill.has-color {
+    background: transparent !important;
+    border: none !important;
+    color: #e4e4e7 !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+  }
+  .tracker-table tr.table-row .category-pill.has-color .dd-arrow,
+  .tracker-table tr.table-row .status-pill.has-color .dd-arrow {
+    color: #3DDC97 !important;
+    opacity: 1 !important;
+  }
+  /* Charging — same plain-text treatment (was a soft gray pill before). */
+  .tracker-table tr.table-row .status-pill[data-eng="Charging"].has-color {
+    background: transparent !important;
+    border: none !important;
+    color: #e4e4e7 !important;
+    font-weight: 500 !important;
+  }
+  .tracker-table tr.table-row .status-pill[data-eng="Charging"].has-color .dd-arrow {
+    color: #3DDC97 !important;
+    opacity: 1 !important;
+  }
+  /* Hover on a filled Category/Energy → label brightens to green
+     (same affordance as empty triggers). */
+  .tracker-table tr.table-row .cell-dropdown:hover .category-pill.has-color,
+  .tracker-table tr.table-row .cell-dropdown:hover .status-pill.has-color {
+    color: #3DDC97 !important;
+  }
+
+  /* NOW separator row */
+  .tracker-table tr.now-separator {
+    display: block !important;
+    border: 1px dashed rgba(61,220,151,0.5) !important;
+    background: rgba(61,220,151,0.04) !important;
+    border-radius: 8px !important;
+    padding: 12px 14px !important;
+  }
+  .tracker-table tr.now-separator > td {
+    display: block !important;
+    padding: 0 !important;
+    border: none !important;
+    width: auto !important;
+  }
+  .tracker-table tr.now-separator .now-tag {
+    display: inline-block !important;
+    background: #3DDC97 !important;
+    color: #0D0D0D !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 999px !important;
+    letter-spacing: 0.04em !important;
+  }
+
+  /* Keep the green left-stripe (current-row-indicator) HIDDEN per King's
+     request — he doesn't want a green stroke on the NOW row. But the
+     inline NOW badge and the original Now / Fill-All widgets are kept. */
+  .tracker-table tr.table-row .current-row-indicator { display: none !important; }
+
+  /* Current-row card stays visually identical to a normal empty row — no
+     green tint, no glow, no left stripe. Only signal is the inline NOW badge. */
+  .tracker-table tr.table-row.current-row {
+    background: #161618 !important;
+    border-left: 1px solid rgba(255,255,255,0.06) !important;
+    box-shadow: none !important;
+  }
+  .tracker-table tr.table-row.current-row .cell-time { color: #a1a1aa !important; font-weight: 500 !important; font-size: 12.5px !important; }
+
+  /* Inline NOW badge — HIDDEN. The left-side Now button is the only NOW
+     indicator now (avoid two NOWs on the same row, per King's request). */
+  .tracker-table tr.table-row .cell-time .now-badge { display: none !important; }
+
+  /* Thinner v-lines AND h-lines (1px) on the Fill-All and Now widgets, AND
+     on the "X rows available" reminder, so every connector line is consistent. */
+  .fill-all-vline { width: 1px !important; }
+  .fill-all-hline { height: 1px !important; }
+  .now-hline { height: 1px !important; }
+  .add-blocked-reminder .reminder-hline { height: 1px !important; }
+  /* The Now widget now also has a green vline mirroring the red Fill-All
+     line — connects the green Now button visually to the current-row card. */
+  .now-vline {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 1px !important;
+    height: 100% !important;
+    background: #3DDC97 !important;
+    border-radius: 2px !important;
+    box-shadow: 0 0 4px rgba(61,220,151,0.45) !important;
+  }
+
+  /* Activity empty state — NO box, NO border. A soft "+" glyph signals
+     "click to add". On hover it brightens green so the affordance is clear. */
+  .tracker-table tr.table-row .cell-editable .activity-empty-state:empty {
+    display: block !important;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: center !important;
+    color: rgba(255,255,255,0.18) !important;
+    font-size: 18px !important;
+    font-weight: 300 !important;
+    line-height: 1 !important;
+    transition: color .15s ease, transform .15s ease !important;
+  }
+  .tracker-table tr.table-row .cell-editable .activity-empty-state:empty::before {
+    content: '+' !important;
+    color: inherit !important;
+    font-size: inherit !important;
+  }
+  .tracker-table tr.table-row .cell-editable:hover .activity-empty-state:empty {
+    color: #3DDC97 !important;
+    transform: scale(1.18) !important;
+  }
+
+  /* The table-scroll-wrap no longer needs to scroll horizontally */
+  .table-scroll-wrap { overflow: visible !important; position: relative !important; }
+  .table-wrapper { background: transparent !important; padding: 0 20px !important; }
+
+  /* ============================================================
+     TIMER WIDGET — collapsed-after-setup with hover-to-expand.
+     Once the user has finished initial setup, the timer card
+     shrinks to just the ring. Hovering brings the controls back.
+     ============================================================ */
+  #timerWidget.timer-collapsed .timer-interval-label,
+  #timerWidget.timer-collapsed .timer-buttons {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    transition:
+      max-height .28s ease,
+      opacity .22s ease,
+      margin .28s ease,
+      padding .28s ease !important;
+  }
+  #timerWidget.timer-collapsed:hover .timer-interval-label {
+    max-height: 60px !important;
+    opacity: 1 !important;
+    margin-top: 8px !important;
+    pointer-events: auto !important;
+  }
+  #timerWidget.timer-collapsed:hover .timer-buttons {
+    max-height: 320px !important;
+    opacity: 1 !important;
+    margin-top: 14px !important;
+    pointer-events: auto !important;
+    overflow: visible !important;
+  }
+  /* When hovered, the interval label also needs visible overflow so its
+     dropdown sibling can spill freely. */
+  #timerWidget.timer-collapsed:hover .timer-interval-label {
+    overflow: visible !important;
+  }
+  /* The widget itself must allow children's dropdowns to overflow its
+     own bounds — otherwise the customMin / notifi panels get clipped. */
+  #timerWidget,
+  #timerWidget .timer-btn-wrap {
+    overflow: visible !important;
+    transition: padding .28s ease !important;
+  }
+
+  /* ============================================================
+     COMPACT-VIEWPORT FIXES (King: identical look at any width).
+     ============================================================ */
+  /* Hide the Home link and Stats toggle in the header — the sidebar
+     and modals already cover that nav, no need to duplicate. */
+  .header .nav-btn,
+  .header .strip-toggle-btn,
+  header.header .nav-btn,
+  header.header .strip-toggle-btn { display: none !important; }
+
+  /* "Blinders" wordmark stays WHITE — no green gradient. */
+  .logo-mark {
+    background: none !important;
+    background-image: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: #ffffff !important;
+    color: #ffffff !important;
+  }
+
+  /* Ensure the timer ring SVG always renders at the original 180px size
+     (matches landing page's .lp-timer-ring-container and app.html's
+     .timer-ring-container). King's note: the ring + the time inside it
+     was visibly tiny on the main app — the original size lives on the
+     landing page. Revert any narrow-width shrinkage. */
+  #timerWidget .timer-ring-container,
+  #timerWidget .timer-ring-container svg {
+    display: block !important;
+    width: 180px !important;
+    height: 180px !important;
+    max-width: 180px !important;
+  }
   </style>
 </head>
 <body class="onboarding">
@@ -5933,17 +6374,43 @@
 // ================================================================
 // CRASH SAFETY NET
 // ================================================================
-// Pure observation. These listeners do NOT alter any behavior — they
-// just stop a single uncaught error from killing the rest of the
-// page's JS, and surface what went wrong in the console for debugging.
-// (Errors thrown inside setInterval/setTimeout callbacks don't stop
-// the interval itself, but they DO abort that one tick. The handler
-// below catches them so the app stays responsive.)
+// Three jobs:
+//   1. Keep a single uncaught error from killing the rest of the page's JS.
+//   2. Log the last few errors to localStorage so a real user can paste them
+//      back to us when reporting bugs (capped to 5, never grows).
+//   3. Show a small "Something went wrong — try refreshing" toast the first
+//      time an uncaught error happens in a session, so the user isn't left
+//      staring at a half-broken UI in silence.
+function _blindersRecordError(label, detail) {
+  try {
+    const arr = JSON.parse(localStorage.getItem('blinders_errors') || '[]');
+    arr.push({ ts: Date.now(), label, detail: String(detail).slice(0, 500) });
+    while (arr.length > 5) arr.shift();
+    localStorage.setItem('blinders_errors', JSON.stringify(arr));
+  } catch (_) {}
+}
+let _blindersToastShown = false;
+function _blindersShowCrashToast() {
+  if (_blindersToastShown) return;
+  _blindersToastShown = true;
+  try {
+    if (!document.body) return;
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;background:#1a1c20;border:1px solid rgba(255,255,255,0.12);color:#fff;font:500 13px/1.4 system-ui,sans-serif;padding:11px 16px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.5);max-width:90vw;';
+    el.innerHTML = 'Something hiccupped. <a href="javascript:location.reload()" style="color:#3DDC97;text-decoration:underline;">Refresh</a> if anything looks broken.';
+    document.body.appendChild(el);
+    setTimeout(() => { try { el.remove(); } catch(_) {} }, 6000);
+  } catch (_) {}
+}
 window.addEventListener('error', (e) => {
   try { console.warn('[Blinders] caught error:', e.message, e.filename + ':' + e.lineno); } catch(_) {}
+  _blindersRecordError('error', (e.message || '') + ' @ ' + (e.filename || '') + ':' + (e.lineno || ''));
+  _blindersShowCrashToast();
 });
 window.addEventListener('unhandledrejection', (e) => {
   try { console.warn('[Blinders] caught promise rejection:', e.reason); } catch(_) {}
+  _blindersRecordError('promise', (e.reason && (e.reason.message || e.reason.toString())) || 'unknown');
+  _blindersShowCrashToast();
 });
 
 // ================================================================
@@ -6131,7 +6598,13 @@ function currentSlotTime() {
   const n = new Date();
   const total = n.getHours() * 60 + n.getMinutes();
   if (total < DAY_START_MIN) return null;
-  const slot = minToTime(Math.floor(total / state.interval) * state.interval);
+  // Align rounding to DAY_START_MIN so e.g. wake=4:45 AM + interval=30 yields
+  // slots {4:45, 5:15, 5:45, 6:15, ...} instead of midnight-aligned multiples
+  // (4:30, 5:00, 5:30, ...). Without this offset, when wake time wasn't a clean
+  // multiple of the interval, currentSlotTime() returned a slot that didn't
+  // exist in state.rows, NULL would propagate, and the Now widget would hide.
+  const slotMin = DAY_START_MIN + Math.floor((total - DAY_START_MIN) / state.interval) * state.interval;
+  const slot = minToTime(slotMin);
   return state.rows.some(r => r.time === slot) ? slot : null;
 }
 
@@ -6152,6 +6625,33 @@ function autoCategorizeByActivity(text) {
 // ================================================================
 
 function storageKey(date) { return `timeaudit_${date}`; }
+
+// One-time cleanup on app load: drop any per-day log older than this cutoff.
+// Without this, a daily user accumulates one localStorage key per day
+// indefinitely (≈ a few KB each). After ~1–2 years the 5–10 MB browser quota
+// fills up and new saves start to silently fail. 365 days is roughly the
+// "Last year" view in the Patterns section, so anything older is safe to drop.
+function pruneOldLogs() {
+  try {
+    var KEEP_DAYS = 365;
+    var cutoffMs = Date.now() - KEEP_DAYS * 24 * 60 * 60 * 1000;
+    var toDelete = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      if (!key || key.indexOf('timeaudit_') !== 0) continue;
+      // Key looks like "timeaudit_YYYY-MM-DD". The "_custom_options" key
+      // (settings) also matches that prefix — skip anything not date-shaped.
+      var dateStr = key.slice('timeaudit_'.length);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
+      var ts = Date.parse(dateStr);
+      if (isNaN(ts)) continue;
+      if (ts < cutoffMs) toDelete.push(key);
+    }
+    toDelete.forEach(function (k) { try { localStorage.removeItem(k); } catch (_) {} });
+  } catch (_) { /* never let cleanup crash the app */ }
+}
+// Run once at module load. Safe + idempotent + bounded (single localStorage walk).
+pruneOldLogs();
 
 function blankRow(time) {
   return { time, activity: '', category: '', energy: '' };
@@ -6436,6 +6936,7 @@ function setInterval2(minutes) {
   }
   state.setupTimeDone = true;
   localStorage.setItem('mozimin_setup_done', '1');
+  applyTimerCollapsed();
   try { stopIntervalGlow(); } catch(e) {}
   timer.totalSec = minutes * 60;
   timer.remainSec = minutes * 60;
@@ -6801,10 +7302,13 @@ function showAddBlockedReminder(count) {
     <span class="reminder-hline"></span>
   `;
   wrap.appendChild(reminder);
-  // Position right edge of reminder just left of the Add button
+  // Position right edge of reminder just left of the Add button.
+  // The previous calc (-2) actually placed the reminder 2px PAST the button's
+  // left edge, causing the red hline to extend INSIDE the button. Use +12px
+  // to leave a clean visible gap between the line tip and the button.
   const wrapRect = wrap.getBoundingClientRect();
   const btnRect = btn.getBoundingClientRect();
-  reminder.style.right = `${wrapRect.right - btnRect.left - 2}px`;
+  reminder.style.right = `${wrapRect.right - btnRect.left + 12}px`;
   _addBlockedTimer = setTimeout(() => {
     reminder.classList.add('fade-out');
     btn.classList.remove('pulse-red');
@@ -6860,59 +7364,194 @@ function catPillColor(cat) {
 // TABLE RENDERING
 // ================================================================
 
+// ────────────────────────────────────────────────────────────────
+// NEW-UI: shrink the timer card after setup is done. Hover restores
+// the controls via CSS (#timerWidget.timer-collapsed:hover).
+// ────────────────────────────────────────────────────────────────
+function applyTimerCollapsed() {
+  const w = document.getElementById('timerWidget');
+  if (!w) return;
+  w.classList.toggle('timer-collapsed', !!state.setupTimeDone);
+}
+
+// ────────────────────────────────────────────────────────────────
+// NEW-UI renderTable — emits a vertical stack of mockup-1 "blocks".
+// Consecutive rows with the same activity + category + energy merge
+// into one taller block showing total duration. Render is still
+// rooted in the existing <table>/<tbody>/<tr>/<td> DOM so existing
+// dropdown / popup handlers keep working.
+// ────────────────────────────────────────────────────────────────
+function _newUiFmtDuration(mins) {
+  if (mins < 60) return mins + ' min';
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? h + 'h' : h + 'h ' + m + 'min';
+}
+
+// Track group membership so dropdown/activity edits on a merged block
+// can apply to every constituent slot.
+state._mergedGroupOf = null;
+// Index of the merged group currently "expanded" (clicked to view as
+// individual rows). When non-null, renderTable renders that group as
+// separate cards instead of one merged block.
+state._expandedGroupFirstIdx = null;
+
+// Helper: tear down expand state after the cursor leaves all expanded rows.
+let _expandLeaveTimer = null;
+function setExpandedGroup(firstIdx) {
+  state._expandedGroupFirstIdx = firstIdx;
+  renderTable();
+}
+function _attachExpandedLeave() {
+  if (state._expandedGroupFirstIdx == null) return;
+  const expandedRows = document.querySelectorAll('#tableBody tr.expanded-of-group');
+  if (!expandedRows.length) return;
+  expandedRows.forEach(tr => {
+    tr.addEventListener('mouseenter', () => {
+      if (_expandLeaveTimer) { clearTimeout(_expandLeaveTimer); _expandLeaveTimer = null; }
+    });
+    tr.addEventListener('mouseleave', () => {
+      _expandLeaveTimer = setTimeout(() => {
+        state._expandedGroupFirstIdx = null;
+        renderTable();
+      }, 220);
+    });
+  });
+}
+
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   const curTime = currentSlotTime();
+  const interval = state.interval || 15;
   const frag = document.createDocumentFragment();
 
+  // Build groups of consecutive rows with same activity+category+energy.
+  // Empty slots only merge with other empty slots.
+  const groups = [];
+  let current = null;
+  // Merge key intentionally OMITS energy — King's rule: if activity+category
+  // match across consecutive slots, merge them. The merged block displays the
+  // first slot's energy; changing it via the dropdown applies to all siblings.
+  const keyOf = r => `${(r.activity||'').trim().toLowerCase()}|${r.category||''}`;
+  // A row is only eligible to JOIN a merge group when ALL THREE fields
+  // (activity, category, energy) are filled. Partial rows — e.g. activity
+  // typed but energy not picked yet — stay as singletons so the user has
+  // a chance to set energy explicitly before merging takes effect.
+  const isFullyFilled = r => !!((r.activity||'').trim() && r.category && r.energy);
+  // When a merged group is "expanded" by the user (clicked), force each of
+  // its rows to render as a solo card so individual slots can be edited.
+  const expandedSet = (() => {
+    if (state._expandedGroupFirstIdx == null) return null;
+    const sibs = state._mergedGroupOf && state._mergedGroupOf[state._expandedGroupFirstIdx];
+    return sibs ? new Set(sibs) : null;
+  })();
   state.rows.forEach((row, idx) => {
+    const isExpandedSlot = expandedSet && expandedSet.has(idx);
+    const k = (isFullyFilled(row) && !isExpandedSlot) ? keyOf(row) : `__solo_${idx}`;
+    if (current && current.key === k) {
+      current.idxs.push(idx);
+    } else {
+      current = { key: k, idxs: [idx], firstRow: row, expanded: isExpandedSlot };
+      groups.push(current);
+    }
+  });
+
+  // Build lookup map so handlers can find sibling indices.
+  const groupOf = {};
+  groups.forEach(g => g.idxs.forEach(i => { groupOf[i] = g.idxs.slice(); }));
+  state._mergedGroupOf = groupOf;
+
+  // Locate the "now" cut between past and future groups.
+  const curIdx = state.rows.findIndex(r => r.time === curTime);
+  const isToday = (state.date === todayStr()) && curIdx >= 0;
+
+  groups.forEach(g => {
+    const firstIdx = g.idxs[0];
+    const lastIdx  = g.idxs[g.idxs.length - 1];
+    const row = state.rows[firstIdx];
+    const cat = getCat(row.category);
+    const eng = getEnergy(row.energy);
+    const merged = g.idxs.length > 1;
+    const isEmpty = !row.activity && !row.category && !row.energy;
+    const totalMins = g.idxs.length * interval;
+    const endMin = timeToMin(state.rows[lastIdx].time) + interval;
+    const endTime = minToTime(endMin);
+    const accent = cat ? cat.color : '#3DDC97';
+    // Is this the group that contains the current slot? (For NOW badge.)
+    const isCurrentGroup = isToday && curIdx >= firstIdx && curIdx <= lastIdx;
+
     const tr = document.createElement('tr');
     tr.className = 'table-row';
-    tr.dataset.index = idx;
+    tr.dataset.index = firstIdx;
+    tr.dataset.groupRows = g.idxs.join(',');
+    tr.style.setProperty('--block-accent', accent);
+    if (merged && !isEmpty) tr.classList.add('block-merged');
+    if (isCurrentGroup) { tr.classList.add('current-row'); tr.id = 'currentRow'; }
+    // Dim rows that start strictly AFTER the current slot.
+    if (isToday && firstIdx > curIdx) tr.classList.add('future-row');
+    // Mark rows that came from an EXPANDED merged group so the mouse-leave
+    // collapse handler can find them.
+    if (g.expanded) tr.classList.add('expanded-of-group');
+    // Click on the activity area of a merged block → expand it for editing.
+    if (merged && !isEmpty && state._expandedGroupFirstIdx !== firstIdx) {
+      tr.addEventListener('click', e => {
+        // Don't hijack clicks on the category/energy pills or their dropdowns.
+        if (e.target.closest('.cell-dropdown')) return;
+        e.preventDefault();
+        e.stopPropagation();
+        setExpandedGroup(firstIdx);
+      });
+    }
 
-    const isCurrent = row.time === curTime;
-    const cat = getCat(row.category);
-    const accent = cat ? cat.color : 'transparent';
-
-    tr.style.setProperty('--row-accent', accent);
-    tr.style.setProperty('--row-tint', cat ? cat.color : 'transparent');
-    if (isCurrent) { tr.classList.add('current-row'); tr.id = 'currentRow'; }
-
-    // --- Time ---
+    // --- Time cell. No inline NOW badge — the left-side green Now button
+    // is the only NOW indicator (per King's "remove the duplicate" request).
     const tdTime = document.createElement('td');
     tdTime.className = 'cell-time';
-    tdTime.innerHTML = `${isCurrent ? '<div class="current-row-indicator"></div>' : ''}<span class="time-text">${row.time}</span>${isCurrent ? '<span class="now-badge">NOW</span>' : ''}`;
+    // Matches the landing-page (lp-cell-time) layout: merged blocks render
+    // start + "→ end time" on two lines so the time cell has the correct
+    // height. Solo rows render just the start time.
+    if (merged && !isEmpty) {
+      tdTime.innerHTML = `<span class="time-text">${row.time}</span><span class="time-range">→ ${endTime}</span>`;
+    } else {
+      tdTime.innerHTML = `<span class="time-text">${row.time}</span>`;
+    }
 
-    // --- Activity ---
-    const tdAct = makeEditCell('activity', idx, row.activity);
+    // --- Activity cell ---
+    // Reuse makeEditCell so click → openActivityPopup keeps working.
+    const tdAct = makeEditCell('activity', firstIdx, row.activity);
+    if (merged && !isEmpty) {
+      const dur = document.createElement('div');
+      dur.className = 'activity-duration';
+      if (row.category === 'Distracted') dur.classList.add('is-distracted');
+      dur.textContent = `${_newUiFmtDuration(totalMins)} · ${g.idxs.length} slots`;
+      tdAct.appendChild(dur);
+    }
 
-    // --- Category ---
+    // --- Category cell ---
     const tdCat = document.createElement('td');
     tdCat.className = 'cell-dropdown cell-category';
     tdCat.dataset.col = 'category';
-    tdCat.dataset.row = idx;
+    tdCat.dataset.row = firstIdx;
     if (cat) {
-      tdCat.innerHTML = `<span class="category-pill has-color" style="--pill-color:${catPillColor(cat)}">${[cat.emoji,_esc(cat.label)].filter(Boolean).join(' ')} <span class="dd-arrow">▾</span></span>`;
+      tdCat.innerHTML = `<span class="category-pill has-color" data-cat="${_esc(cat.label)}" style="--pill-color:${catPillColor(cat)}">${[cat.emoji,_esc(cat.label)].filter(Boolean).join(' ')} <span class="dd-arrow">▾</span></span>`;
     } else {
       tdCat.innerHTML = `<span class="dd-trigger">Category <span class="dd-arrow">▾</span></span>`;
     }
 
-    // --- Energy ---
+    // --- Energy cell ---
     const tdEng = document.createElement('td');
     tdEng.className = 'cell-dropdown cell-energy';
     if (row.category === 'Sleep/Rest') tdEng.classList.add('energy-locked');
     tdEng.dataset.col = 'energy';
-    tdEng.dataset.row = idx;
-    const eng = getEnergy(row.energy);
+    tdEng.dataset.row = firstIdx;
     if (eng) {
-      tdEng.innerHTML = `<span class="status-pill has-color" style="--pill-color:${energyPillColor(eng.label)}">${_esc(eng.label)} <span class="dd-arrow">▾</span></span>`;
+      tdEng.innerHTML = `<span class="status-pill has-color" data-eng="${_esc(eng.label)}" style="--pill-color:${energyPillColor(eng.label)}">${_esc(eng.label)} <span class="dd-arrow">▾</span></span>`;
     } else {
       tdEng.innerHTML = `<span class="dd-trigger">Energy <span class="dd-arrow">▾</span></span>`;
     }
 
-    // Inline handlers — ensures every row (including Load More) has working dropdowns
-    tdCat.onclick = e => { e.stopPropagation(); openDropdown('category', idx, tdCat); };
-    tdEng.onclick = e => { e.stopPropagation(); openDropdown('energy', idx, tdEng); };
+    tdCat.onclick = e => { e.stopPropagation(); openDropdown('category', firstIdx, tdCat); };
+    tdEng.onclick = e => { e.stopPropagation(); openDropdown('energy', firstIdx, tdEng); };
 
     tr.append(tdTime, tdAct, tdCat, tdEng);
     frag.appendChild(tr);
@@ -6922,14 +7561,20 @@ function renderTable() {
   tbody.appendChild(frag);
   attachCellListeners();
   renderStats();
+  // positionFillAllWidget + positionNowWidget kept for compat — CSS hides them.
   positionFillAllWidget();
   positionNowWidget();
   const _btn = document.getElementById('loadMoreBtn');
-  if (_btn) _btn.style.display = (state.extraSlots >= loadMoreMax()) ? 'none' : '';
+  // Hide on past / future days — only today is extendable. Also hide once
+  // the day-cap is reached.
+  if (_btn) {
+    const notToday = state.date !== todayStr();
+    _btn.style.display = (notToday || state.extraSlots >= loadMoreMax()) ? 'none' : '';
+  }
   refreshLoadMoreLabel();
   updateLoadMoreBounce();
-  // Auto-dismiss the "X rows available" reminder if the user has since
-  // filled the empty rows past current time (block condition cleared).
+  applyTimerCollapsed();
+  _attachExpandedLeave();
   if (typeof emptyRowsAfterCurrent === 'function' && emptyRowsAfterCurrent() === 0) {
     clearAddBlockedReminder();
   }
@@ -7016,7 +7661,9 @@ function positionFillAllWidget() {
     const lRect = lastRow.getBoundingClientRect();
     const top = fRect.top - wrapRect.top;
     const height = (lRect.bottom - fRect.top);
-    const left = (firstRow.querySelector('td')?.getBoundingClientRect().left ?? fRect.left) - wrapRect.left - 8;
+    // New-UI: place vline JUST OUTSIDE the card's left edge (negative offset)
+    // so it sits in the empty page margin, not inside the card.
+    const left = fRect.left - wrapRect.left - 14;
     w.style.top = `${top}px`;
     w.style.height = `${height}px`;
     w.style.left = `${left}px`;
@@ -7038,6 +7685,7 @@ function buildNowWidget() {
   w.id = 'nowWidget';
   w.className = 'now-widget';
   w.innerHTML = `
+    <div class="now-vline"></div>
     <div class="now-hline"></div>
     <button type="button" class="now-btn">Now</button>
   `;
@@ -7068,7 +7716,8 @@ function positionNowWidget() {
   const rRect = curRow.getBoundingClientRect();
   const top  = rRect.top  - wrapRect.top;
   const height = rRect.height;
-  const left = (curRow.querySelector('td')?.getBoundingClientRect().left ?? rRect.left) - wrapRect.left - 8;
+  // New-UI: vline JUST OUTSIDE the card's left edge.
+  const left = rRect.left - wrapRect.left - 14;
   w.style.top    = `${top}px`;
   w.style.height = `${height}px`;
   w.style.left   = `${left}px`;
@@ -7669,17 +8318,20 @@ function openActivityPopup(rowIdx) {
   }
   function save() {
     const val = titleCaseActivity(inp.value.trim());
-    state.rows[rowIdx].activity = val;
+    // New-UI: write to every slot in the merged group so a multi-slot
+    // block's activity changes together. Falls back to single row.
+    const targets = (state._mergedGroupOf && state._mergedGroupOf[rowIdx]) || [rowIdx];
+    targets.forEach(i => { state.rows[i].activity = val; });
     const matched = autoCategorizeByActivity(val);
     if (matched) {
-      state.rows[rowIdx].category = matched;
-      coupleEnergyToCategory(state.rows[rowIdx], 'category', matched);
-      patchDropdownCell(rowIdx, 'category');
-      patchDropdownCell(rowIdx, 'energy');
+      targets.forEach(i => {
+        state.rows[i].category = matched;
+        coupleEnergyToCategory(state.rows[i], 'category', matched);
+      });
     }
     saveData();
-    const cell = document.querySelector(`[data-col="activity"][data-row="${rowIdx}"]`);
-    if (cell) renderActivityCellContent(cell, val);
+    // Merge shape may have changed — full re-render keeps it accurate.
+    renderTable();
     renderStats();
     close();
   }
@@ -7948,14 +8600,19 @@ function pickOption(label) {
 
   const rowIdx = dd.rowIdx;
   const colType = dd.colType;
-  state.rows[rowIdx][colType] = label;
-  coupleEnergyToCategory(state.rows[rowIdx], colType, label);
+  // New-UI: apply to every slot in the merged group so a 13-slot block
+  // updates as one. Falls back to single-row when no group is tracked.
+  const targets = (state._mergedGroupOf && state._mergedGroupOf[rowIdx]) || [rowIdx];
+  targets.forEach(i => {
+    state.rows[i][colType] = label;
+    coupleEnergyToCategory(state.rows[i], colType, label);
+  });
   if (colType === 'energy') stopEnergyGlow();
   bounceIntervalBtns();
   saveData();
   closeDropdown();
-  patchDropdownCell(rowIdx, colType);
-  if (colType === 'category') patchDropdownCell(rowIdx, 'energy');
+  // Merge shape may have changed — do a full re-render instead of cell patch.
+  renderTable();
   renderStats();
 
 }
@@ -11391,6 +12048,7 @@ document.addEventListener('DOMContentLoaded', () => {
         customMinDropdown.classList.remove('open');
         state.setupTimeDone = true;
         localStorage.setItem('mozimin_setup_done', 'true');
+        applyTimerCollapsed();
       });
     });
     if (customMinInputInline) {
@@ -11407,6 +12065,7 @@ document.addEventListener('DOMContentLoaded', () => {
             customMinDropdown.classList.remove('open');
             state.setupTimeDone = true;
             localStorage.setItem('mozimin_setup_done', 'true');
+            applyTimerCollapsed();
           }
         }
       });
@@ -11735,8 +12394,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('fbCancel').addEventListener('click', close);
     overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
-    // Paste your Google Apps Script Web App URL here once deployed
-    const FEEDBACK_GAS_URL = 'https://script.google.com/macros/s/AKfycbxSSC7cRHY1m5pDULmy0AoIpa78jNjB9v_XJkJkw4HXLnVw6WADFSqW87OWOLCKuIxy/exec';
+    // Feedback goes through our own /api/feedback proxy (origin-checked + IP
+    // rate-limited) so the Apps Script daily quota can't be drained by spam.
+    const FEEDBACK_ENDPOINT = '/api/feedback';
 
     document.getElementById('fbSend').addEventListener('click', () => {
       const text = document.getElementById('fbText').value.trim();
@@ -11744,8 +12404,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // Honeypot — bots fill hidden inputs, humans don't. Silently drop spam.
       const hp = document.getElementById('fbHp')?.value;
       if (hp) { close(); return; }
-      // Rate-limit: max 1 submission per 30 seconds per browser, to keep
-      // the Google Apps Script quota safe at scale.
+      // Rate-limit: max 1 submission per 30 seconds per browser. (Server-side
+      // limit in /api/feedback is the real protection — this is just UX.)
       const RATE_LIMIT_MS = 30_000;
       const lastSend = +localStorage.getItem('mozimin_last_fb') || 0;
       const wait = RATE_LIMIT_MS - (Date.now() - lastSend);
@@ -11759,11 +12419,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const sendBtn = document.getElementById('fbSend');
       sendBtn.textContent = 'Sending…'; sendBtn.disabled = true;
       localStorage.setItem('mozimin_last_fb', Date.now());
-      const params = new URLSearchParams({ type: selectedType, msg: text, page: 'app' });
-      const submit = FEEDBACK_GAS_URL
-        ? fetch(`${FEEDBACK_GAS_URL}?${params}`, { mode: 'no-cors' })
-        : Promise.resolve();
-      submit.finally(() => { close(); });
+      fetch(FEEDBACK_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: selectedType, msg: text, page: 'app' }),
+      }).finally(() => { close(); });
     });
 
     setTimeout(() => document.getElementById('fbText')?.focus(), 100);

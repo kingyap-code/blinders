@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com https://img.youtube.com https://i.ytimg.com; media-src 'self' data: blob:; connect-src 'self' https://script.google.com https://*.paddle.com; frame-src https://*.paddle.com https://www.youtube.com; frame-ancestors 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.paddle.com; font-src https://fonts.gstatic.com https://*.paddle.com; script-src 'self' 'unsafe-inline' https://*.paddle.com; img-src 'self' data: blob: https://*.paddle.com https://img.youtube.com https://i.ytimg.com; media-src 'self' data: blob:; connect-src 'self' https://*.paddle.com; frame-src https://*.paddle.com https://www.youtube.com; frame-ancestors 'none';">
   <title>Blinders — Know Where Your Time Actually Goes</title>
   <meta name="description" content="Blinders logs where your time actually goes — every 30 minutes, automatically. See your peak hours, weekly score, and the exact moments you're at your best.">
   <meta property="og:title" content="Blinders — Know Where Your Time Actually Goes">
@@ -1619,12 +1619,15 @@ footer {
   fill: none; stroke: #ffffff; stroke-width: 4;
   stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 0;
   transform: rotate(-90deg); transform-origin: 60px 60px;
+  /* Copied from the app (.ring-progress) so the countdown sweeps smoothly. */
+  transition: stroke-dashoffset 0.05s linear, stroke 0.4s ease;
 }
 .lp-ring-blue-glow {
   fill: none; stroke: #4DA3FF; stroke-width: 4;
   stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 0;
   transform: rotate(-90deg); transform-origin: 60px 60px;
   opacity: 0.15; filter: blur(8px);
+  transition: stroke-dashoffset 0.05s linear, stroke 0.4s ease;
 }
 .lp-timer-text {
   font-size: 22px; font-weight: 700; fill: #ffffff;
@@ -1636,7 +1639,7 @@ footer {
   border-radius: 10px; border: 1px solid rgba(255,255,255,0.18);
   background: transparent; color: #ffffff;
   display: flex; align-items: center; justify-content: center;
-  cursor: default; line-height: 1; font-family: inherit;
+  cursor: pointer; line-height: 1; font-family: inherit;
 }
 .lp-timer-buttons {
   display: flex; flex-direction: column; gap: 8px; width: 100%;
@@ -1648,7 +1651,46 @@ footer {
   background: transparent; border: 1px solid rgba(255,255,255,0.12);
   color: rgba(255,255,255,0.85); border-radius: 8px;
   font-family: inherit; font-weight: 500;
-  cursor: default; text-align: center;
+  cursor: pointer; text-align: center;
+}
+/* ── Timer dropdowns (copied from the app: .custom-min-dropdown /
+   .notifi-dropdown) so the interval + notification buttons are clickable ── */
+.lp-timer-btn-wrap { position: relative; width: 100%; }
+.lp-timer-btn-wrap > .lp-timer-wide-btn { width: 100%; }
+.lp-min-dropdown, .lp-notifi-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: #2a2c30; border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px; padding: 4px; z-index: 1000;
+  display: none; flex-direction: column; gap: 2px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+.lp-min-dropdown.open, .lp-notifi-dropdown.open { display: flex; }
+.lp-min-dropdown .lp-dd-opt, .lp-notifi-dropdown .lp-dd-opt {
+  padding: 8px 12px; cursor: pointer; color: rgba(255,255,255,0.85);
+  font-size: 12px; border-radius: 6px; text-align: center;
+  background: transparent; border: none; font-family: inherit; width: 100%;
+}
+.lp-min-dropdown .lp-dd-opt:hover, .lp-notifi-dropdown .lp-dd-opt:hover {
+  background: rgba(255,255,255,0.08); color: #fff;
+}
+.lp-min-dropdown .lp-dd-opt.active, .lp-notifi-dropdown .lp-dd-opt.active {
+  background: rgba(255,255,255,0.14); color: #fff;
+}
+.lp-notifi-dropdown .lp-dd-opt {
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.lp-notifi-dropdown .lp-dd-opt-label { flex: 1 1 auto; text-align: center; }
+.lp-notifi-dropdown .lp-dd-opt-preview {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 22px; height: 22px; padding: 0; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 50%; color: #fff; font-size: 9px; line-height: 1;
+  cursor: pointer; font-family: inherit;
+}
+.lp-notifi-dropdown .lp-dd-opt:hover .lp-dd-opt-preview { display: flex; }
+.lp-notifi-dropdown .lp-dd-opt-preview:hover {
+  background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.32);
 }
 
 /* ── FILL CALLOUT (text + arrow above Fill all button) ── */
@@ -1929,7 +1971,9 @@ footer {
   }
   .lp-score-arrow {
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; width: 80px; margin-top: 42px;
+    /* margin-top tuned so the path's start point (viewBox y=32) lands at
+       the vertical middle of the "Today's Score" button. */
+    flex-shrink: 0; width: 80px; margin-top: 31px;
   }
   .lp-score-arrow svg { width: 64px; height: 40px; }
   .lp-score-preview {
@@ -2442,7 +2486,287 @@ footer {
     padding: 0;
   }
   /* ── end Mobile checkout warning ───────────────────────────────────── */
+
+  /* ════════════════════════════════════════════════════════════════════
+     FEAT 1 — New-UI port. Re-skins the lp-tracker-table demo to look
+     like the merged-blocks design from new-ui.html.
+     Lifted from new-ui.html's override block; selectors are .lp-* scoped.
+     ════════════════════════════════════════════════════════════════════ */
+  .lp-tracker-table {
+    display: block !important;
+    width: 100% !important;
+    background: transparent !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+  .lp-tracker-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    width: 100% !important;
+  }
+  .lp-tracker-table tr.lp-table-row {
+    display: grid !important;
+    /* Column widths copied from the app's row box (80 / 130 / 130 / 130) so
+       the energy column has the same room — incl. its green ▾ — as the app. */
+    grid-template-columns: 80px 130px 130px 130px !important;
+    gap: 22px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+    background: #161618 !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    border-radius: 8px !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    transition: background .15s ease, border-color .15s ease !important;
+  }
+  .lp-tracker-table tr.lp-table-row:hover {
+    border-color: rgba(255,255,255,0.12) !important;
+    background: #1c1c1f !important;
+  }
+  .lp-tracker-table tr.lp-table-row.lp-block-merged {
+    background: linear-gradient(180deg, #161618, #1a1a1c) !important;
+    padding: 9px 14px !important;
+  }
+  /* No row fading for past / future */
+  .lp-tracker-table tr.lp-row-past,
+  .lp-tracker-table tr.lp-row-disabled { opacity: 1 !important; }
+  /* All cells render as block; reset original td widths/borders */
+  .lp-tracker-table tr.lp-table-row > td {
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+    border: none !important;
+    height: auto !important;
+    background: transparent !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    color: inherit !important;
+  }
+  /* Time cell — centered */
+  .lp-tracker-table tr.lp-table-row .lp-cell-time {
+    font-size: 12.5px !important;
+    color: #a1a1aa !important;
+    font-variant-numeric: tabular-nums !important;
+    font-weight: 500 !important;
+    text-align: center !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-cell-time .lp-time-text { display: block !important; }
+  .lp-tracker-table tr.lp-table-row .lp-cell-time .lp-time-range {
+    display: block !important;
+    font-size: 11px !important;
+    color: #71717a !important;
+    font-weight: 400 !important;
+    margin-top: 3px !important;
+  }
+  /* Activity — centered, no box */
+  .lp-tracker-table tr.lp-table-row .lp-cell-editable {
+    font-size: 14px !important;
+    color: #e4e4e7 !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    overflow: visible !important;
+    text-align: center !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-cell-editable .lp-act-empty {
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    font-size: 14px !important;
+    color: #e4e4e7 !important;
+    line-height: 1.3 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    text-align: center !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-cell-editable .lp-act-empty:empty {
+    color: rgba(255,255,255,0.18) !important;
+    font-size: 18px !important;
+    font-weight: 300 !important;
+    line-height: 1 !important;
+    transition: color .15s ease, transform .15s ease !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-cell-editable .lp-act-empty:empty::before {
+    content: '+' !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-cell-editable:hover .lp-act-empty:empty {
+    color: #3DDC97 !important;
+    transform: scale(1.18) !important;
+  }
+  /* Duration sub-line under activity for merged blocks */
+  .lp-tracker-table tr.lp-table-row .lp-activity-duration {
+    font-size: 11px !important;
+    color: #71717a !important;
+    font-weight: 500 !important;
+    margin-top: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-activity-duration::before {
+    content: '' !important;
+    width: 4px !important; height: 4px !important;
+    border-radius: 50% !important;
+    background: #3DDC97 !important;
+  }
+  /* Pills — fixed width, centered label, arrow absolute right.
+     Filled state = plain white text + green ▾. Empty trigger = same shape, no border, green ▾. */
+  .lp-tracker-table tr.lp-table-row .lp-category-pill,
+  .lp-tracker-table tr.lp-table-row .lp-status-pill,
+  .lp-tracker-table tr.lp-table-row .lp-dd-trigger {
+    /* Match app.html: display:inline-flex + align-items:center makes the text
+       vertically centered inside the pill (instead of relying on padding +
+       font baselines, which leaves the text ~3px above center). */
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    text-align: center !important;
+    padding: 5px 18px 5px 18px !important;
+    border-radius: 6px !important;
+    font-size: 11.5px !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+    line-height: 1.4 !important;
+  }
+  .lp-tracker-table tr.lp-table-row > td:nth-child(3) > span { width: 130px !important; max-width: 130px !important; }
+  .lp-tracker-table tr.lp-table-row > td:nth-child(4) > span { width: 130px !important; max-width: 130px !important; }
+  /* Vertically center category + energy text inside the FULL row box.
+     align-self:stretch makes these two cells fill the row's full height
+     (same as the tallest cell — the activity column on multi-line rows),
+     then flex centers the pill inside that full height. Time + activity
+     cells are NOT touched. */
+  .lp-tracker-table tr.lp-table-row > td:nth-child(3),
+  .lp-tracker-table tr.lp-table-row > td:nth-child(4) {
+    align-self: stretch !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-dd-arrow {
+    position: absolute !important;
+    right: 7px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    color: #3DDC97 !important;
+  }
+  .lp-tracker-table tr.lp-table-row .lp-dd-trigger {
+    background: transparent !important;
+    border: none !important;
+    color: #71717a !important;
+    font-size: 11px !important;
+    transition: color .15s ease !important;
+  }
+  .lp-tracker-table tr.lp-table-row td:hover .lp-dd-trigger { color: #3DDC97 !important; }
+  /* Filled pill — NO colored fill, NO border, plain white text + green ▾ */
+  .lp-tracker-table tr.lp-table-row .lp-category-pill.has-color,
+  .lp-tracker-table tr.lp-table-row .lp-status-pill.has-color {
+    background: transparent !important;
+    border: none !important;
+    color: #e4e4e7 !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+  }
+  .lp-tracker-table tr.lp-table-row td:hover .lp-category-pill.has-color,
+  .lp-tracker-table tr.lp-table-row td:hover .lp-status-pill.has-color { color: #3DDC97 !important; }
+  /* Now widget — thinner lines + push vline OUTSIDE the row card so it
+     doesn't touch the card's left edge. Matches new-ui.html style. */
+  .lp-now-vline {
+    left: -10px !important;
+    top: 0 !important;
+    width: 1px !important;
+    height: 100% !important;
+  }
+  .lp-now-hline {
+    height: 1px !important;
+    right: calc(100% + 10px) !important;
+  }
+  .lp-now-btn {
+    right: calc(100% + 46px) !important;
+  }
+  /* Allow vline to overflow the wrap on the left side */
+  .lp-tbl-scroll-wrap { overflow: visible !important; }
+
+  /* ── Landing-page timer: compact by default, smooth expand on hover ── */
+  #lpTimerWidget.lp-timer-collapsed .lp-timer-play-solo,
+  #lpTimerWidget.lp-timer-collapsed .lp-timer-buttons {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+    transition: max-height .3s ease, opacity .25s ease, margin .3s ease !important;
+  }
+  /* Tight max-heights (~real content height) so the reveal fills the whole
+     transition instead of finishing early and "stopping" — King's glitch. */
+  #lpTimerWidget.lp-timer-collapsed:hover .lp-timer-play-solo {
+    max-height: 44px !important;
+    opacity: 1 !important;
+    margin-top: 10px !important;
+    pointer-events: auto !important;
+    overflow: visible !important;
+  }
+  #lpTimerWidget.lp-timer-collapsed:hover .lp-timer-buttons {
+    max-height: 110px !important;
+    opacity: 1 !important;
+    margin-top: 8px !important;
+    pointer-events: auto !important;
+    overflow: visible !important;
+  }
+  /* ════════════════ end FEAT 1 new-UI port ════════════════════════════ */
   </style>
+
+  <!-- ════════════════ CRASH SAFETY NET ════════════════
+       Keeps a single uncaught error from killing the rest of the page's JS,
+       and surfaces a one-time "refresh" toast so visitors don't sit in a
+       half-broken state. Same pattern as app.html. -->
+  <script>
+    (function () {
+      var toastShown = false;
+      function showCrashToast() {
+        if (toastShown) return;
+        toastShown = true;
+        try {
+          if (!document.body) return;
+          var el = document.createElement('div');
+          el.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;background:#1a1c20;border:1px solid rgba(255,255,255,0.12);color:#fff;font:500 13px/1.4 system-ui,sans-serif;padding:11px 16px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.5);max-width:90vw;';
+          el.innerHTML = 'Something hiccupped. <a href="javascript:location.reload()" style="color:#3DDC97;text-decoration:underline;">Refresh</a> if anything looks broken.';
+          document.body.appendChild(el);
+          setTimeout(function () { try { el.remove(); } catch (_) {} }, 6000);
+        } catch (_) {}
+      }
+      window.addEventListener('error', function (e) {
+        try { console.warn('[Blinders] caught error:', e.message, (e.filename || '') + ':' + (e.lineno || '')); } catch (_) {}
+        showCrashToast();
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        try { console.warn('[Blinders] caught promise rejection:', e.reason); } catch (_) {}
+        showCrashToast();
+      });
+    })();
+  </script>
 </head>
 <body>
 
@@ -2611,8 +2935,23 @@ footer {
               </div>
               <button class="lp-timer-play-solo">▶</button>
               <div class="lp-timer-buttons">
-                <button class="lp-timer-wide-btn">30 min</button>
-                <button class="lp-timer-wide-btn">Notif 1</button>
+                <div class="lp-timer-btn-wrap">
+                  <button class="lp-timer-wide-btn" id="lpTimerMinBtn" type="button">30 min</button>
+                  <div class="lp-min-dropdown" id="lpMinDropdown">
+                    <button type="button" class="lp-dd-opt" data-min="15">15 min</button>
+                    <button type="button" class="lp-dd-opt active" data-min="30">30 min</button>
+                    <button type="button" class="lp-dd-opt" data-min="45">45 min</button>
+                    <button type="button" class="lp-dd-opt" data-min="60">1 hr</button>
+                  </div>
+                </div>
+                <div class="lp-timer-btn-wrap">
+                  <button class="lp-timer-wide-btn" id="lpTimerNotifBtn" type="button">Notif 1</button>
+                  <div class="lp-notifi-dropdown" id="lpNotifDropdown">
+                    <div class="lp-dd-opt active" data-sound="asstes/notif1.WAV" data-label="Notif 1"><span class="lp-dd-opt-label">Notif 1</span><button type="button" class="lp-dd-opt-preview" aria-label="Preview Notif 1">▶</button></div>
+                    <div class="lp-dd-opt" data-sound="asstes/notif2.WAV" data-label="Notif 2"><span class="lp-dd-opt-label">Notif 2</span><button type="button" class="lp-dd-opt-preview" aria-label="Preview Notif 2">▶</button></div>
+                    <div class="lp-dd-opt" data-sound="asstes/notif3.WAV" data-label="Notif 3"><span class="lp-dd-opt-label">Notif 3</span><button type="button" class="lp-dd-opt-preview" aria-label="Preview Notif 3">▶</button></div>
+                  </div>
+                </div>
               </div>
             </div>
             <table class="lp-tracker-table" id="lpTrackerTable">
@@ -2785,9 +3124,15 @@ footer {
 
         <!-- Arrow pointing from sidebar to score modal -->
         <div class="lp-score-arrow" aria-hidden="true">
-          <svg viewBox="0 0 64 40" fill="none">
-            <path d="M4 20 C20 20, 30 6, 48 10" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
-            <polygon points="46,5 52,10 46,15" fill="#ffffff"/>
+          <!-- Hand-drawn sketchy curved arrow, gold. Same SVG box (64x40) and
+               same container as before — only the path style was changed.
+               Main curve uses linecap:butt for a SHARP starting edge (per
+               King's request); arrowhead keeps linecap:round for nice tips. -->
+          <svg viewBox="0 0 64 40" fill="none" stroke="#D4A017" stroke-width="2" stroke-linejoin="round">
+            <!-- Main curve: starts bottom-left (sharp), swoops up-right -->
+            <path d="M4 32 C 14 30, 22 22, 34 16 S 50 8, 54 6" stroke-linecap="butt" fill="none"/>
+            <!-- Y-shaped arrowhead: rounded tips, two strokes meeting near (54,6) -->
+            <path d="M46 4 L54 6 L50 14" stroke-linecap="round" fill="none"/>
           </svg>
         </div>
 
@@ -3179,76 +3524,151 @@ footer {
   function getCat(label)    { return CATS.find(c => c.label === label) || null; }
   function getEnergy(label) { return ENERGY.find(e => e.label === label) || null; }
 
-  // ── FIXED DEMO ROWS — 30-min interval, current = 9:00 AM (index 8) ──
+  // ── FIXED DEMO ROWS — 30-min interval, 5 AM → 2 PM all filled with
+  // realistic founder activities (sourced from the "after 7 days" persona
+  // section below). Current row = 2:30 PM (index 19) — empty so anything
+  // typed in the demo lands on the Now slot.
   const DEMO_ROWS = [
-    { time:'5:00 AM',  activity:'Wake up',    category:'Movement',     energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    { time:'5:30 AM',  activity:'Workout',    category:'Movement',     energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'6:00 AM',  activity:'Bible',      category:'Spirituality', energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    { time:'6:30 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'7:00 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'7:30 AM',  activity:'Coding',     category:'Deep Work',    energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'8:00 AM',  activity:'Twitter',    category:'Distracted',   energy:'Low',    isCur:false, disabled:false, isPast:true  },
-    { time:'8:30 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:true  },
-    { time:'9:00 AM',  activity:'',           category:'',             energy:'',       isCur:true,  disabled:false, isPast:false },
-    { time:'9:30 AM',  activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'10:00 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'10:30 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'11:00 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'11:30 AM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'12:00 PM', activity:'',           category:'',             energy:'',       isCur:false, disabled:false, isPast:false },
+    // Compressed into 6 merged blocks (King's request) so the whole day
+    // collapses upward and the 2:30 PM "Now" row sits high on the table.
+    // Small one-off rows were absorbed into their neighboring block.
+    // 2:30 PM stays at index 19 so _LP_CUR_IDX / the inject logic still match.
+    // 5:00–6:00 AM — Workout (merge 2 = 1h)
+    { time:'5:00 AM',  activity:'Workout',           category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'5:30 AM',  activity:'Workout',           category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true  },
+    // 6:00–9:00 AM — Building product (merge 6 = 3h)
+    { time:'6:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'6:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'7:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'7:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'8:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'8:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    // 9:00–11:00 AM — Customer calls (merge 4 = 2h)
+    { time:'9:00 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'9:30 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'10:00 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'10:30 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    // 11:00 AM–12:00 PM — Lunch (merge 2 = 1h)
+    { time:'11:00 AM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    { time:'11:30 AM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    // 12:00–1:30 PM — Product strategy (merge 3 = 1h 30min)
+    { time:'12:00 PM', activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'12:30 PM', activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    { time:'1:00 PM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+    // 1:30–2:30 PM — Cofounder sync (merge 2 = 1h)
+    { time:'1:30 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    { time:'2:00 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true  },
+    // 2:30 PM — CURRENT (Now widget sits here, index 19). Empty so the
+    // demo's default-UI input lands on this row.
+    { time:'2:30 PM',  activity:'',                  category:'',          energy:'',       isCur:true,  disabled:false, isPast:false },
+    // 3:00–3:30 PM — upcoming empty slots (King's request). Left blank.
+    { time:'3:00 PM',  activity:'',                  category:'',          energy:'',       isCur:false, disabled:false, isPast:false },
+    { time:'3:30 PM',  activity:'',                  category:'',          energy:'',       isCur:false, disabled:false, isPast:false },
   ];
 
-  // ── RENDER ───────────────────────────────────────────────────────
+  // ── RENDER (new-UI port from new-ui.html — merged blocks) ───────────
+  function _lpFmtDuration(slots, intervalMin) {
+    const mins = slots * intervalMin;
+    if (mins < 60) return mins + ' min';
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m === 0 ? h + 'h' : h + 'h ' + m + 'min';
+  }
+  function _lpTimeToMin(t) {
+    const m = String(t || '').match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!m) return null;
+    let h = parseInt(m[1], 10);
+    const mn = parseInt(m[2], 10);
+    if (m[3].toUpperCase() === 'AM') { if (h === 12) h = 0; }
+    else                              { if (h !== 12) h += 12; }
+    return h * 60 + mn;
+  }
+  function _lpMinToTime(m) {
+    let h = Math.floor(m / 60) % 24;
+    const mn = m % 60;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return h + ':' + String(mn).padStart(2,'0') + ' ' + ampm;
+  }
   function render() {
     const tbody = document.getElementById('lpTableBody');
     if (!tbody) return;
     const frag = document.createDocumentFragment();
+    const intervalMin = 30; // demo's interval
 
+    // Build merge groups — only fully filled rows can join (matches new-ui).
+    const isFullyFilled = r => !!((r.activity||'').trim() && r.category && r.energy);
+    const keyOf = r => `${(r.activity||'').trim().toLowerCase()}|${r.category||''}`;
+    const groups = [];
+    let current = null;
     DEMO_ROWS.forEach((row, idx) => {
+      const k = isFullyFilled(row) ? keyOf(row) : `__solo_${idx}`;
+      if (current && current.key === k) current.idxs.push(idx);
+      else { current = { key: k, idxs: [idx] }; groups.push(current); }
+    });
+    // Track group membership for compatibility with old lp-r-* IDs.
+    const groupOfIdx = {};
+    groups.forEach(g => g.idxs.forEach(i => { groupOfIdx[i] = g; }));
+
+    groups.forEach(g => {
+      const firstIdx = g.idxs[0];
+      const lastIdx  = g.idxs[g.idxs.length - 1];
+      const row = DEMO_ROWS[firstIdx];
       const cat = getCat(row.category);
       const eng = getEnergy(row.energy);
+      const merged = g.idxs.length > 1;
+      const startMin = _lpTimeToMin(row.time);
+      const endMin = _lpTimeToMin(DEMO_ROWS[lastIdx].time) + intervalMin;
+      const endTime = _lpMinToTime(endMin);
 
       const tr = document.createElement('tr');
       let cls = 'lp-table-row';
       if (row.isCur)    cls += ' lp-cur-row';
       if (row.disabled) cls += ' lp-row-disabled';
       if (row.isPast)   cls += ' lp-row-past';
+      if (merged && cat)cls += ' lp-block-merged';
       tr.className = cls;
-      tr.id = `lp-r-${idx}`;
-      tr.style.setProperty('--lp-row-accent', 'transparent');
+      tr.id = `lp-r-${firstIdx}`;
+      tr.dataset.groupRows = g.idxs.join(',');
 
       // Time cell
       const tdTime = document.createElement('td');
       tdTime.className = 'lp-cell-time';
-      tdTime.innerHTML = `<span>${row.time}</span>`;
+      tdTime.innerHTML = merged
+        ? `<span class="lp-time-text">${row.time}</span><span class="lp-time-range">→ ${endTime}</span>`
+        : `<span class="lp-time-text">${row.time}</span>`;
 
       // Activity cell
       const tdAct = document.createElement('td');
       tdAct.className = 'lp-cell-editable';
       tdAct.innerHTML = '<span class="lp-act-empty"></span>';
       if (row.activity) tdAct.querySelector('.lp-act-empty').textContent = row.activity;
-      tdAct.addEventListener('click', () => openAlarmPopup(idx));
+      if (merged && cat) {
+        const dur = document.createElement('div');
+        dur.className = 'lp-activity-duration';
+        dur.textContent = `${_lpFmtDuration(g.idxs.length, intervalMin)} · ${g.idxs.length} slots`;
+        tdAct.appendChild(dur);
+      }
+      tdAct.addEventListener('click', () => openAlarmPopup(firstIdx));
 
       // Category cell
       const tdCat = document.createElement('td');
-      tdCat.style.textAlign = 'center';
       if (cat) {
-        tdCat.innerHTML = `<span class="lp-category-pill has-color" style="--pill-color:${cat.color}">${cat.label} <span class="lp-dd-arrow">▾</span></span>`;
+        tdCat.innerHTML = `<span class="lp-category-pill has-color" data-cat="${cat.label}" style="--pill-color:${cat.color}">${cat.label} <span class="lp-dd-arrow">▾</span></span>`;
       } else {
         tdCat.innerHTML = `<span class="lp-dd-trigger">Category <span class="lp-dd-arrow">▾</span></span>`;
       }
-      tdCat.addEventListener('click', () => openDropdown('category', idx, tdCat));
+      tdCat.addEventListener('click', () => openDropdown('category', firstIdx, tdCat));
 
       // Energy cell
       const tdEng = document.createElement('td');
-      tdEng.style.textAlign = 'center';
       if (eng) {
-        tdEng.innerHTML = `<span class="lp-status-pill has-color" style="--pill-color:${eng.color}">${eng.label} <span class="lp-dd-arrow">▾</span></span>`;
+        tdEng.innerHTML = `<span class="lp-status-pill has-color" data-eng="${eng.label}" style="--pill-color:${eng.color}">${eng.label} <span class="lp-dd-arrow">▾</span></span>`;
       } else {
         tdEng.innerHTML = `<span class="lp-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></span>`;
       }
       if (row.category !== 'Sleep/Rest') {
-        tdEng.addEventListener('click', () => openDropdown('energy', idx, tdEng));
+        tdEng.addEventListener('click', () => openDropdown('energy', firstIdx, tdEng));
       }
 
       tr.append(tdTime, tdAct, tdCat, tdEng);
@@ -3260,11 +3680,14 @@ footer {
     placeNowWidget();
   }
 
-  // ── NOW WIDGET (current = 9:00 AM = index 8) ─────────────────────
+  // ── NOW WIDGET (current = 2:30 PM = index 19) ────────────────────
+  // King's request: "the now button must be on 2:30 PM, so if they type
+  // something on the default UI it will be applied on the 2:30 PM."
+  const _LP_CUR_IDX = 19;
   function placeNowWidget() {
     const wrap = document.getElementById('lpTblWrap');
     if (!wrap) return;
-    const curRow = document.getElementById('lp-r-8');
+    const curRow = document.getElementById('lp-r-' + _LP_CUR_IDX);
     if (!curRow) return;
 
     let w = document.getElementById('lpNowWidget');
@@ -3273,7 +3696,7 @@ footer {
       w.id = 'lpNowWidget'; w.className = 'lp-now-widget';
       w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn">Now</button>`;
       wrap.appendChild(w);
-      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(8));
+      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(_LP_CUR_IDX));
     }
     w.style.top    = curRow.offsetTop + 'px';
     w.style.height = curRow.offsetHeight + 'px';
@@ -3691,11 +4114,11 @@ footer {
   setInterval(updateGreetingTime, 60000);
 
   // ── PUBLIC API — called by FEAT 1's alarm popup after the user submits.
-  // Injects the user's input into the 8:30 AM row and swaps the headline +
-  // body copy from "Log faster…" to "Turn every 30 minutes…".
+  // Injects the user's input into the 2:30 PM row (the Now slot) and swaps
+  // the headline + body copy from "Log faster…" to "Turn every 30 minutes…".
   window.__blindersFeat1 = {
     injectLog(activity, category, energy) {
-      const idx = DEMO_ROWS.findIndex(r => r.time === '8:30 AM');
+      const idx = DEMO_ROWS.findIndex(r => r.time === '2:30 PM');
       if (idx < 0) return;
       DEMO_ROWS[idx].activity = activity || '';
       DEMO_ROWS[idx].category = category || '';
@@ -4023,11 +4446,12 @@ footer {
     const bluEl  = widget.querySelector('.lp-ring-blue-glow');
     const btn    = widget.querySelector('.lp-timer-play-solo');
 
-    let remaining = TOTAL;
+    let total = TOTAL;      // mutable so the interval dropdown can change it
+    let remaining = total;
     let iv = null;
 
     function updateUI() {
-      const ratio = remaining / TOTAL;
+      const ratio = remaining / total;
       textEl.textContent = fmt(remaining);
       const offset = ((1 - ratio) * CIRC).toFixed(2);
       ringEl.style.strokeDashoffset = offset;
@@ -4035,7 +4459,7 @@ footer {
     }
 
     function tick() {
-      if (remaining <= 0) { stop(); remaining = TOTAL; updateUI(); return; }
+      if (remaining <= 0) { stop(); remaining = total; updateUI(); return; }
       remaining--;
       updateUI();
     }
@@ -4044,12 +4468,75 @@ footer {
     function start() { iv = setInterval(tick, 1000); btn.textContent = '⏸'; }
 
     btn.addEventListener('click', () => iv ? stop() : start());
+
+    // ── Dropdowns (interval + notification) ──────────────────────────
+    const minBtn   = widget.querySelector('#lpTimerMinBtn');
+    const minDd    = widget.querySelector('#lpMinDropdown');
+    const notifBtn = widget.querySelector('#lpTimerNotifBtn');
+    const notifDd  = widget.querySelector('#lpNotifDropdown');
+
+    function closeDds(except) {
+      [minDd, notifDd].forEach(d => { if (d && d !== except) d.classList.remove('open'); });
+    }
+    function bindToggle(triggerBtn, dd) {
+      if (!triggerBtn || !dd) return;
+      triggerBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        const willOpen = !dd.classList.contains('open');
+        closeDds(); if (willOpen) dd.classList.add('open');
+      });
+    }
+    bindToggle(minBtn, minDd);
+    bindToggle(notifBtn, notifDd);
+
+    // Interval: change the countdown length, then reset to the new total.
+    if (minBtn && minDd) {
+      minDd.querySelectorAll('.lp-dd-opt').forEach(opt => {
+        opt.addEventListener('click', e => {
+          e.stopPropagation();
+          minDd.querySelectorAll('.lp-dd-opt').forEach(o => o.classList.remove('active'));
+          opt.classList.add('active');
+          minBtn.textContent = opt.textContent;
+          total = parseInt(opt.dataset.min, 10) * 60;
+          remaining = total;
+          updateUI();
+          minDd.classList.remove('open');
+        });
+      });
+    }
+
+    // Notification: pick a sound (label updates); ▶ previews it.
+    if (notifBtn && notifDd) {
+      notifDd.querySelectorAll('.lp-dd-opt').forEach(opt => {
+        opt.addEventListener('click', e => {
+          e.stopPropagation();
+          notifDd.querySelectorAll('.lp-dd-opt').forEach(o => o.classList.remove('active'));
+          opt.classList.add('active');
+          notifBtn.textContent = opt.dataset.label;
+          notifDd.classList.remove('open');
+        });
+        const prev = opt.querySelector('.lp-dd-opt-preview');
+        if (prev) prev.addEventListener('click', e => {
+          e.stopPropagation();
+          try { const a = new Audio(opt.dataset.sound); a.volume = 0.6; a.play().catch(() => {}); } catch (_) {}
+        });
+      });
+    }
+
+    document.addEventListener('click', () => closeDds());
+
     updateUI();
     if (autoStart) start();
   }
 
   function init() {
     makeTimer('lpTimerWidget',  true);
+    // Compact by default (just the ring); expands on hover. The ring now has
+    // a smooth stroke-dashoffset transition, so there's no stutter on hover.
+    const tw = document.getElementById('lpTimerWidget');
+    if (tw) tw.classList.add('lp-timer-collapsed');
+    // Also render the demo immediately so it's there at first paint.
+    if (typeof render === 'function') render();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -4230,8 +4717,10 @@ footer {
     });
   });
 
-  // Paste your Google Apps Script Web App URL here once deployed
-  const FEEDBACK_GAS_URL = 'https://script.google.com/macros/s/AKfycbxSSC7cRHY1m5pDULmy0AoIpa78jNjB9v_XJkJkw4HXLnVw6WADFSqW87OWOLCKuIxy/exec';
+  // Feedback is sent through our own /api/feedback proxy (which forwards to the
+  // Google Apps Script Web App). This adds origin checking and IP rate limiting
+  // so the Apps Script daily quota can't be drained by spam from outside.
+  const FEEDBACK_ENDPOINT = '/api/feedback';
 
   sendBtn.addEventListener('click', () => {
     const text = textarea.value.trim();
@@ -4253,11 +4742,13 @@ footer {
     sendBtn.textContent = 'Sending…';
     sendBtn.disabled = true;
     localStorage.setItem('mozimin_last_fb', Date.now());
-    const params = new URLSearchParams({ type: selectedType, msg: text, page: 'landing' });
-    const submit = FEEDBACK_GAS_URL
-      ? fetch(`${FEEDBACK_GAS_URL}?${params}`, { mode: 'no-cors' })
-      : Promise.resolve();
-    submit.finally(() => {
+    // POST as JSON to our serverless proxy. The proxy validates + rate-limits
+    // before forwarding to Google Apps Script.
+    fetch(FEEDBACK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: selectedType, msg: text, page: 'landing' }),
+    }).finally(() => {
       textarea.value = '';
       close();
       sendBtn.textContent = 'Send';

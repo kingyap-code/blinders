@@ -70,6 +70,9 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    // Treat 429 (rate-limited) as a transient backend failure so refresh() keeps
+    // the cached plan instead of downgrading a paying customer to "free".
+    if (res.status === 429) return { plan: 'free', error: 'rate_limited' };
     return res.json();
   }
 
