@@ -6192,7 +6192,7 @@
       <span class="logo-sub">Where does your time actually go?</span>
     </div>
     <div class="header-right">
-      <a href="moziminute-landingpage.html" class="nav-btn" style="text-decoration:none;font-size:12px;padding:5px 12px;opacity:0.6;" title="Back to homepage">← Home</a>
+      <a href="index.html" class="nav-btn" style="text-decoration:none;font-size:12px;padding:5px 12px;opacity:0.6;" title="Back to homepage">← Home</a>
       <button class="strip-toggle-btn" id="stripToggleBtn">📊 Stats</button>
     </div>
   </header>
@@ -6210,7 +6210,7 @@
     </div>
     <div class="week-date-sub" id="dateDisplay"></div>
     <div class="stats-bar" id="statsBar">
-      <div class="stats-hormozi">Based on Alex Hormozi's time audit — every 15 min, log what you're doing. The timer will remind you. Click any row to start.</div>
+      <div class="stats-hormozi">Click any row to log what you're doing.</div>
     </div>
   </div>
 
@@ -8739,7 +8739,7 @@ function renderStats() {
   });
 
   if (totalLogged === 0) {
-    statsEl.innerHTML = '<div class="stats-hormozi">Based on Alex Hormozi\'s time audit — every 15 min, log what you\'re doing. The timer will remind you. Click any row to start.</div>';
+    statsEl.innerHTML = '<div class="stats-hormozi">Click any row to log what you\'re doing.</div>';
     return;
   }
 

@@ -685,15 +685,6 @@ body {
   border-top: 1px solid var(--border2);
 }
 
-/* ── FEAT 1 copy swap: shows "Log faster" headline + body by default,
-   switches to "Turn every 30 minutes" copy after the user submits the
-   alarm popup. The .feat-header fades out, copy swaps, fades back in. */
-#features [data-copy="after"]  { display: none; }
-#features.feat1-switched [data-copy="before"] { display: none; }
-#features.feat1-switched [data-copy="after"]  { display: revert; }
-#features .feat-header { transition: opacity 260ms ease; }
-#features.feat1-fading .feat-header { opacity: 0; }
-
 .feat-header {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1093,9 +1084,9 @@ footer {
 /* Outer card */
 .lp-demo-box {
   position: relative;
-  width: 100%; height: 620px;
-  background: #0F0F10; border-radius: 10px;
-  overflow: hidden; display: flex; flex-direction: column;
+  width: 100%;
+  background: transparent;
+  overflow: visible; display: flex; flex-direction: column;
   font-family: 'Inter', system-ui, sans-serif; font-size: 13px;
   color: #fff; -webkit-font-smoothing: antialiased;
 }
@@ -1466,47 +1457,11 @@ footer {
 }
 .lp-alarm-feat2 .lp-alarm-log { border-radius: 5px; }
 
-/* ── ALARM POPUP BACKDROP — soft warm organic glow with film grain ── */
-#lpDemoGrid .lp-alarm-ov {
-  background: #000000;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  overflow: hidden;
-}
-#lpDemoGrid .lp-alarm-ov::before {
-  content: '';
-  position: absolute;
-  inset: -25%;
-  background:
-    radial-gradient(ellipse 28% 36% at 50% 44%, rgba(220,255,240,0.88) 0%, rgba(90,229,176,0.70) 22%, transparent 56%),
-    radial-gradient(ellipse 55% 50% at 32% 65%, rgba(61,220,151,0.65) 0%, transparent 62%),
-    radial-gradient(ellipse 50% 55% at 72% 32%, rgba(61,220,151,0.50) 0%, transparent 60%),
-    radial-gradient(ellipse 45% 42% at 68% 78%, rgba(77,163,255,0.38) 0%, transparent 68%),
-    radial-gradient(ellipse 38% 32% at 18% 28%, rgba(77,163,255,0.36) 0%, transparent 65%);
-  filter: blur(55px);
-  animation: lpAuroraDrift 14s ease-in-out infinite;
-  z-index: 0;
-  pointer-events: none;
-}
-#lpDemoGrid .lp-alarm-ov::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.72  0 0 0 0 0.78  0 0 0 0 0.74  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  opacity: 0.42;
-  z-index: 1;
-  pointer-events: none;
-  mix-blend-mode: overlay;
-}
-#lpDemoGrid .lp-alarm-ov .lp-alarm-card {
-  position: relative;
-  z-index: 2;
-}
-@keyframes lpAuroraDrift {
-  0%, 100% { transform: translate(-3%, -2%) scale(1);    opacity: 0.95; }
-  33%      { transform: translate(4%, 3%)   scale(1.10); opacity: 1;    }
-  66%      { transform: translate(2%, -4%)  scale(1.06); opacity: 0.90; }
-}
+/* ── ALARM POPUP BACKDROP — uses the default .lp-alarm-ov rule above:
+   rgba(15,15,16,0.65) + backdrop-filter: blur(24px) saturate(150%).
+   The page content behind the overlay is frosted-glass blurred, and there's
+   NO overflow:hidden — so the Category/Energy dropdown can extend below the
+   popup card without being clipped. ── */
 
 /* ── LIQUID GRADIENT RING (Feature 2 popup — applied directly to elements) ── */
 @property --lp-glow-angle {
@@ -1538,40 +1493,88 @@ footer {
 /* ── GREETING ── */
 .lp-greeting-section {
   padding: 12px 28px 10px 28px; flex-shrink: 0;
-  background: #0F0F10;
+  background: transparent;
   text-align: center; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
+  gap: 10px;
 }
-.lp-greeting-headline { font-size: 14px; font-weight: 400; color: #b0b5c0; letter-spacing: 0.01em; line-height: 1.3; margin-bottom: 2px; }
-.lp-greeting-name { color: #ffffff; font-weight: 500; }
 .lp-greeting-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #b0b5c0; font-weight: 400; }
 .lp-greeting-meta-sep { color: rgba(255,255,255,0.25); }
 .lp-greeting-time { color: #7a7f8a; }
 
-/* ─── Week pills (Mon–Sun) — copied from main app ─── */
-.lp-week-pills {
-  display: flex; align-items: center; gap: 2px;
-  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 999px; padding: 4px;
-  width: fit-content; margin: 6px auto 4px;
+/* ─── Week pills (Mon–Sun) — pixel-for-pixel port from app.html ─── */
+.lp-week-row {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
   font-family: 'Inter', system-ui, sans-serif;
 }
+.lp-week-arrow {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 50%;
+  color: #b0b5c0;
+  cursor: pointer;
+  transition: all .15s ease;
+  padding: 0;
+}
+.lp-week-arrow:hover { border-color: #3DDC97; color: #3DDC97; }
+.lp-week-arrow svg { width: 14px; height: 14px; }
+.lp-week-arrow.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+.lp-week-pills {
+  display: flex; align-items: center; gap: 4px;
+  background: linear-gradient(160deg, #242424 0%, #131313 100%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 999px;
+  padding: 5px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.lp-week-pills::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%);
+  border-radius: 999px 999px 0 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.lp-week-pills > * { position: relative; z-index: 1; }
+
 .lp-week-pill {
-  min-width: 26px; height: 24px; padding: 0 10px;
+  min-width: 36px; height: 32px;
+  padding: 0 12px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 999px;
-  font-size: 11px; font-weight: 600;
-  color: #7a7f8a;
+  font-size: 12px; font-weight: 600;
+  color: #b0b5c0;
+  cursor: pointer;
+  transition: all .15s ease;
   position: relative;
+  user-select: none;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
 }
+.lp-week-pill:hover { color: #ffffff; background: rgba(255,255,255,0.04); }
 .lp-week-pill.today {
-  background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%);
+  background: linear-gradient(160deg, #3a3a3a 0%, #282828 100%);
   color: #ffffff;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.28),
-    inset 0 0 0 1px rgba(255,255,255,0.22);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    0 0 0 1px rgba(255,255,255,0.1),
+    0 2px 6px rgba(0,0,0,0.4);
+}
+.lp-week-pill.future { cursor: default; pointer-events: none; opacity: 0.55; }
+.lp-week-pill.has-data::before {
+  content: '';
+  position: absolute; bottom: 3px; left: 50%;
+  transform: translateX(-50%);
+  width: 3px; height: 3px; border-radius: 50%;
+  background: #3DDC97;
 }
 
 /* ─── Stats bar (top metrics) — copied from main app ─── */
@@ -1594,7 +1597,7 @@ footer {
 /* ── TIMER WIDGET ── */
 /* ── TIMER WIDGET — exact copy of main app's design ── */
 .lp-timer-widget {
-  position: absolute; left: calc(100% + 10px); top: 50%;
+  position: absolute; left: calc(100% + 40px); top: 50%;
   transform: translateY(-50%); width: 220px;
   display: flex; flex-direction: column; align-items: center; gap: 14px;
   z-index: 10; background: #1d1f23; padding: 22px 20px; border-radius: 18px;
@@ -2804,12 +2807,8 @@ footer {
       </h1>
       <div class="hero-actions-row reveal d1">
         <p class="hero-sub">
-          See your peak hours and energy patterns. Discover what's truly worth your attention — and what you should delegate.
+          See your peak hours, your energy patterns, and where your time actually goes.
         </p>
-        <a href="#features" class="hero-tag-right">
-          <span class="hero-dot" aria-hidden="true"></span>
-          Log once. See patterns. Know yourself. &nbsp;→
-        </a>
       </div>
     </div>
 
@@ -2818,7 +2817,7 @@ footer {
       <div class="hero-video-dust" aria-hidden="true"></div>
       <div class="hero-video" id="videoContainer">
         <img
-          src="https://img.youtube.com/vi/JQLdWsR0f-E/maxresdefault.jpg"
+          src="https://img.youtube.com/vi/TmB9fIvy7lM/maxresdefault.jpg"
           alt="Blinders — Time Audit Method"
           class="video-thumbnail"
         >
@@ -2876,16 +2875,15 @@ footer {
 </section>
 
 <!-- ══════════════════════════════════════
-     FEATURE 1 — "Make product operations self-driving"
-     → "Turn every 30 minutes into measurable data"
+     FEATURE 1 — "Log faster than you can think"
 ══════════════════════════════════════ -->
-<section class="feat-section" id="features" aria-labelledby="feat1-h">
+<section class="feat-section" id="features" style="padding-bottom:96px" aria-labelledby="feat1-h">
   <div class="container">
     <div class="feat-header reveal">
       <div class="feat-meta">
         <div class="feat-label">Time logging</div>
         <h2 class="feat-h2" id="feat1-h">
-          <span data-copy="before">Log faster than<br>you can think</span><span data-copy="after">Turn every 30 minutes<br>into measurable data</span>
+          Log faster than<br>you can think
         </h2>
         <a href="#pricing" class="feat-more">
           Start 3-day free trial
@@ -2893,21 +2891,31 @@ footer {
         </a>
       </div>
       <div class="feat-body">
-        <div data-copy="before">
-          <p>When the timer goes off, you spend 3 seconds answering three questions: What did you do? What category was it? What was your energy level?</p>
-          <p>No friction. Just honest logging, every interval.</p>
-        </div>
-        <div data-copy="after">
-          <p>An alarm fires. You open Blinders. You log what you just did, pick a category, rate your energy. 3 seconds later, you're back to work.</p>
-          <p>See your energy patterns. Now you know exactly when you're most productive — and can schedule deep work during your peak hours.</p>
-        </div>
+        <p>When the timer goes off, you spend 3 seconds answering three questions: What did you do? What category was it? What was your energy level?</p>
+        <p>No friction. Just honest logging, every interval.</p>
       </div>
     </div>
     <div class="feat-visual reveal">
       <div class="lp-demo-box" id="lpDemoGrid">
-        <!-- Greeting bar -->
+        <!-- Week pills (M T W Today F S S) + Palo Alto location/time -->
         <div class="lp-greeting-section">
-          <div class="lp-greeting-headline">Good morning, <span class="lp-greeting-name">King</span></div>
+          <div class="lp-week-row">
+            <button class="lp-week-arrow" id="lpWeekPrev" type="button" aria-label="Previous week">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="lp-week-pills" id="lpWeekPills">
+              <button class="lp-week-pill has-data" type="button" data-day="0">M</button>
+              <button class="lp-week-pill has-data" type="button" data-day="1">T</button>
+              <button class="lp-week-pill has-data" type="button" data-day="2">W</button>
+              <button class="lp-week-pill today has-data" type="button" data-day="3">Today</button>
+              <button class="lp-week-pill future" type="button" data-day="4">F</button>
+              <button class="lp-week-pill future" type="button" data-day="5">S</button>
+              <button class="lp-week-pill future" type="button" data-day="6">S</button>
+            </div>
+            <button class="lp-week-arrow disabled" id="lpWeekNext" type="button" aria-label="Next week">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
           <div class="lp-greeting-meta">
             <span>Palo Alto</span>
             <span class="lp-greeting-meta-sep">·</span>
@@ -2974,7 +2982,7 @@ footer {
       <div class="feat-meta">
         <div class="feat-label">Your insights</div>
         <h2 class="feat-h2" id="feat3-h">
-          See your performance,<br>day by day.<br>Week by week.
+          See where today<br>actually went.
         </h2>
         <a href="app.html" class="feat-more">
           See your insights
@@ -2982,161 +2990,14 @@ footer {
         </a>
       </div>
       <div class="feat-body">
-        <p>Every day gets a score. Green days mean you hit your deep work target. Red days show where time slipped away. The sidebar shows your full week at a glance.</p>
-        <p>Compare this week to your best week. After a week, you own your time instead of letting it own you.</p>
-        <p>After a week, you have a complete picture of where your time actually went.</p>
+        <p>Every day ends with a clear breakdown. Where your hours went. Where your energy peaked. Where you slipped.</p>
+        <p>No fuzzy "I think I worked a lot." Just a real picture of where today actually went.</p>
       </div>
     </div>
     <div class="feat-visual reveal">
       <div class="lp-score-layout">
-        <!-- Left: Day metrics sidebar -->
-        <div class="lp-sidebar">
 
-          <!-- Action buttons (Focus / Today's Score / Weekly Score) -->
-          <div class="lp-strip-btns">
-            <div class="lp-btn-focus">Focus</div>
-            <div class="lp-btn-score">Today's Score</div>
-            <div class="lp-btn-week">Weekly Score</div>
-          </div>
-
-          <!-- Best Week card -->
-          <div class="lp-week-card lp-week-card-best">
-            <div class="lp-week-card-header">
-              <span class="lp-week-card-title">Best Week</span>
-              <span class="lp-gold-orb" aria-hidden="true"></span>
-            </div>
-            <div class="lp-week-card-row">
-              <div class="lp-week-card-track">
-                <div class="lp-week-card-fill" style="width:78%;background:#3DDC97"></div>
-              </div>
-              <span class="lp-week-card-score">78%</span>
-            </div>
-            <div class="lp-week-card-date">Mar 10 – Mar 16</div>
-          </div>
-
-          <!-- This Week card -->
-          <div class="lp-week-card">
-            <div class="lp-week-card-header">
-              <span class="lp-week-card-title">This Week</span>
-            </div>
-            <div class="lp-week-card-row">
-              <div class="lp-week-card-track">
-                <div class="lp-week-card-fill" style="width:64%;background:#6981ED"></div>
-              </div>
-              <span class="lp-week-card-score">64%</span>
-            </div>
-            <div class="lp-week-card-date">Apr 7 – Apr 13</div>
-          </div>
-
-          <div class="lp-strip-divider"></div>
-
-          <!-- MON — 100% Green -->
-          <div class="lp-day-card">
-            <div class="lp-day-card-row1">
-              <div>
-                <div class="lp-day-name">MON</div>
-                <div class="lp-day-date">Apr 7</div>
-              </div>
-              <div><span class="lp-day-score-num">100</span></div>
-            </div>
-            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:100%;background:#3DDC97"></div></div>
-            <div class="lp-day-metrics">
-              <div class="lp-day-metric"><span class="lp-day-metric-val">8h 30m</span><span class="lp-day-metric-lbl">deep</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">51/51</span><span class="lp-day-metric-lbl">logged</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">9A–5P</span><span class="lp-day-metric-lbl">peak</span></div>
-            </div>
-            <div class="lp-day-copy">Exceptional. This is you at your peak.</div>
-          </div>
-
-          <!-- TUE — 63% Blue -->
-          <div class="lp-day-card">
-            <div class="lp-day-card-row1">
-              <div>
-                <div class="lp-day-name">TUE</div>
-                <div class="lp-day-date">Apr 8</div>
-              </div>
-              <div><span class="lp-day-score-num">63</span></div>
-            </div>
-            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:63%;background:#6981ED"></div></div>
-            <div class="lp-day-metrics">
-              <div class="lp-day-metric"><span class="lp-day-metric-val">5h</span><span class="lp-day-metric-lbl">deep</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">30/48</span><span class="lp-day-metric-lbl">logged</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">9A–1P</span><span class="lp-day-metric-lbl">peak</span></div>
-            </div>
-            <div class="lp-day-copy">Good momentum. Push deeper tomorrow.</div>
-          </div>
-
-          <!-- WED — 88% Green -->
-          <div class="lp-day-card">
-            <div class="lp-day-card-row1">
-              <div>
-                <div class="lp-day-name">WED</div>
-                <div class="lp-day-date">Apr 9</div>
-              </div>
-              <div><span class="lp-day-score-num">88</span></div>
-            </div>
-            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:88%;background:#3DDC97"></div></div>
-            <div class="lp-day-metrics">
-              <div class="lp-day-metric"><span class="lp-day-metric-val">7h</span><span class="lp-day-metric-lbl">deep</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">42/48</span><span class="lp-day-metric-lbl">logged</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">8A–3P</span><span class="lp-day-metric-lbl">peak</span></div>
-            </div>
-            <div class="lp-day-copy">Strong day. Push this into a streak.</div>
-          </div>
-
-          <!-- THU — 100% Green -->
-          <div class="lp-day-card">
-            <div class="lp-day-card-row1">
-              <div>
-                <div class="lp-day-name">THU</div>
-                <div class="lp-day-date">Apr 10</div>
-              </div>
-              <div><span class="lp-day-score-num">100</span></div>
-            </div>
-            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:100%;background:#3DDC97"></div></div>
-            <div class="lp-day-metrics">
-              <div class="lp-day-metric"><span class="lp-day-metric-val">8h 30m</span><span class="lp-day-metric-lbl">deep</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">51/51</span><span class="lp-day-metric-lbl">logged</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">6A–2P</span><span class="lp-day-metric-lbl">peak</span></div>
-            </div>
-            <div class="lp-day-copy">Exceptional. This is you at your peak.</div>
-          </div>
-
-          <!-- FRI — 94% Green -->
-          <div class="lp-day-card">
-            <div class="lp-day-card-row1">
-              <div>
-                <div class="lp-day-name">FRI</div>
-                <div class="lp-day-date">Apr 11</div>
-              </div>
-              <div><span class="lp-day-score-num">94</span></div>
-            </div>
-            <div class="lp-day-minbar"><div class="lp-day-minbar-fill" style="width:94%;background:#3DDC97"></div></div>
-            <div class="lp-day-metrics">
-              <div class="lp-day-metric"><span class="lp-day-metric-val">8h</span><span class="lp-day-metric-lbl">deep</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">47/50</span><span class="lp-day-metric-lbl">logged</span></div>
-              <div class="lp-day-metric"><span class="lp-day-metric-val">7A–3P</span><span class="lp-day-metric-lbl">peak</span></div>
-            </div>
-            <div class="lp-day-copy">Exceptional. This is you at your peak.</div>
-          </div>
-
-        </div>
-
-        <!-- Arrow pointing from sidebar to score modal -->
-        <div class="lp-score-arrow" aria-hidden="true">
-          <!-- Hand-drawn sketchy curved arrow, gold. Same SVG box (64x40) and
-               same container as before — only the path style was changed.
-               Main curve uses linecap:butt for a SHARP starting edge (per
-               King's request); arrowhead keeps linecap:round for nice tips. -->
-          <svg viewBox="0 0 64 40" fill="none" stroke="#D4A017" stroke-width="2" stroke-linejoin="round">
-            <!-- Main curve: starts bottom-left (sharp), swoops up-right -->
-            <path d="M4 32 C 14 30, 22 22, 34 16 S 50 8, 54 6" stroke-linecap="butt" fill="none"/>
-            <!-- Y-shaped arrowhead: rounded tips, two strokes meeting near (54,6) -->
-            <path d="M46 4 L54 6 L50 14" stroke-linecap="round" fill="none"/>
-          </svg>
-        </div>
-
-        <!-- Right: Today's Score preview (exact Variant C copy, static data matching THU) -->
+        <!-- Today's Score preview (exact Variant C copy, static data matching THU) -->
         <div class="lp-score-preview">
           <div class="c-wrap">
             <div class="c-steps">
@@ -3215,7 +3076,7 @@ footer {
       <div class="feat-meta">
         <div class="feat-label">Your week, in one view</div>
         <h2 class="feat-h2" id="feat4-h">
-          After 7 days,<br>your real schedule<br>becomes visible.
+          See where your week<br>actually went.
         </h2>
         <a href="app.html" class="feat-more">
           See your weekly score
@@ -3223,7 +3084,7 @@ footer {
         </a>
       </div>
       <div class="feat-body">
-        <p>Daily scores tell you about today. Weekly scores reveal the pattern. Which days you're sharpest. Which leak the most. Where 90 hours of your life actually went.</p>
+        <p>Which days you're sharpest. Which leak the most. Where 90 hours of your life actually went.</p>
         <p>Switch between the last 4 weeks in one click. Compare against last week. Find the patterns hiding in plain sight.</p>
         <p>By Friday, you know what to cut — and what to double down on.</p>
       </div>
@@ -3328,7 +3189,7 @@ footer {
     <div class="pricing-meta reveal">
       <div class="pricing-label">Pricing</div>
       <h2 class="pricing-h2" id="pricing-h">Built for builders who refuse<br>to guess where their time went.</h2>
-      <p class="pricing-sub">3-day free trial. Cancel anytime. 14-day money-back guarantee. By day 3, you'll see your real schedule — and you'll know if this is for you.</p>
+      <p class="pricing-sub">By day 3, you'll see your real schedule — and you'll know if this is for you.</p>
     </div>
     <div class="pricing-cards reveal d1">
       <!-- Pro -->
@@ -3397,7 +3258,7 @@ footer {
       you'll know for sure.
     </h2>
     <p class="cta-sub reveal d2">
-      Start your 3-day free trial. Build the habit. See your real schedule emerge. By the end of 3 days, you'll know if this is the tool that finally tells you where your time actually went.
+      Start the trial. Build the habit. See your real schedule emerge.
     </p>
     <div class="cta-actions reveal d2">
       <a href="#" class="cta-btn" onclick="return blindersCheckout(this, 'pri_01ks1twfe0r7995nfbbte7nrw3');">
@@ -3406,7 +3267,7 @@ footer {
       </a>
     </div>
     <p class="cta-trust reveal d3">
-      No credit card required <span>·</span> Works in your browser <span>·</span> Takes 30 seconds to set up
+      3-day free trial <span>·</span> Works in your browser <span>·</span> Takes 30 seconds to set up
     </p>
   </div>
 </section>
@@ -3466,7 +3327,7 @@ footer {
   const videoContainer = document.getElementById('videoContainer');
   if (videoContainer) {
     videoContainer.addEventListener('click', () => {
-      const videoId = 'JQLdWsR0f-E';
+      const videoId = 'TmB9fIvy7lM';
       const iframe = document.createElement('iframe');
       iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
       iframe.title = 'Blinders — Time Audit Method';
@@ -3483,7 +3344,7 @@ footer {
   const thumb = document.querySelector('.video-thumbnail');
   if (thumb) {
     thumb.addEventListener('error', () => {
-      thumb.src = 'https://img.youtube.com/vi/JQLdWsR0f-E/hqdefault.jpg';
+      thumb.src = 'https://img.youtube.com/vi/TmB9fIvy7lM/hqdefault.jpg';
     }, { once: true });
   }
 </script>
@@ -3524,47 +3385,137 @@ footer {
   function getCat(label)    { return CATS.find(c => c.label === label) || null; }
   function getEnergy(label) { return ENERGY.find(e => e.label === label) || null; }
 
-  // ── FIXED DEMO ROWS — 30-min interval, 5 AM → 2 PM all filled with
-  // realistic founder activities (sourced from the "after 7 days" persona
-  // section below). Current row = 2:30 PM (index 19) — empty so anything
-  // typed in the demo lands on the Now slot.
-  const DEMO_ROWS = [
-    // Compressed into 6 merged blocks (King's request) so the whole day
-    // collapses upward and the 2:30 PM "Now" row sits high on the table.
-    // Small one-off rows were absorbed into their neighboring block.
-    // 2:30 PM stays at index 19 so _LP_CUR_IDX / the inject logic still match.
-    // 5:00–6:00 AM — Workout (merge 2 = 1h)
-    { time:'5:00 AM',  activity:'Workout',           category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'5:30 AM',  activity:'Workout',           category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true  },
-    // 6:00–9:00 AM — Building product (merge 6 = 3h)
-    { time:'6:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'6:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'7:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'7:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'8:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'8:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    // 9:00–11:00 AM — Customer calls (merge 4 = 2h)
-    { time:'9:00 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'9:30 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'10:00 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'10:30 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    // 11:00 AM–12:00 PM — Lunch (merge 2 = 1h)
-    { time:'11:00 AM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    { time:'11:30 AM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    // 12:00–1:30 PM — Product strategy (merge 3 = 1h 30min)
-    { time:'12:00 PM', activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'12:30 PM', activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    { time:'1:00 PM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
-    // 1:30–2:30 PM — Cofounder sync (merge 2 = 1h)
-    { time:'1:30 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    { time:'2:00 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true  },
-    // 2:30 PM — CURRENT (Now widget sits here, index 19). Empty so the
-    // demo's default-UI input lands on this row.
-    { time:'2:30 PM',  activity:'',                  category:'',          energy:'',       isCur:true,  disabled:false, isPast:false },
-    // 3:00–3:30 PM — upcoming empty slots (King's request). Left blank.
-    { time:'3:00 PM',  activity:'',                  category:'',          energy:'',       isCur:false, disabled:false, isPast:false },
-    { time:'3:30 PM',  activity:'',                  category:'',          energy:'',       isCur:false, disabled:false, isPast:false },
-  ];
+  // ── DAY-OF-WEEK DEMO ROWS — 30-min interval, 5:00 AM → 3:00 PM (21 rows)
+  // Each day is a complete founder-routine, merged into long activity blocks
+  // (King's request: "merge a lot of hours so the user can see a lot of hours
+  // in one activity"). Mon/Tue/Wed are past days (all isPast:true). Thursday
+  // is TODAY — same layout as previous version: filled through 2:00 PM, then
+  // 2:30 PM is the empty "Now" slot, 3:00 PM is the next empty future slot.
+  // The 3:30 PM row from the old version was removed to make space for the
+  // week-pill row above.
+  const DAY_ROWS = {
+    // ─── MONDAY (idx 0) — "Customer-heavy day" — 8 merged blocks, 5:00 AM → 7:00 PM ───
+    0: [
+      { time:'5:00 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:30 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'6:00 AM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'6:30 AM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'7:00 AM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'7:30 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'8:00 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'8:30 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'9:00 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'9:30 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'10:00 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'10:30 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'11:00 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'11:30 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'12:00 PM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'12:30 PM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'1:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'1:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'2:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'2:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'3:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'3:30 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'4:00 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'4:30 PM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:00 PM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:30 PM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'6:00 PM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'6:30 PM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+    ],
+    // ─── TUESDAY (idx 1) — "Build day" — 8 merged blocks, 5:00 AM → 7:00 PM ───
+    1: [
+      { time:'5:00 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:30 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'6:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'6:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'7:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'7:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'8:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'8:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'9:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'9:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'10:00 AM', activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'10:30 AM', activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'11:00 AM', activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'11:30 AM', activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'12:00 PM', activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'12:30 PM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'1:00 PM',  activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'1:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'2:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'2:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'3:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'3:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'4:00 PM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'4:30 PM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:00 PM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:30 PM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'6:00 PM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'6:30 PM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+    ],
+    // ─── WEDNESDAY (idx 2) — "Strategy + planning heavy" — 8 merged blocks, 5:00 AM → 7:00 PM ───
+    2: [
+      { time:'5:00 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:30 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'6:00 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'6:30 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'7:00 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'7:30 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'8:00 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'8:30 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'9:00 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'9:30 AM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'10:00 AM', activity:'Cofounder sync',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'10:30 AM', activity:'Cofounder sync',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'11:00 AM', activity:'Cofounder sync',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'11:30 AM', activity:'Cofounder sync',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'12:00 PM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'12:30 PM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'1:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'1:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'2:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'2:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'3:00 PM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'3:30 PM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'4:00 PM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'4:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:00 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'5:30 PM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true },
+      { time:'6:00 PM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+      { time:'6:30 PM',  activity:'Email',            category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true },
+    ],
+    // ─── THURSDAY (idx 3) — TODAY. 2:30 PM = Now (empty); 3:00 PM = future empty ───
+    3: [
+      { time:'5:00 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'5:30 AM',  activity:'Workout',          category:'Movement',  energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'6:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'6:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'7:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'7:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'8:00 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'8:30 AM',  activity:'Building product', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'9:00 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'9:30 AM',  activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'10:00 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'10:30 AM', activity:'Customer calls',   category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'11:00 AM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true  },
+      { time:'11:30 AM', activity:'Lunch',            category:'Meal/Break',energy:'Medium', isCur:false, disabled:false, isPast:true  },
+      { time:'12:00 PM', activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'12:30 PM', activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'1:00 PM',  activity:'Product strategy', category:'Deep Work', energy:'High',   isCur:false, disabled:false, isPast:true  },
+      { time:'1:30 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true  },
+      { time:'2:00 PM',  activity:'Cofounder sync',   category:'Deep Work', energy:'Medium', isCur:false, disabled:false, isPast:true  },
+      { time:'2:30 PM',  activity:'',                  category:'',          energy:'',       isCur:true,  disabled:false, isPast:false },
+      { time:'3:00 PM',  activity:'',                  category:'',          energy:'',       isCur:false, disabled:false, isPast:false },
+    ],
+  };
+  // The active day (mutable — switched by pill clicks). render(), the alarm
+  // popup, and the "Now" widget all read from this. Default = 3 (Thursday).
+  let DEMO_ROWS = DAY_ROWS[3];
+  let _curDay   = 3;
 
   // ── RENDER (new-UI port from new-ui.html — merged blocks) ───────────
   function _lpFmtDuration(slots, intervalMin) {
@@ -3680,29 +3631,67 @@ footer {
     placeNowWidget();
   }
 
-  // ── NOW WIDGET (current = 2:30 PM = index 19) ────────────────────
-  // King's request: "the now button must be on 2:30 PM, so if they type
-  // something on the default UI it will be applied on the 2:30 PM."
-  const _LP_CUR_IDX = 19;
+  // ── NOW WIDGET — dynamic: finds the row with isCur:true in the active
+  // day's DEMO_ROWS. Past days (Mon/Tue/Wed) have no isCur row, so the Now
+  // widget is hidden when those days are selected.
   function placeNowWidget() {
     const wrap = document.getElementById('lpTblWrap');
     if (!wrap) return;
-    const curRow = document.getElementById('lp-r-' + _LP_CUR_IDX);
+    const curIdx = DEMO_ROWS.findIndex(r => r.isCur);
+    let w = document.getElementById('lpNowWidget');
+
+    // Past days have no current row — hide the widget if present.
+    if (curIdx < 0) {
+      if (w) w.classList.remove('visible');
+      return;
+    }
+    const curRow = document.getElementById('lp-r-' + curIdx);
     if (!curRow) return;
 
-    let w = document.getElementById('lpNowWidget');
     if (!w) {
       w = document.createElement('div');
       w.id = 'lpNowWidget'; w.className = 'lp-now-widget';
       w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn">Now</button>`;
       wrap.appendChild(w);
-      document.getElementById('lpNowBtn').addEventListener('click', () => openAlarmPopup(_LP_CUR_IDX));
+    }
+    // Re-wire the click handler each call so it points at the latest curIdx.
+    const btn = w.querySelector('#lpNowBtn');
+    if (btn) {
+      const fresh = btn.cloneNode(true);
+      btn.parentNode.replaceChild(fresh, btn);
+      fresh.addEventListener('click', () => openAlarmPopup(curIdx));
     }
     w.style.top    = curRow.offsetTop + 'px';
     w.style.height = curRow.offsetHeight + 'px';
     w.style.left   = '0';
     w.style.width  = '100%';
     w.classList.add('visible');
+  }
+
+  // ── DAY SWITCHER (wired to the week-pill row at top of the demo) ─────
+  // Past days (M/T/W) and Today are clickable; future pills are CSS-locked
+  // (pointer-events:none) so this only fires for indices 0..3.
+  function switchDay(d) {
+    if (!DAY_ROWS[d]) return;
+    _curDay = d;
+    DEMO_ROWS = DAY_ROWS[d];
+    document.querySelectorAll('#lpWeekPills .lp-week-pill').forEach(p => {
+      const isThisDay = parseInt(p.dataset.day, 10) === d;
+      p.classList.toggle('today', isThisDay);
+    });
+    render();
+  }
+  // Wire the pill clicks after DOM is ready.
+  function wireWeekPills() {
+    document.querySelectorAll('#lpWeekPills .lp-week-pill').forEach(p => {
+      if (p.classList.contains('future')) return;
+      p.addEventListener('click', () => switchDay(parseInt(p.dataset.day, 10)));
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireWeekPills);
+  } else {
+    wireWeekPills();
   }
 
   // ── DROPDOWN ─────────────────────────────────────────────────────
@@ -4113,320 +4102,10 @@ footer {
   else { render(); updateGreetingTime(); window.scrollTo(0, 0); }
   setInterval(updateGreetingTime, 60000);
 
-  // ── PUBLIC API — called by FEAT 1's alarm popup after the user submits.
-  // Injects the user's input into the 2:30 PM row (the Now slot) and swaps
-  // the headline + body copy from "Log faster…" to "Turn every 30 minutes…".
-  window.__blindersFeat1 = {
-    injectLog(activity, category, energy) {
-      const idx = DEMO_ROWS.findIndex(r => r.time === '2:30 PM');
-      if (idx < 0) return;
-      DEMO_ROWS[idx].activity = activity || '';
-      DEMO_ROWS[idx].category = category || '';
-      DEMO_ROWS[idx].energy   = energy   || '';
-      render();
-    },
-    switchCopy() {
-      const section = document.getElementById('features');
-      if (!section || section.classList.contains('feat1-switched')) return;
-      section.classList.add('feat1-fading');
-      setTimeout(() => {
-        section.classList.add('feat1-switched');
-        section.classList.remove('feat1-fading');
-      }, 260);
-    }
-  };
-
 })();
 </script>
 
 
-<script>
-/* ================================================================
-   FEATURE 1 ALARM POPUP — exact duplicate of FEAT 2's popup logic
-   (always-open popup with hover-dropdowns, gold-glow validation,
-   "Same as last", autoCat from input, Log It / Skip / backdrop).
-   Layered on top of FEAT 1's demo box (#lpDemoGrid). All element
-   IDs use the `F1` suffix to avoid clashes with FEAT 2's `2` suffix.
-================================================================ */
-(function () {
-  'use strict';
-
-  const CATS = [
-    { id:'deep-work',    label:'Deep Work',    color:'#3DDC97' },
-    { id:'movement',     label:'Movement',     color:'#3DDC97' },
-    { id:'meal-break',   label:'Meal/Break',   color:'#4DA3FF' },
-    { id:'sleep-rest',   label:'Sleep/Rest',   color:'#4DA3FF' },
-    { id:'spirituality', label:'Spirituality', color:'#FFFFFF' },
-    { id:'distracted',   label:'Distracted',   color:'#FF5A5F' },
-  ];
-  const ENERGY = [
-    { id:'high',   label:'High',   color:'#3DDC97' },
-    { id:'medium', label:'Medium', color:'#4DA3FF' },
-    { id:'low',    label:'Low',    color:'#FF5A5F' },
-  ];
-
-  function autoCat(text) {
-    const t = text.toLowerCase();
-    if (/coding|writing|designing|programming|editing|researching|planning|strategy|deep.?work|\bfocus\b|creating|building/.test(t)) return 'deep-work';
-    if (/\bgym\b|workout|\brun\b|running|\bwalk\b|walking|exercise|stretch|yoga|cardio|fitness|\btrain\b|training/.test(t)) return 'movement';
-    if (/scroll|tiktok|instagram|facebook|twitter|youtube|netflix|social.?media|procrastinat/.test(t)) return 'distracted';
-    if (/\bsleep\b|\bnap\b|\bbed\b|\btired\b|\bcharging\b/.test(t)) return 'sleep-rest';
-    if (/\beat\b|eating|lunch|dinner|breakfast|meal|snack|coffee|\bbreak\b|\brest\b/.test(t)) return 'meal-break';
-
-    return null;
-  }
-
-  function getCat(label)    { return CATS.find(c => c.label === label) || null; }
-  function getEnergy(label) { return ENERGY.find(e => e.label === label) || null; }
-
-  // Single popup row context — FEAT 1's actual table is rendered by its own
-  // script and is not modified by this popup.
-  const DEMO_ROWS = [
-    { time:'6:30 AM',  activity:'',  category:'',  energy:'',  isCur:true,  disabled:false, isPast:false },
-  ];
-
-  // ── ALARM POPUP ──────────────────────────────────────────────────
-  function openAlarmPopup(rowIdx) {
-    if (document.getElementById('lpAlarmOvF1')) return; // prevent duplicate
-
-    const row = DEMO_ROWS[rowIdx];
-    const logoSrc = document.querySelector('.nav-brand img')?.src || '';
-
-    const ov = document.createElement('div');
-    ov.className = 'lp-alarm-ov lp-alarm-feat2'; ov.id = 'lpAlarmOvF1';
-    ov.innerHTML = `
-      <div class="lp-alarm-card">
-        <img class="lp-alarm-logo" src="${logoSrc}" alt="Blinders">
-        <div class="lp-alarm-time">${row.time}</div>
-        <button class="lp-alarm-same" id="lpAlSameF1">◄ Same as last</button>
-        <div class="lp-alarm-all-row">
-          <input type="text" class="lp-alarm-input" id="lpAlActF1"
-                 placeholder="e.g. Writing report..." value="${row.activity}">
-          <button id="lpAlCatF1" class="lp-al-dd-trigger">Category <span class="lp-dd-arrow">▾</span></button>
-          <button id="lpAlEngF1" class="lp-al-dd-trigger">Energy <span class="lp-dd-arrow">▾</span></button>
-        </div>
-        <button class="lp-alarm-log" id="lpAlLogF1">Log It</button>
-        <button class="lp-alarm-skip" id="lpAlSkipF1">Skip</button>
-      </div>`;
-    document.getElementById('lpDemoGrid').appendChild(ov);
-    requestAnimationFrame(() => ov.classList.add('open'));
-
-    const alCatBtn = document.getElementById('lpAlCatF1');
-    const alEngBtn = document.getElementById('lpAlEngF1');
-    let alCat = row.category, alEng = row.energy;
-
-    function syncPills() {
-      const cat = getCat(alCat);
-      if (cat) {
-        alCatBtn.className = 'lp-al-category-pill has-color';
-        alCatBtn.style.setProperty('--lp-adc-c', cat.color);
-        alCatBtn.innerHTML = `${cat.label} <span class="lp-dd-arrow">▾</span>`;
-      } else {
-        alCatBtn.className = 'lp-al-dd-trigger';
-        alCatBtn.removeAttribute('style');
-        alCatBtn.innerHTML = `Category <span class="lp-dd-arrow">▾</span>`;
-      }
-      const eng = getEnergy(alEng);
-      if (eng) {
-        alEngBtn.className = 'lp-al-status-pill has-color';
-        alEngBtn.style.setProperty('--lp-adc-c', eng.color);
-        alEngBtn.innerHTML = `${eng.label} <span class="lp-dd-arrow">▾</span>`;
-      } else {
-        alEngBtn.className = 'lp-al-dd-trigger';
-        alEngBtn.removeAttribute('style');
-        alEngBtn.innerHTML = `Energy <span class="lp-dd-arrow">▾</span>`;
-      }
-    }
-    syncPills();
-
-    alCatBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      openAlarmDd('category', alCatBtn, val => { alCat = val; if (val === 'Sleep/Rest') alEng = 'Charging'; syncPills(); checkAndUpdateGlow(); });
-    });
-    alEngBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      openAlarmDd('energy', alEngBtn, val => { alEng = val; syncPills(); checkAndUpdateGlow(); });
-    });
-
-    document.getElementById('lpAlSameF1').addEventListener('click', () => {
-      const prev = DEMO_ROWS.slice(0, rowIdx).reverse().find(r => r.activity);
-      if (prev) {
-        document.getElementById('lpAlActF1').value = prev.activity;
-        alCat = prev.category; alEng = prev.energy; syncPills();
-      }
-    });
-
-    function showHighlight(elIds) {
-      elIds.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (!el.classList.contains('lp-box-glow-active')) {
-          el.classList.add('lp-box-glow-active');
-        }
-      });
-    }
-
-    function checkAndUpdateGlow() {
-      const anyGlowing = ['lpAlActF1','lpAlCatF1','lpAlEngF1'].some(id =>
-        document.getElementById(id)?.classList.contains('lp-box-glow-active')
-      );
-      if (!anyGlowing) return;
-      const actVal = document.getElementById('lpAlActF1')?.value.trim() || '';
-      if (actVal) document.getElementById('lpAlActF1')?.classList.remove('lp-box-glow-active');
-      if (alCat)  document.getElementById('lpAlCatF1')?.classList.remove('lp-box-glow-active');
-      if (alEng)  document.getElementById('lpAlEngF1')?.classList.remove('lp-box-glow-active');
-    }
-
-    function validateOrHighlight() {
-      const actVal = document.getElementById('lpAlActF1')?.value.trim() || '';
-      const emptyIds = [];
-      if (!actVal) emptyIds.push('lpAlActF1');
-      if (!alCat)  emptyIds.push('lpAlCatF1');
-      if (!alEng)  emptyIds.push('lpAlEngF1');
-      if (emptyIds.length) { showHighlight(emptyIds); return false; }
-      return true;
-    }
-
-    function doLog() {
-      if (!validateOrHighlight()) return;
-      const actVal = document.getElementById('lpAlActF1').value.trim();
-      DEMO_ROWS[rowIdx].activity = actVal;
-      DEMO_ROWS[rowIdx].category = alCat;
-      DEMO_ROWS[rowIdx].energy   = alEng;
-      if (!DEMO_ROWS[rowIdx].category && actVal) {
-        const cid = autoCat(actVal);
-        DEMO_ROWS[rowIdx].category = CATS.find(c => c.id === cid)?.label || '';
-      }
-      // Inject into FEAT 1's 8:30 AM row and swap the headline + side copy
-      // from "Log faster…" to "Turn every 30 minutes…".
-      const finalCat = DEMO_ROWS[rowIdx].category;
-      window.__blindersFeat1?.injectLog(actVal, finalCat, alEng);
-      window.__blindersFeat1?.switchCopy();
-      close();
-    }
-
-    function clearGlow() {
-      ['lpAlActF1','lpAlCatF1','lpAlEngF1'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('lp-box-glow-active');
-      });
-    }
-
-    function close() {
-      clearGlow();
-      ov.classList.remove('open');
-      setTimeout(() => ov.remove(), 200);
-      closeAlarmDd();
-    }
-
-    document.getElementById('lpAlLogF1').addEventListener('click', doLog);
-
-    document.getElementById('lpAlSkipF1').addEventListener('click', () => {
-      clearGlow();
-      document.getElementById('lpAlActF1').value = '';
-      alCat = ''; alEng = '';
-      syncPills();
-    });
-
-    ov.addEventListener('click', e => { if (e.target === ov) validateOrHighlight(); });
-
-    const actInput = document.getElementById('lpAlActF1');
-    actInput.addEventListener('keydown', e => { if (e.key === 'Enter') doLog(); });
-    actInput.addEventListener('input', () => {
-      const catId = autoCat(actInput.value.trim());
-      if (catId) { const label = CATS.find(c => c.id === catId)?.label || ''; if (label && label !== alCat) { alCat = label; syncPills(); } }
-      checkAndUpdateGlow();
-    });
-    requestAnimationFrame(() => {
-      const emptyIds = [];
-      if (!actInput.value.trim()) emptyIds.push('lpAlActF1');
-      if (!alCat) emptyIds.push('lpAlCatF1');
-      if (!alEng) emptyIds.push('lpAlEngF1');
-      if (emptyIds.length) showHighlight(emptyIds);
-    });
-    [['lpAlCatF1', () => alCat], ['lpAlEngF1', () => alEng]].forEach(([id, getVal]) => {
-      const btn = document.getElementById(id);
-      if (!btn) return;
-      let _ht = null;
-      btn.addEventListener('mouseenter', () => {
-        if (getVal()) return;
-        _ht = setTimeout(() => {
-          if (getVal()) return;
-          if (document.getElementById('lpAlDdPanelF1')) closeAlarmDd();
-          btn.click();
-        }, 150);
-      });
-      btn.addEventListener('mouseleave', () => { clearTimeout(_ht); _ht = null; });
-    });
-    setTimeout(() => actInput.focus({ preventScroll: true }), 80);
-  }
-
-  // ── ALARM DROPDOWN ───────────────────────────────────────────────
-  let _alDdRemove = null;
-  function closeAlarmDd() {
-    const p = document.getElementById('lpAlDdPanelF1');
-    if (p) { p.classList.remove('lp-dd-open'); setTimeout(() => p.remove(), 160); }
-    if (_alDdRemove) { document.removeEventListener('click', _alDdRemove); _alDdRemove = null; }
-  }
-  function openAlarmDd(colType, anchor, onPick) {
-    closeAlarmDd();
-    const opts = colType === 'category' ? CATS : ENERGY;
-    const panel = document.createElement('div');
-    panel.id = 'lpAlDdPanelF1'; panel.className = 'lp-dd-panel';
-    panel.style.zIndex = '100002';
-
-    const optList = document.createElement('div');
-    optList.className = 'lp-dd-opts';
-    opts.forEach(opt => {
-      const d = document.createElement('div');
-      d.className = 'lp-dd-opt';
-      d.textContent = opt.label;
-      d.addEventListener('click', e => { e.stopPropagation(); onPick(opt.label); closeAlarmDd(); });
-      optList.appendChild(d);
-    });
-    panel.appendChild(optList);
-    if (colType === 'category') {
-      const editBtn = document.createElement('button');
-      editBtn.className = 'lp-dd-clear';
-      editBtn.style.cssText = 'text-align:right;padding-right:14px;';
-      editBtn.textContent = 'Edit options';
-      editBtn.addEventListener('click', e => { e.stopPropagation(); closeAlarmDd(); });
-      panel.appendChild(editBtn);
-    }
-
-    const ov = anchor.closest('.lp-alarm-ov');
-    if (ov) {
-      panel.style.position = 'absolute';
-      ov.appendChild(panel);
-      const ovRect = ov.getBoundingClientRect();
-      const rect   = anchor.getBoundingClientRect();
-      let top  = rect.bottom - ovRect.top + 6;
-      let left = rect.left   - ovRect.left;
-      if (left + 210 > ov.offsetWidth) left = ov.offsetWidth - 218;
-      panel.style.top = top + 'px'; panel.style.left = left + 'px';
-    } else {
-      document.body.appendChild(panel);
-      const rect = anchor.getBoundingClientRect();
-      let top = rect.bottom + 6, left = rect.left;
-      if (top + 260 > window.innerHeight) top = rect.top - 260 - 6;
-      if (left + 210 > window.innerWidth) left = window.innerWidth - 218;
-      panel.style.top = top + 'px'; panel.style.left = left + 'px';
-    }
-
-    requestAnimationFrame(() => panel.classList.add('lp-dd-open'));
-    setTimeout(() => {
-      _alDdRemove = e => { if (!panel.contains(e.target) && e.target !== anchor) closeAlarmDd(); };
-      document.addEventListener('click', _alDdRemove);
-    }, 10);
-  }
-
-  // ── INIT ─────────────────────────────────────────────────────────
-  function initF1() { setTimeout(() => openAlarmPopup(0), 120); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initF1);
-  else initF1();
-
-})();
-</script>
 
 <script>
 (function () {
