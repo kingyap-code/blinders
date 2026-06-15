@@ -677,18 +677,37 @@
     }
     .notes-popup-overlay.open { opacity: 1; }
 
+    /* Card body — same recipe as .score-modal-card (This Week / Today's Score):
+       gradient + 1px border + 18px corners + drop shadow + inset glint + ::before
+       sheen. Covers the "What are you doing?" activity popup, the row notes
+       popup, the Settings modal, etc. */
     .notes-popup-card {
-      background: #26282E;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
+      background: linear-gradient(160deg, #242424 0%, #131313 100%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
       width: 480px;
       max-width: 92vw;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
-      padding: 24px;
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+      padding: 26px 26px 22px;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      position: relative;
+      overflow: hidden;
     }
+    .notes-popup-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 45%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+      border-radius: 18px 18px 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .notes-popup-card > * { position: relative; z-index: 1; }
 
     .notes-popup-header {
       display: flex;
@@ -725,7 +744,21 @@
       box-sizing: border-box;
     }
     .notes-popup-textarea::placeholder { color: rgba(255,255,255,0.35); }
-    .notes-popup-textarea:focus { border-color: #3DDC97; box-shadow: 0 0 0 3px rgba(61,220,151,0.18); }
+    /* Focus = lighter gray stroke (no green glow), matching onboarding. */
+    .notes-popup-textarea:focus { border-color: var(--border-hover); }
+
+    /* Settings time inputs — hide the native browser clock icon on the right
+       side of <input type="time"> per King's request. */
+    .settings-time-input::-webkit-calendar-picker-indicator {
+      display: none !important;
+      -webkit-appearance: none !important;
+    }
+    .settings-time-input::-moz-calendar-picker-indicator {
+      display: none !important;
+    }
+    .settings-time-input { -webkit-appearance: none; appearance: none; }
+    /* Focus = lighter gray stroke (no green glow). */
+    .settings-time-input:focus { border-color: var(--border-hover) !important; }
 
     .notes-popup-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
@@ -872,14 +905,37 @@
       border-color: rgba(255,255,255,0.15);
     }
     .feedback-fab svg { width: 13px; height: 13px; }
+    /* Feedback modal — full This-Week-modal recipe (gradient + sheen + border)
+       on the container, dark inner-panel on every control. */
     .feedback-card {
       max-width: 460px !important;
+      background: linear-gradient(160deg, #242424 0%, #131313 100%) !important;
+      border: 1px solid rgba(255,255,255,0.1) !important;
+      border-radius: 18px !important;
+      padding: 26px 26px 22px !important;
+      box-shadow:
+        0 24px 60px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.1) !important;
+      position: relative;
+      overflow: hidden;
     }
+    .feedback-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 45%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+      border-radius: 18px 18px 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .feedback-card > * { position: relative; z-index: 1; }
     .feedback-textarea {
       width: 100%;
       min-height: 140px;
-      background: rgba(0,0,0,0.45);
-      border: 1px solid rgba(255,255,255,0.10);
+      /* Dark inner panel — same as the .c-panel boxes in the This Week modal. */
+      background: #0F0F10;
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 8px;
       padding: 12px 14px;
       color: #fff;
@@ -888,15 +944,17 @@
       resize: vertical;
       outline: none;
     }
-    .feedback-textarea:focus { border-color: #3DDC97; box-shadow: 0 0 0 3px rgba(61,220,151,0.18); }
+    /* Focus = lighter gray stroke (no green glow), matching onboarding. */
+    .feedback-textarea:focus { border-color: var(--border-hover); }
     .feedback-textarea::placeholder { color: rgba(255,255,255,0.35); }
     .feedback-type-row {
       display: flex; gap: 8px; margin-bottom: 12px;
     }
     .feedback-type-btn {
       flex: 1;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      /* Dark inner panel — matches textarea + onboarding controls. */
+      background: #0F0F10;
+      border: 1px solid rgba(255,255,255,0.06);
       color: rgba(255,255,255,0.7);
       border-radius: 8px;
       padding: 8px 10px;
@@ -904,10 +962,13 @@
       cursor: pointer;
       transition: all 0.15s ease;
     }
+    /* Active = lighter gray stroke + bold white text (no green), matching the
+       onboarding goal-buttons "selected" treatment. */
     .feedback-type-btn.active {
-      background: rgba(61,220,151,0.12);
-      border-color: rgba(61,220,151,0.4);
-      color: #3DDC97;
+      border-color: var(--border-hover);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      font-weight: 700;
     }
 
     .notes-popup-save {
@@ -1044,10 +1105,31 @@
       align-items: center;
       gap: 12px;
       z-index: 100;
-      background: #26282E;
+      /* Fill copied EXACTLY from the M-T-W-Today-T-F-S-S day-pills bar:
+         a 160deg two-stop dark gradient + the same shadow + ::before sheen. */
+      background: linear-gradient(160deg, #242424 0%, #131313 100%);
       padding: 20px;
       border-radius: 12px;
+      box-shadow:
+        0 4px 14px rgba(0,0,0,0.55),
+        0 1px 3px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+      isolation: isolate;
     }
+    /* Glossy top sheen — same overlay as the day-pills bar. Rounded to match
+       the timer widget's 12px corners so it follows the box's top edge. */
+    .timer-widget::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 55%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%);
+      border-radius: 12px 12px 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Keep all timer-widget children above the sheen overlay. */
+    .timer-widget > * { position: relative; z-index: 1; }
     #perfStrip .timer-widget {
       position: fixed;
       right: 20px;
@@ -1068,7 +1150,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #ffffff;
+      /* Filled inner disk removed — the timer-widget box shows through.
+         The 4 visible elements are now: box, ring track, ring progress, number. */
+      background: transparent;
       border-radius: 50%;
     }
 
@@ -1428,15 +1512,17 @@
       font-weight: 700;
     }
 
+    /* Setup Time glow — same gold/green/red palette as the Energy gradient.
+       Blue (#4DA3FF) retired; effect preserved exactly. */
     .interval-btn.interval-glow,
     #customMinBtn.interval-glow {
       border: 2px solid transparent !important;
       background:
         linear-gradient(#26282E, #26282E) padding-box,
-        conic-gradient(from var(--angle), #4DA3FF, #3DDC97, #FF5A5F, #4DA3FF) border-box !important;
+        conic-gradient(from var(--angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97) border-box !important;
       animation: rotateConic 3s linear infinite !important;
       color: var(--text-primary) !important;
-      box-shadow: 0 0 10px 2px rgba(77,163,255,0.45), 0 0 20px 4px rgba(61,220,151,0.2) !important;
+      box-shadow: 0 0 10px 2px rgba(245,166,35,0.45), 0 0 20px 4px rgba(61,220,151,0.2) !important;
     }
 
     @keyframes intervalBtnBounce {
@@ -1621,15 +1707,17 @@
       transition: border-color 0.15s, box-shadow 0.15s;
     }
 
+    /* Focus = lighter gray stroke (no green glow), matching the rest of the app. */
     .dropdown-search:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(61,220,151,0.15);
+      border-color: var(--border-hover);
     }
 
     .dropdown-search::placeholder { color: var(--text-muted); }
 
+    /* Show all 9 universal categories at once — no scroll friction.
+       ~38px per option × 9 = 342px + headroom. */
     .dropdown-options {
-      max-height: 280px;
+      max-height: 380px;
       overflow-y: auto;
       padding: 6px;
     }
@@ -2210,7 +2298,13 @@
       box-sizing: border-box;
     }
     .focus-prompt-input::placeholder { color: rgba(255,255,255,0.35); }
-    .focus-prompt-input:focus { border-color: #3DDC97; box-shadow: 0 0 0 3px rgba(61,220,151,0.18); }
+    /* Focus = lighter gray stroke (no green glow), matching onboarding.
+       !important to guarantee the override wins on a freshly-shown input
+       (transition + cascade quirk caused the override to lose without it). */
+    .focus-prompt-input:focus {
+      border-color: var(--border-hover) !important;
+      box-shadow: none !important;
+    }
     .focus-prompt-btn {
       background: #3DDC97;
       color: #0F0F10;
@@ -2341,25 +2435,13 @@
       border-color: rgba(255,255,255,0.45);
       color: #ffffff;
     }
-    @keyframes addBtnRedPulse {
-      0%, 100% {
-        box-shadow:
-          0 0 0 0 rgba(255,90,95,0.55),
-          0 4px 12px rgba(255,90,95,0.35);
-        border-color: rgba(255,90,95,0.7);
-      }
-      50% {
-        box-shadow:
-          0 0 0 10px rgba(255,90,95,0),
-          0 4px 22px rgba(255,90,95,0.85),
-          0 0 32px 6px rgba(255,90,95,0.55);
-        border-color: rgba(255,90,95,1);
-      }
-    }
-    .load-more-btn.pulse-red {
-      animation: addBtnRedPulse 1.5s ease-in-out infinite;
-      color: #ffffff;
-      border-color: rgba(255,90,95,0.7);
+    /* Smooth pop-in so the "X rows available" reminder fades + bounces in
+       instead of snapping into place. translateY(-50%) is preserved in every
+       keyframe so vertical centering never jumps. */
+    @keyframes reminderAppear {
+      0%   { opacity: 0; transform: translateY(-50%) scale(0.6); }
+      55%  { opacity: 1; transform: translateY(-50%) scale(1.12); }
+      100% { opacity: 1; transform: translateY(-50%) scale(1); }
     }
     .add-blocked-reminder {
       position: absolute;
@@ -2371,6 +2453,8 @@
       z-index: 50;
       opacity: 1;
       transition: opacity 0.3s ease;
+      animation: reminderAppear 0.4s ease-out;
+      transform-origin: right center;
     }
     .add-blocked-reminder.fade-out { opacity: 0; }
     .add-blocked-reminder .reminder-hline {
@@ -2378,6 +2462,17 @@
       height: 2px;
       background: #FF3B3F;
       box-shadow: 0 0 4px rgba(255,59,63,0.5);
+    }
+    /* Small red circle at the RIGHT end of the horizontal line (the side
+       toward the Add button), differentiating this reminder from the Now
+       indicator's vertical-line tick. */
+    .add-blocked-reminder .reminder-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #FF3B3F;
+      box-shadow: 0 0 6px rgba(255,59,63,0.7);
+      flex: 0 0 auto;
     }
     .add-blocked-reminder .reminder-btn {
       pointer-events: auto;
@@ -2583,8 +2678,9 @@
     .c-energy-line .track { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; display: block; }
     .c-energy-line .fill { height: 100%; border-radius: 3px; min-width: 2px; display: block; }
     .c-energy-line .pct { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; width: 34px; text-align: right; }
-    .c-energy-line.h .fill { background: #3DDC97; } .c-energy-line.h .pct { color: #3DDC97; }
-    .c-energy-line.m .fill { background: rgba(255,255,255,0.55); } .c-energy-line.m .pct { color: rgba(255,255,255,0.75); }
+    /* Energy tiers — same gold/green/red palette as the rest of the app. */
+    .c-energy-line.h .fill { background: #F5A623; } .c-energy-line.h .pct { color: #F5A623; }
+    .c-energy-line.m .fill { background: #3DDC97; } .c-energy-line.m .pct { color: #3DDC97; }
     .c-energy-line.l .fill { background: #FF5A5F; } .c-energy-line.l .pct { color: #FF5A5F; }
     .c-question {
       margin-top: 12px;
@@ -2992,7 +3088,7 @@
       display: inline-block;
       border-radius: 8px;
       padding: 2px;
-      background: conic-gradient(from var(--angle), #3DDC97, #6981ED, #FF5A5F, #3DDC97);
+      background: conic-gradient(from var(--angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97);
       animation: rotateConic 3s linear infinite;
       isolation: isolate;
     }
@@ -3002,7 +3098,7 @@
       position: absolute;
       inset: -4px;
       border-radius: 10px;
-      background: conic-gradient(from var(--angle), #3DDC97, #6981ED, #FF5A5F, #3DDC97);
+      background: conic-gradient(from var(--angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97);
       animation: rotateConic 3s linear infinite;
       filter: blur(10px);
       opacity: 0.6;
@@ -3040,7 +3136,7 @@
       width: 5px;
       height: 22px;
       border-radius: 100px;
-      background: conic-gradient(from var(--angle), #3DDC97, #6981ED, #FF5A5F, #3DDC97);
+      background: conic-gradient(from var(--angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97);
       animation: rotateConic 3s linear infinite;
       box-shadow:
         0 0 8px  rgba(61,220,151,0.9),
@@ -3054,7 +3150,7 @@
       position: absolute;
       inset: -6px;
       border-radius: 100px;
-      background: conic-gradient(from var(--angle), #3DDC97, #6981ED, #FF5A5F, #3DDC97);
+      background: conic-gradient(from var(--angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97);
       filter: blur(10px);
       opacity: 0.55;
       z-index: -1;
@@ -3311,21 +3407,59 @@
   .strip-action-score:hover {
     background: #2cb87f !important;
   }
+  /* Weekly Score — flowing LIQUID gold, matching the "Get lifetime access"
+     button colour (var(--gold) = #F5A623). Built as a FLAT gold base with two
+     big, heavily-blurred blobs (one lighter gold, one deeper amber) that drift
+     and morph slowly over it. Because every colour stays in the same gold
+     family, fades to transparent, and is blurred, there are NO hard cut lines
+     or vertical bands — just soft liquid motion. Blobs sit behind the label
+     via z-index:-1; overflow:hidden clips the blur to the rounded box. */
   .strip-action-week {
     width: 100% !important;
-    background: transparent !important;
-    border: 0.5px solid rgba(61,220,151,0.55) !important;
-    color: #3DDC97 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+    background: #F5A623 !important;
+    border: none !important;
+    color: #2a1404 !important;
     border-radius: 6px !important;
     font-size: 13px !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     padding: 8px 12px !important;
     text-align: center !important;
     justify-content: center !important;
   }
+  .strip-action-week::before,
+  .strip-action-week::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: -60% !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+    filter: blur(10px) !important;
+  }
+  /* Stronger secondary tones so the liquid motion actually reads: a pale
+     bright-gold highlight blob and a deep amber/bronze shadow blob. Both stay
+     in the gold family and fade to transparent (still blurred), so the effect
+     is noticeable but never a hard cut. Speeds unchanged (8s / 11s). */
+  .strip-action-week::before {
+    background: radial-gradient(circle at 35% 40%, #FFF0C2 0%, #FBC83C 40%, rgba(245,166,35,0) 72%) !important;
+    animation: weeklyGoldA 8s ease-in-out infinite !important;
+  }
+  .strip-action-week::after {
+    background: radial-gradient(circle at 65% 55%, #A85806 0%, #C26B08 35%, rgba(168,88,6,0) 66%) !important;
+    animation: weeklyGoldB 11s ease-in-out infinite !important;
+  }
+  @keyframes weeklyGoldA {
+    0%, 100% { transform: translate(-8%, -6%) scale(1)    rotate(0deg); }
+    50%      { transform: translate(10%,  8%) scale(1.25) rotate(25deg); }
+  }
+  @keyframes weeklyGoldB {
+    0%, 100% { transform: translate(8%,  6%) scale(1.1) rotate(0deg); }
+    50%      { transform: translate(-10%,-8%) scale(0.9) rotate(-20deg); }
+  }
   .strip-action-week:hover {
-    background: rgba(61,220,151,0.10) !important;
-    border-color: rgba(61,220,151,0.85) !important;
+    filter: brightness(1.05) !important;
   }
 
   /* ---- Weekly Score: 7-day bar chart ---- */
@@ -3365,9 +3499,12 @@
   .c-week-bar.empty .c-week-bar-fill {
     background: rgba(255,255,255,0.10);
   }
+  /* Current-day battery box: green inset stroke REMOVED per King's request.
+     The green "W" label below is the only current-day signal now.
   .c-week-bar.today .c-week-bar-track {
     box-shadow: 0 0 0 1px rgba(61,220,151,0.35) inset;
   }
+  */
   .c-week-bar-label {
     font-size: 11px;
     color: var(--text-muted, #a1a1a8);
@@ -3672,8 +3809,10 @@
     margin-bottom: 8px;
   }
 
+  /* Best Week — plain gray stroke like the normal day cards (was green).
+     The green title + orb are intentionally kept; only the border changed. */
   .week-card-best {
-    border-color: #3DDC97;
+    border-color: rgba(111,111,111,0.6);
   }
 
   .week-card-header {
@@ -4063,7 +4202,10 @@
     display: none;
     position: fixed; top: 0; right: 0; bottom: 0;
     width: 220px; z-index: 9001;
-    background: #1a1a1f;
+    /* Match the primary background (color + dot specs), same as the desktop strip. */
+    background-color: #0D0D0D;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.036) 1px, transparent 1px);
+    background-size: 22px 22px;
     border-left: 1px solid rgba(255,255,255,0.06);
     padding: 20px 12px;
     overflow-y: auto;
@@ -4076,9 +4218,14 @@
   }
 
   /* ===================== DESIGN OVERRIDES (PNG SPEC) ===================== */
-  /* Sidebar: #0F0F10 with thin right border */
+  /* Sidebar base color = PRIMARY (matches the main app background): same
+     #0D0D0D + dot-grid "specs" as the body, instead of a flat fill. This makes
+     the sidebar read as one surface with the main area, and the transparent
+     day/week cards now show the dot specs inside them. */
   #perfStrip {
-    background: #0F0F10 !important;
+    background-color: #0D0D0D !important;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.036) 1px, transparent 1px) !important;
+    background-size: 22px 22px !important;
     border-right: 1px solid rgba(255,255,255,0.08) !important;
   }
   .strip-logo-area { border-bottom: 1px solid rgba(255,255,255,0.06) !important; }
@@ -4091,10 +4238,13 @@
     border: 0.5px solid rgba(111,111,111,0.6) !important;
     box-shadow: none !important;
   }
+  /* Current day — plain gray stroke like the other day cards (was a glowing
+     white border). The .state-today class is kept so scroll-to-center logic
+     still finds today; only its appearance changed. */
   .day-card.state-today {
     background: transparent !important;
-    border: 1px solid #ffffff !important;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.15), 0 0 18px rgba(255,255,255,0.35) !important;
+    border: 0.5px solid rgba(111,111,111,0.6) !important;
+    box-shadow: none !important;
   }
   .day-card.state-best {
     background: transparent !important;
@@ -4183,20 +4333,30 @@
       top: 50% !important;
       transform: translateY(-50%) !important;
       width: 220px !important;
-      background: #1d1f23 !important;
+      /* Same day-pills gradient + shadow recipe as the base rule. */
+      background: linear-gradient(160deg, #242424 0%, #131313 100%) !important;
       padding: 22px 20px !important;
       border-radius: 18px !important;
       border: none !important;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.10) !important;
+      box-shadow:
+        0 4px 14px rgba(0,0,0,0.55),
+        0 1px 3px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1) !important;
       z-index: 100 !important;
       gap: 14px !important;
       align-items: center !important;
+    }
+    /* Match the 18px corners on desktop so the sheen hugs the rounded box. */
+    .timer-widget::before {
+      border-radius: 18px 18px 0 0 !important;
     }
   }
 
   /* Ring: white track + white shrinking progress, logo centered inside */
   .timer-ring-container {
-    background: #1d1f23 !important;
+    /* Inner disk removed — transparent so only ring + number are visible
+       inside the timer-widget box. */
+    background: transparent !important;
     width: 180px !important;
     height: 180px !important;
     border-radius: 50% !important;
@@ -4642,14 +4802,14 @@
     padding: 0 12px !important;
     background:
       linear-gradient(#1a1c20, #1a1c20) padding-box,
-      conic-gradient(from var(--angle), #3DDC97, #6981ED, #FF5A5F, #3DDC97) border-box !important;
+      conic-gradient(from var(--angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97) border-box !important;
     animation: rotateConic 3s linear infinite !important;
     box-shadow: 0 0 0 1px rgba(168,85,247,0.25), 0 0 24px 2px rgba(168,85,247,0.45), 0 0 48px 4px rgba(108,40,217,0.25) !important;
   }
   #alarmOverlay .alarm-dd-cell.energy-glow-active:hover {
     background:
       linear-gradient(#1a1c20, #1a1c20) padding-box,
-      conic-gradient(from var(--angle), #3DDC97, #6981ED, #FF5A5F, #3DDC97) border-box !important;
+      conic-gradient(from var(--angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97) border-box !important;
   }
   /* Bounce the whole cell, not just the inner span */
   #alarmOverlay .alarm-dd-cell.energy-bounce {
@@ -4674,9 +4834,16 @@
     background-image: none !important;
     opacity: 1 !important;
   }
+  /* Subtle Skip — quiet escape hatch, doesn't compete with the green Log It. */
   .alarm-skip-btn {
-    color: #ffffff !important;
-    font-size: 13px !important;
+    color: rgba(255,255,255,0.45) !important;
+    font-size: 11px !important;
+    font-weight: 400 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px !important;
+  }
+  .alarm-skip-btn:hover {
+    color: rgba(255,255,255,0.75) !important;
   }
   .alarm-snooze-btn {
     color: #ffffff !important;
@@ -5124,49 +5291,35 @@
     max-width: 400px;
   }
 
+  /* Onboarding card — design COPIED EXACTLY from .score-modal-card (the
+     "This Week" modal). Same gradient + border + drop shadow + inset glint
+     + ::before top sheen. The Continue/Enter button sits OUTSIDE this card
+     so it's untouched.  Previously: blurred dark fill + light-sweep shimmer
+     (kept the animation keyframes intact in case other elements still use
+     them; replaced the heavy shadow stack with the modal's lighter recipe). */
   .onb-card {
     width: 100%;
-    background: rgba(11, 11, 15, 0.85);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
-    border-radius: 20px;
-    padding: 24px;
+    background: linear-gradient(160deg, #242424 0%, #131313 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 26px 26px 22px;
     margin-bottom: 28px;
     text-align: left;
     position: relative;
     overflow: hidden;
-    /* layered shadows: ambient depth */
     box-shadow:
-      0 0 0 1.5px rgba(255, 255, 255, 0.04),
-      0 32px 80px rgba(0, 0, 0, 0.75),
-      0 8px 24px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.10);
+      0 24px 60px rgba(0,0,0,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.1);
   }
   .onb-card::before {
     content: '';
     position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+    border-radius: 18px 18px 0 0;
     pointer-events: none;
     z-index: 0;
-  }
-  /* Light sweep shimmer */
-  .onb-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 55%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-    animation: onbLightSweep 6s ease-in-out infinite 2s;
-    pointer-events: none;
-    z-index: 0;
-  }
-  @keyframes onbLightSweep {
-    0%   { left: -60%; opacity: 0; }
-    10%  { opacity: 1; }
-    45%  { left: 120%; opacity: 1; }
-    50%  { left: 120%; opacity: 0; }
-    100% { left: 120%; opacity: 0; }
   }
   .onb-card > * { position: relative; z-index: 1; }
 
@@ -5219,8 +5372,9 @@
     padding: 8px 0 4px;
   }
   .onb-stepper {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    /* Same dark inner-panel as wake/log-off + goal buttons. */
+    background: #0F0F10;
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 10px;
     width: 40px;
     height: 40px;
@@ -5234,11 +5388,11 @@
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.1s ease;
     user-select: none;
   }
+  /* Hover = lighter stroke only (no green glow) — same neutral feel as the
+     wake/log-off boxes' hover effect. */
   .onb-stepper:hover {
-    background: rgba(61,220,151,0.1);
-    border-color: rgba(61,220,151,0.45);
-    box-shadow: 0 0 14px rgba(61,220,151,0.18);
-    color: #3DDC97;
+    border-color: var(--border-hover);
+    color: var(--text-primary);
   }
   .onb-stepper:active { transform: scale(0.93); }
   .onb-stepper:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -5261,8 +5415,9 @@
 
   .onb-goals { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .onb-goal {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
+    /* Same dark inner-panel as the other onboarding inputs. */
+    background: #0F0F10;
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 10px;
     padding: 18px 12px;
     cursor: pointer;
@@ -5279,11 +5434,13 @@
     text-align: center;
   }
   .onb-goal:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.05); }
+  /* Selected = same lighter stroke as hover (no green glow). Bolder text
+     keeps the selected state distinguishable without color noise. */
   .onb-goal.selected {
-    border-color: rgba(61,220,151,0.45);
-    background: rgba(61,220,151,0.1);
-    color: #3DDC97;
-    box-shadow: 0 0 14px rgba(61,220,151,0.18);
+    border-color: var(--border-hover);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-primary);
+    font-weight: 700;
   }
   .onb-goal-icon { display: none; }
 
@@ -5348,8 +5505,11 @@
     justify-content: center;
     gap: 2px;
     width: 100%;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border);
+    /* Dark inner-panel style — same recipe as the .c-panel boxes inside the
+       This Week modal (#0F0F10 + soft white border). Functional radius/padding
+       kept. */
+    background: #0F0F10;
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 8px;
     padding: 11px 12px;
     cursor: text;
@@ -5361,10 +5521,9 @@
     transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
   }
   .onb-time-custom:hover { border-color: var(--border-hover); }
+  /* Click/focus state = same lighter stroke as hover (no green glow). */
   .onb-time-custom.focused {
-    border-color: rgba(61, 220, 151, 0.6);
-    background: rgba(61, 220, 151, 0.04);
-    box-shadow: 0 0 0 3px rgba(61, 220, 151, 0.12), 0 0 16px rgba(61, 220, 151, 0.08);
+    border-color: var(--border-hover);
   }
 
   .onb-tc-seg {
@@ -5621,6 +5780,12 @@
   /* Future rows render at full opacity — same look as the current row.
      (King: don't fade times that haven't passed yet.) */
   .tracker-table tr.table-row.future-row { opacity: 1 !important; }
+  /* …EXCEPT in Focus mode, where only the current row should stand out.
+     Without these overrides, the !important above wins over the base
+     `.focus-mode .table-row:not(.current-row) { opacity: 0.22 }` rule, so
+     future rows stayed bright while past rows dimmed correctly. */
+  .focus-mode .tracker-table tr.table-row.future-row { opacity: 0.22 !important; }
+  .focus-mode .tracker-table tr.table-row.future-row:hover { opacity: 0.72 !important; }
 
   /* All cells render as block; reset the original td widths */
   .tracker-table tr.table-row > td {
@@ -5889,6 +6054,10 @@
   .add-blocked-reminder .reminder-hline { height: 1px !important; }
   /* The Now widget now also has a green vline mirroring the red Fill-All
      line — connects the green Now button visually to the current-row card. */
+  /* PRESERVED FOR EASY REVERT — original Now vertical-line tick.
+     Replaced by .now-dot (green circle) below. To revert: uncomment this
+     block and swap <div class="now-dot"> back to <div class="now-vline">
+     in buildNowWidget().
   .now-vline {
     position: absolute !important;
     left: 0 !important;
@@ -5898,6 +6067,21 @@
     background: #3DDC97 !important;
     border-radius: 2px !important;
     box-shadow: 0 0 4px rgba(61,220,151,0.45) !important;
+  }
+  */
+  /* Small green circle at the right end of the Now widget's horizontal line
+     (the end toward the current row). Mirrors the red reminder's .reminder-dot
+     but in the Now indicator's green, centered exactly on the line's tip. */
+  .now-dot {
+    position: absolute !important;
+    left: 0 !important;
+    top: 50% !important;
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background: #3DDC97 !important;
+    box-shadow: 0 0 6px rgba(61,220,151,0.7) !important;
+    transform: translate(-50%, -50%) !important;
   }
 
   /* Activity empty state — NO box, NO border. A soft "+" glyph signals
@@ -6424,11 +6608,19 @@ function _esc(s) {
 // CONSTANTS
 // ================================================================
 
+// 9 universal default categories — covers founders/online workers without bloat.
+// Existing users keep their localStorage-customized list (see CATEGORIES =
+// filtered.length ? filtered : CATEGORIES below); only fresh installs get these
+// defaults. Existing users can add the new ones via the "Edit options" button.
 let CATEGORIES = [
   { id: 'deep-work',    emoji: '', label: 'Deep Work',    color: '#3DDC97' },
+  { id: 'meeting',      emoji: '', label: 'Meeting',      color: '#3DDC97' },
+  { id: 'admin',        emoji: '', label: 'Admin',        color: '#3DDC97' },
+  { id: 'learning',     emoji: '', label: 'Learning',     color: '#3DDC97' },
   { id: 'movement',     emoji: '', label: 'Movement',     color: '#3DDC97' },
   { id: 'meal-break',   emoji: '', label: 'Meal/Break',   color: '#4DA3FF' },
   { id: 'sleep-rest',   emoji: '', label: 'Sleep/Rest',   color: '#4DA3FF' },
+  { id: 'spirituality', emoji: '', label: 'Spirituality', color: '#3DDC97' },
   { id: 'distracted',   emoji: '', label: 'Distracted',   color: '#FF5A5F' },
 ];
 
@@ -6450,14 +6642,23 @@ const KEYWORD_MAP = [
 
 const CATEGORY_COLOR_MAP = {
   'deep-work':    '#3DDC97',
+  'meeting':      '#3DDC97',
+  'admin':        '#3DDC97',
+  'learning':     '#3DDC97',
   'movement':     '#3DDC97',
   'meal-break':   '#4DA3FF',
   'sleep-rest':   '#4DA3FF',
+  'spirituality': '#3DDC97',
   'distracted':   '#FF5A5F',
 };
-const CATEGORY_ORDER = ['deep-work','movement','meal-break','sleep-rest','distracted'];
+const CATEGORY_ORDER = ['deep-work','meeting','admin','learning','movement','meal-break','sleep-rest','spirituality','distracted'];
 
-const REMOVED_CATEGORY_IDS = new Set(['procrastinating','calls-meetings','admin-email','power-nap','creative','client-work','learning','exhausted','spirituality']);
+// Removed legacy IDs that should be stripped from saved user lists. Note:
+// 'learning' and 'spirituality' were here previously but are now back as
+// universal defaults (different IDs than the old removed ones, so no clash).
+// 'calls-meetings' and 'admin-email' are the OLD ids — the new ones are
+// 'meeting' and 'admin', so the old removed set still correctly retires them.
+const REMOVED_CATEGORY_IDS = new Set(['procrastinating','calls-meetings','admin-email','power-nap','creative','client-work','exhausted']);
 
 function loadCustomOptions() {
   const raw = localStorage.getItem('timeaudit_custom_options');
@@ -6469,6 +6670,23 @@ function loadCustomOptions() {
       const filtered = o.category
         .filter(c => !REMOVED_CATEGORY_IDS.has(c.id))
         .map(c => ({ ...c, emoji: '', color: CATEGORY_COLOR_MAP[c.id] || c.color }));
+
+      // ONE-SHOT MIGRATION (mozimin_universal_cats_v1):
+      // Add the new universal default categories (meeting, admin, learning,
+      // spirituality) to any existing user list that's missing them. Runs
+      // exactly once per browser so future user-deletions aren't undone.
+      const MIGRATION_KEY = 'mozimin_universal_cats_v1_done';
+      if (!localStorage.getItem(MIGRATION_KEY)) {
+        const haveIds = new Set(filtered.map(c => c.id));
+        ['meeting','admin','learning','spirituality'].forEach(id => {
+          if (!haveIds.has(id)) {
+            const def = CATEGORIES.find(c => c.id === id);
+            if (def) { filtered.push({ ...def }); changed = true; }
+          }
+        });
+        localStorage.setItem(MIGRATION_KEY, '1');
+      }
+
       filtered.sort((a, b) => {
         const ai = CATEGORY_ORDER.indexOf(a.id);
         const bi = CATEGORY_ORDER.indexOf(b.id);
@@ -7024,6 +7242,31 @@ function _preDecodeAlarmBuffer(src) {
 // prevents the tab from being throttled or silenced. When the real
 // alarm fires, it just plays on top of this loop.
 let _silentLoopAudio = null;
+let _silentLoopWatchdog = null;
+
+// (Re)start the silent keep-alive loop. This is THE thing that stops Chrome
+// from silencing the tab after ~5 min in the background. It must NEVER be
+// allowed to stay paused, because the moment it stops, the tab loses its
+// "playing audio" status and the alarm goes silent. Things that can pause it
+// without our code knowing: device sleep/wake, switching audio output
+// (headphones plugged/unplugged), an incoming phone call, OS audio-focus
+// loss. So we (a) create it once, (b) re-call .play() whenever it's found
+// paused, and (c) run a watchdog that checks every 15s. Calling .play() on
+// an already-playing element is a harmless no-op.
+function _ensureSilentLoop() {
+  try {
+    if (!_silentLoopAudio) {
+      _silentLoopAudio = new Audio('asstes/loop.WAV');
+      _silentLoopAudio.loop = true;
+      _silentLoopAudio.preload = 'auto';
+      _silentLoopAudio.volume = 1.0; // file is silent; volume must be non-zero so Chrome counts it as active audio
+    }
+    if (_silentLoopAudio.paused) {
+      const p = _silentLoopAudio.play();
+      if (p && p.catch) p.catch(() => {});
+    }
+  } catch(e) {}
+}
 
 function _unlockAudio() {
   if (_audioUnlocked) return;
@@ -7042,16 +7285,14 @@ function _unlockAudio() {
   // it never applies background-tab audio suspension, intensive
   // throttling for audio, or AudioContext suspend-on-hidden behaviors.
   // When the alarm fires, it plays cleanly on top of this loop.
-  try {
-    if (!_silentLoopAudio) {
-      _silentLoopAudio = new Audio('asstes/loop.WAV');
-      _silentLoopAudio.loop = true;
-      _silentLoopAudio.preload = 'auto';
-      _silentLoopAudio.volume = 1.0; // file is silent; volume must be non-zero so Chrome counts it as active audio
-    }
-    const p = _silentLoopAudio.play();
-    if (p && p.catch) p.catch(() => {});
-  } catch(e) {}
+  _ensureSilentLoop();
+  // Watchdog: keep the silent loop alive for the whole session. If anything
+  // pauses it (sleep/wake, audio-device change, OS interruption), restart it
+  // within 15s so the tab never loses its "playing audio" status and the
+  // alarm stays audible in deep-background tabs. Guarded so it's set once.
+  if (!_silentLoopWatchdog) {
+    _silentLoopWatchdog = setInterval(_ensureSilentLoop, 15000);
+  }
   // Preload + PRIME the chosen alarm sound on first user gesture.
   // Priming = play() once while muted, then pause + reset. This unlocks
   // the HTML5 Audio element so it can play later in deeply-backgrounded
@@ -7073,6 +7314,15 @@ function _unlockAudio() {
         localStorage.removeItem('mozimin_alarm_sound');
         stored = null;
       }
+    }
+    // Default ringtone: if the user has never picked a sound, lock in Notif 1
+    // (asstes/notif1.WAV) the moment they first interact / hit Play. This
+    // persists the choice so EVERY code path agrees — playback, priming, the
+    // Web Audio fallback, and the "Notif 1" button label — and the alarm can
+    // only ever play a real asset-folder sound, never a browser/OS default.
+    if (!stored) {
+      stored = 'asstes/notif1.WAV';
+      localStorage.setItem('mozimin_alarm_sound', stored);
     }
     const fallback = document.querySelector('.sound-opt')?.dataset.file;
     const src2 = stored || fallback;
@@ -7127,6 +7377,11 @@ function _primeAlarmAudio(src) {
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) return;
 
+  // (0) Re-kick the silent keep-alive loop the instant we're visible again.
+  // If the OS paused it while hidden, this restarts it immediately rather
+  // than waiting up to 15s for the watchdog tick.
+  _ensureSilentLoop();
+
   // (1) Catch-up: if the timer is running and the wall-clock end has passed,
   // fire onTimerDone right now. Chrome's intensive throttling can delay the
   // next setInterval tick by up to a minute, so without this catch-up the
@@ -7163,7 +7418,10 @@ function _getAlarmAudio(src) {
   if (!a) {
     a = new Audio(src);
     a.preload = 'auto';
-    a.volume = 1.0;
+    // Apply the user's saved volume preference so the alarm respects the
+    // Settings slider on first-ring after a page load. Falls back to 100%.
+    const savedVol = parseInt(localStorage.getItem('mozimin_alarm_volume') || '100', 10);
+    a.volume = Math.max(0, Math.min(1, savedVol / 100));
     try { a.load(); } catch(e) {}
     _alarmAudioCache.set(src, a);
   }
@@ -7292,14 +7550,12 @@ function showAddBlockedReminder(count) {
   const btn = document.getElementById('loadMoreBtn');
   if (!wrap || !btn) return;
   clearAddBlockedReminder();
-  // Restart pulse animation
-  void btn.offsetWidth;
-  btn.classList.add('pulse-red');
   const reminder = document.createElement('div');
   reminder.className = 'add-blocked-reminder';
   reminder.innerHTML = `
     <button type="button" class="reminder-btn" tabindex="-1">${count} ${count === 1 ? 'row' : 'rows'} available</button>
     <span class="reminder-hline"></span>
+    <span class="reminder-dot"></span>
   `;
   wrap.appendChild(reminder);
   // Position right edge of reminder just left of the Add button.
@@ -7400,6 +7656,12 @@ state._expandedGroupFirstIdx = null;
 let _expandLeaveTimer = null;
 function setExpandedGroup(firstIdx) {
   state._expandedGroupFirstIdx = firstIdx;
+  // CAPTURE the FULL sibling list NOW — before renderTable rebuilds
+  // _mergedGroupOf and collapses the expanded group's entry down to just
+  // [firstIdx]. Without this, only the first row would render as solo and
+  // the remaining identical rows would silently re-merge.
+  const sibs = state._mergedGroupOf && state._mergedGroupOf[firstIdx];
+  state._expandedGroupSiblings = sibs ? sibs.slice() : [firstIdx];
   renderTable();
 }
 function _attachExpandedLeave() {
@@ -7412,7 +7674,15 @@ function _attachExpandedLeave() {
     });
     tr.addEventListener('mouseleave', () => {
       _expandLeaveTimer = setTimeout(() => {
+        // King's fix: don't collapse while an edit popup is open. The cursor
+        // travels from the spread row to the popup (which is centered on
+        // screen, outside the rows), firing mouseleave. Without this guard,
+        // the rows visibly shrink/re-merge behind the popup before the user
+        // even types. The popup's save/cancel will trigger renderTable() and
+        // let the merge re-evaluate based on the new value.
+        if (document.getElementById('activityPopupOverlay')) return;
         state._expandedGroupFirstIdx = null;
+        state._expandedGroupSiblings = null;
         renderTable();
       }, 220);
     });
@@ -7442,7 +7712,10 @@ function renderTable() {
   // its rows to render as a solo card so individual slots can be edited.
   const expandedSet = (() => {
     if (state._expandedGroupFirstIdx == null) return null;
-    const sibs = state._mergedGroupOf && state._mergedGroupOf[state._expandedGroupFirstIdx];
+    // Prefer the PRESERVED sibling list captured at setExpandedGroup time.
+    // Fall back to _mergedGroupOf for backward compatibility.
+    const sibs = state._expandedGroupSiblings
+      || (state._mergedGroupOf && state._mergedGroupOf[state._expandedGroupFirstIdx]);
     return sibs ? new Set(sibs) : null;
   })();
   state.rows.forEach((row, idx) => {
@@ -7684,8 +7957,13 @@ function buildNowWidget() {
   const w = document.createElement('div');
   w.id = 'nowWidget';
   w.className = 'now-widget';
+  // REVERT NOTE: the Now indicator used to end in a vertical line. It now
+  // ends in a small green circle (.now-dot) to match the red reminder's dot.
+  // To revert to the vertical line: change `<div class="now-dot"></div>` back
+  // to `<div class="now-vline"></div>` below, and re-enable the .now-vline CSS
+  // block (preserved, commented out, right above the .now-dot rule).
   w.innerHTML = `
-    <div class="now-vline"></div>
+    <div class="now-dot"></div>
     <div class="now-hline"></div>
     <button type="button" class="now-btn">Now</button>
   `;
@@ -7924,24 +8202,55 @@ function openSettingsModal() {
   overlay.style.background = 'rgba(15,15,16,0.45)';
   overlay.style.backdropFilter = 'blur(20px) saturate(140%)';
   overlay.style.webkitBackdropFilter = 'blur(20px) saturate(140%)';
+  // Read current persisted prefs so the modal reflects reality.
+  const currentInterval = parseInt(localStorage.getItem('mozimin_interval') || (state.interval || 15), 10);
+  const currentSound    = localStorage.getItem('mozimin_alarm_sound') || 'asstes/notif1.WAV';
+  const currentVolume   = parseInt(localStorage.getItem('mozimin_alarm_volume') || '100', 10);
+  // Use .c-panel dark inner-panel style for all inputs (matches This Week modal).
+  const innerInputStyle = "background:#0F0F10;border:1px solid rgba(255,255,255,0.06);color:#fff;border-radius:8px;padding:10px 12px;font-size:14px;width:100%;box-sizing:border-box;font-family:inherit;";
+  const labelStyle = "display:flex;flex-direction:column;gap:6px;color:rgba(255,255,255,0.85);font-size:13px;";
+  const soundOptions = [
+    { v: 'asstes/notif1.WAV', l: 'Notif 1' },
+    { v: 'asstes/notif2.WAV', l: 'Notif 2' },
+    { v: 'asstes/notif3.WAV', l: 'Notif 3' },
+    { v: 'asstes/GTA.mp3',    l: 'GTA'     },
+  ];
   overlay.innerHTML = `
-    <div class="notes-popup-card" style="max-width:420px;background:linear-gradient(135deg,#2a2d33 0%,#1a1c20 55%,#0d0e11 100%);border:1px solid rgba(255,255,255,0.06);">
+    <div class="notes-popup-card" style="max-width:420px;">
       <div class="notes-popup-header">
         <span class="notes-popup-title">Settings</span>
         <button class="notes-popup-close" id="setClose" aria-label="Close">✕</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px;">
-        <label style="display:flex;flex-direction:column;gap:6px;color:rgba(255,255,255,0.85);font-size:13px;">
+        <label style="${labelStyle}">
           Wake Up Time
-          <input type="time" id="setWake" class="alarm-input" step="900"
-            value="${minToHHMM(DAY_START_MIN)}"
-            style="background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.10);color:#fff;border-radius:8px;padding:10px 12px;font-size:14px;">
+          <input type="time" id="setWake" class="settings-time-input" step="900"
+            value="${minToHHMM(DAY_START_MIN)}" style="${innerInputStyle}">
         </label>
-        <label style="display:flex;flex-direction:column;gap:6px;color:rgba(255,255,255,0.85);font-size:13px;">
+        <label style="${labelStyle}">
           Log Off Time
-          <input type="time" id="setLogoff" class="alarm-input" step="900"
-            value="${minToHHMM(DAY_END_MIN)}"
-            style="background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.10);color:#fff;border-radius:8px;padding:10px 12px;font-size:14px;">
+          <input type="time" id="setLogoff" class="settings-time-input" step="900"
+            value="${minToHHMM(DAY_END_MIN)}" style="${innerInputStyle}">
+        </label>
+        <label style="${labelStyle}">
+          Default check-in interval
+          <div id="setIntervalRow" style="display:flex;gap:8px;">
+            ${[15,30,60].map(m =>
+              `<button type="button" class="set-int-btn" data-min="${m}"
+                style="flex:1;background:#0F0F10;border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border-radius:8px;padding:8px;font-size:13px;cursor:pointer;font-family:inherit;">${m===60?'1h':m+'m'}</button>`
+            ).join('')}
+          </div>
+        </label>
+        <label style="${labelStyle}">
+          Default ringtone
+          <select id="setSound" style="${innerInputStyle}">
+            ${soundOptions.map(o => `<option value="${o.v}" ${o.v===currentSound?'selected':''}>${o.l}</option>`).join('')}
+          </select>
+        </label>
+        <label style="${labelStyle}">
+          Notification volume <span id="setVolumeLabel" style="color:rgba(255,255,255,0.55);font-weight:600;">${currentVolume}%</span>
+          <input type="range" id="setVolume" min="0" max="100" step="5" value="${currentVolume}"
+            style="width:100%;accent-color:#3DDC97;">
         </label>
         <div id="setError" style="color:#FF5A5F;font-size:12px;min-height:14px;"></div>
       </div>
@@ -7962,6 +8271,32 @@ function openSettingsModal() {
   document.getElementById('setCancel').addEventListener('click', close);
   overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
+  // --- Interval pill row: highlight current + select on click ---
+  let selectedInterval = currentInterval;
+  const markInterval = () => overlay.querySelectorAll('.set-int-btn').forEach(b => {
+    const sel = parseInt(b.dataset.min, 10) === selectedInterval;
+    b.style.borderColor    = sel ? 'var(--border-hover)' : 'rgba(255,255,255,0.06)';
+    b.style.background     = sel ? 'rgba(255,255,255,0.05)' : '#0F0F10';
+    b.style.color          = sel ? '#fff' : 'rgba(255,255,255,0.7)';
+    b.style.fontWeight     = sel ? '700' : '400';
+  });
+  markInterval();
+  overlay.querySelectorAll('.set-int-btn').forEach(b => {
+    b.addEventListener('click', () => { selectedInterval = parseInt(b.dataset.min, 10); markInterval(); });
+  });
+
+  // --- Volume slider: live label + live cache update so any current audio reflects it ---
+  const volSlider = document.getElementById('setVolume');
+  const volLabel  = document.getElementById('setVolumeLabel');
+  volSlider.addEventListener('input', () => {
+    const v = parseInt(volSlider.value, 10);
+    volLabel.textContent = v + '%';
+    // Live-apply so the user can hear the new level instantly if they preview.
+    const vol = Math.max(0, Math.min(1, v / 100));
+    try { if (typeof _alarmAudioCache !== 'undefined') _alarmAudioCache.forEach(a => { a.volume = vol; }); } catch(e) {}
+    try { if (typeof currentAlarmAudio !== 'undefined' && currentAlarmAudio) currentAlarmAudio.volume = vol; } catch(e) {}
+  });
+
   document.getElementById('setSave').addEventListener('click', () => {
     const wakeStr = document.getElementById('setWake').value;
     const offStr  = document.getElementById('setLogoff').value;
@@ -7974,6 +8309,27 @@ function openSettingsModal() {
     if (off <= wake) { err.textContent = 'Log Off must be after Wake Up.'; return; }
     // Match onboarding: end at the last full slot before log-off.
     if (off > wake) off = Math.max(wake + 15, off - 15);
+
+    // --- Persist new prefs (interval / sound / volume) ---
+    localStorage.setItem('mozimin_interval', String(selectedInterval));
+    state.interval = selectedInterval;
+    const chosenSound = document.getElementById('setSound').value;
+    localStorage.setItem('mozimin_alarm_sound', chosenSound);
+    // Re-prime so the alarm rings the new sound the next time it fires.
+    try { _getAlarmAudio(chosenSound); _preDecodeAlarmBuffer(chosenSound); _primeAlarmAudio(chosenSound); } catch(e) {}
+    // Sync the timer panel's notifi button label so both UIs agree.
+    try {
+      const notifiBtn = document.getElementById('notifiBtn');
+      const opt = document.querySelector(`#notifiDropdown .opt[data-sound="${chosenSound}"]`);
+      if (notifiBtn && opt) {
+        notifiBtn.textContent = opt.dataset.label;
+        document.querySelectorAll('#notifiDropdown .opt').forEach(o => o.classList.toggle('active', o === opt));
+      }
+    } catch(e) {}
+    const newVol = parseInt(document.getElementById('setVolume').value, 10);
+    localStorage.setItem('mozimin_alarm_volume', String(newVol));
+    const volFraction = Math.max(0, Math.min(1, newVol / 100));
+    try { if (typeof _alarmAudioCache !== 'undefined') _alarmAudioCache.forEach(a => { a.volume = volFraction; }); } catch(e) {}
 
     localStorage.setItem('mozimin_wake_min', String(wake));
     localStorage.setItem('mozimin_logoff_min', String(off));
@@ -8112,17 +8468,39 @@ function renderActivityCellContent(td, value) {
   if (display) td.querySelector('.activity-empty-state').textContent = display;
 }
 
+// King's fix: clicking a MERGED (not-yet-expanded) block's activity cell
+// should EXPAND the block into its individual slots, NOT open the popup.
+// The popup only opens when clicking a solo row or a slot inside an already-
+// expanded block. Centralizing the check here so both Activity and the
+// Category/Energy beginEdit paths follow the same rule.
+function _handleMergedExpandOrFallback(cell, fallback, event) {
+  const rowIdx = +cell.dataset.row;
+  const sibs = state._mergedGroupOf && state._mergedGroupOf[rowIdx];
+  const isMerged = sibs && sibs.length > 1;
+  const isExpanded = sibs && state._expandedGroupFirstIdx === sibs[0];
+  if (isMerged && !isExpanded) {
+    // Stop the bubble to the TR — the TR has its own redundant expand handler
+    // that would re-fire setExpandedGroup AFTER our siblings list is captured,
+    // re-reading the (now-collapsed) _mergedGroupOf and shrinking the spread
+    // to just one row. stopPropagation prevents that second call.
+    if (event) event.stopPropagation();
+    setExpandedGroup(sibs[0]);
+    return;
+  }
+  fallback();
+}
+
 function attachCellListeners() {
   document.querySelectorAll('.cell-editable').forEach(cell => {
     if (cell.dataset.col === 'activity') {
-      cell.addEventListener('click', () => openActivityPopup(+cell.dataset.row));
+      cell.addEventListener('click', e => _handleMergedExpandOrFallback(cell, () => openActivityPopup(+cell.dataset.row), e));
       cell.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openActivityPopup(+cell.dataset.row); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _handleMergedExpandOrFallback(cell, () => openActivityPopup(+cell.dataset.row), e); }
       });
     } else {
-      cell.addEventListener('click', () => beginEdit(cell));
+      cell.addEventListener('click', e => _handleMergedExpandOrFallback(cell, () => beginEdit(cell), e));
       cell.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); beginEdit(cell); }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _handleMergedExpandOrFallback(cell, () => beginEdit(cell), e); }
       });
     }
   });
@@ -8318,16 +8696,16 @@ function openActivityPopup(rowIdx) {
   }
   function save() {
     const val = titleCaseActivity(inp.value.trim());
-    // New-UI: write to every slot in the merged group so a multi-slot
-    // block's activity changes together. Falls back to single row.
-    const targets = (state._mergedGroupOf && state._mergedGroupOf[rowIdx]) || [rowIdx];
-    targets.forEach(i => { state.rows[i].activity = val; });
+    // PER-SLOT EDIT (King's fix): write ONLY to the clicked row, not the whole
+    // merged group. Was previously propagating across all merge-group siblings,
+    // which made it impossible to correct a single mis-typed slot inside a
+    // multi-slot block. If the new value differs, the next renderTable() will
+    // naturally split the merge into separate groups.
+    state.rows[rowIdx].activity = val;
     const matched = autoCategorizeByActivity(val);
     if (matched) {
-      targets.forEach(i => {
-        state.rows[i].category = matched;
-        coupleEnergyToCategory(state.rows[i], 'category', matched);
-      });
+      state.rows[rowIdx].category = matched;
+      coupleEnergyToCategory(state.rows[rowIdx], 'category', matched);
     }
     saveData();
     // Merge shape may have changed — full re-render keeps it accurate.
@@ -8600,13 +8978,12 @@ function pickOption(label) {
 
   const rowIdx = dd.rowIdx;
   const colType = dd.colType;
-  // New-UI: apply to every slot in the merged group so a 13-slot block
-  // updates as one. Falls back to single-row when no group is tracked.
-  const targets = (state._mergedGroupOf && state._mergedGroupOf[rowIdx]) || [rowIdx];
-  targets.forEach(i => {
-    state.rows[i][colType] = label;
-    coupleEnergyToCategory(state.rows[i], colType, label);
-  });
+  // PER-SLOT EDIT (King's fix): write ONLY to the clicked row. Was previously
+  // propagating Category/Energy edits to every slot in the merged group; that
+  // made it impossible to recategorize a single mis-tagged slot. Merge will
+  // re-split naturally on next render if the value differs from siblings.
+  state.rows[rowIdx][colType] = label;
+  coupleEnergyToCategory(state.rows[rowIdx], colType, label);
   if (colType === 'energy') stopEnergyGlow();
   bounceIntervalBtns();
   saveData();
@@ -9065,7 +9442,9 @@ function showAlarmOverlay(slotTime, rowIdx) {
       <div class="alarm-actions">
         <button class="alarm-log-btn" id="alarmLogBtn">Log It</button>
         <button class="alarm-skip-btn" id="alarmSkipBtn">Skip</button>
-        <button class="alarm-snooze-btn" id="alarmSnoozeBtn">2 min</button>
+        <!-- 2 min snooze button removed per King's request — kept the hidden element
+             so any JS that references #alarmSnoozeBtn still resolves without error. -->
+        <button class="alarm-snooze-btn" id="alarmSnoozeBtn" style="display:none;" aria-hidden="true"></button>
       </div>
     </div>
   `;
@@ -9279,7 +9658,14 @@ function fireNotification(slotTime) {
       icon: "asstes/petals-circle.png",
       tag: "blinders-timer",
       renotify: true,
-      requireInteraction: true
+      requireInteraction: true,
+      // Silent: the app plays its OWN chosen ringtone via playAlarm().
+      // Without this, macOS/Chrome ALSO plays its default system notification
+      // chime on top — a sound that isn't in the app's ringtone choices and
+      // is most noticeable on the first alarm of each session (before the
+      // custom ringtone is primed). silent:true removes that OS chime so the
+      // user only ever hears the ringtone they actually selected.
+      silent: true
     });
   } catch(e) {}
 }
@@ -9959,11 +10345,13 @@ function openWeekModal() {
     return days;
   }
 
-  // 3-color tier system: green (high) / blue (medium) / red (low).
+  // 3-color tier system: gold (high) / green (medium) / red (low).
+  // REVERT NOTE — previous palette used blue for the medium tier:
+  //   high >=70: '#10b981' (green)   medium 40-69: '#3b82f6' (blue)   low: '#ef4444'
   const barColor = (score) => {
-    if (score >= 70) return '#10b981'; // high
-    if (score >= 40) return '#3b82f6'; // medium
-    return '#ef4444';                   // low
+    if (score >= 70) return '#F5A623'; // high   → gold (palette / lifetime gold)
+    if (score >= 40) return '#10b981'; // medium → green (was blue #3b82f6)
+    return '#ef4444';                   // low    → red
   };
 
   const todayMon = getMondayOf(todayDate);
@@ -11217,18 +11605,21 @@ function getAllTimeBestDate() {
 }
 
 // Bar/line color tier based on QUALIFYING minutes (Deep Work + Movement),
-// matching the line % model. Same minute thresholds as before.
+// matching the line % model. Updated to the app-wide gold/green/red palette
+// (was green/blue/red). REVERT NOTE: medium tier used to be '#6981ED'.
 function stripDayColor(qMin) {
-  if (qMin >= 300) return '#3DDC97';
-  if (qMin >= 240) return '#6981ED';
-  return '#FF5A5F';
+  if (qMin >= 300) return '#F5A623'; // high   → gold (was green #3DDC97)
+  if (qMin >= 240) return '#3DDC97'; // medium → green (was blue #6981ED)
+  return '#FF5A5F';                  // low    → red (unchanged)
 }
 
 function scoreBarColor(score) {
-  if (score >= 70) return '#3DDC97';
-  if (score >= 40) return '#4DA3FF';
-  if (score >= 1)  return '#FF5A5F';
-  return '#3DDC97';
+  // 3-color tier: gold (high) / green (medium) / red (low).
+  // REVERT NOTE — medium tier used to be blue '#4DA3FF'.
+  if (score >= 70) return '#F5A623'; // high   → gold (was green #3DDC97)
+  if (score >= 40) return '#3DDC97'; // medium → green (was blue #4DA3FF)
+  if (score >= 1)  return '#FF5A5F'; // low    → red
+  return '#3DDC97';                  // no data → neutral green (unchanged)
 }
 
 function stripDayCopy(score, metrics) {

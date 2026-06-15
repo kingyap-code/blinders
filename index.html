@@ -1281,7 +1281,9 @@ footer {
   padding: 7px 10px; font-family: inherit; font-size: 12.5px; color: #fff; outline: none;
 }
 .lp-dd-search::placeholder { color: #5a5d67; }
-.lp-dd-opts { max-height: 220px; overflow-y: auto; padding: 4px 6px; }
+/* Show all 9 categories at once — no scroll friction. Each option is ~38px
+   tall; 9 × 38 = 342px, plus a little headroom for hover/active state. */
+.lp-dd-opts { max-height: 380px; overflow-y: auto; padding: 4px 6px; }
 .lp-dd-opt {
   display: flex; align-items: center; gap: 8px;
   padding: 8px 10px; border-radius: 8px; cursor: pointer;
@@ -1356,15 +1358,17 @@ footer {
   z-index: 200; opacity: 0; transition: opacity 0.2s; border-radius: 10px;
 }
 .lp-alarm-ov.open { opacity: 1; }
+/* Sizing copied EXACTLY from the app's .alarm-card override (app.html ~4614)
+   so the landing demo popup is the same wider/taller card the real app shows. */
 .lp-alarm-card {
   background: linear-gradient(135deg,#2a2d33 0%,#1a1c20 55%,#0d0e11 100%);
-  border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
-  width: 440px; max-width: calc(100% - 48px);
+  border: 1px solid rgba(255,255,255,0.06); border-radius: 20px;
+  width: 600px; max-width: calc(100% - 48px);
   box-shadow: 0 32px 80px rgba(0,0,0,0.6);
-  padding: 28px; display: flex; flex-direction: column;
-  align-items: center; gap: 20px;
+  padding: 28px 28px 22px; display: flex; flex-direction: column;
+  align-items: center; gap: 16px;
 }
-.lp-alarm-logo { width: 36px; height: 36px; object-fit: contain; }
+.lp-alarm-logo { width: 64px; height: 64px; object-fit: contain; }
 .lp-alarm-time {
   font-size: 14px; font-weight: 700; color: #fff;
   background: rgba(255,255,255,0.10); border-radius: 8px; padding: 5px 14px;
@@ -1429,12 +1433,20 @@ footer {
   justify-content: center;
 }
 .lp-alarm-log:hover { opacity: 0.9; transform: translateY(-1px); }
+/* Subtle Skip — quiet escape hatch (ported from app.html .alarm-skip-btn).
+   Smaller + lower opacity + underlined so it doesn't compete with Log It. */
 .lp-alarm-skip {
   background: none; border: none; font-family: inherit;
-  font-size: 13px; color: #7a7f8a; cursor: pointer;
-  padding: 4px 8px; transition: color 0.15s;
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
 }
-.lp-alarm-skip:hover { color: #b0b5c0; }
+.lp-alarm-skip:hover { color: rgba(255,255,255,0.75); }
 .lp-alarm-timer-hint {
   font-size: 12px; color: #5a5d67; font-family: inherit;
 }
@@ -1473,20 +1485,18 @@ footer {
   from { --lp-glow-angle: 0deg; }
   to   { --lp-glow-angle: 360deg; }
 }
+/* Tri-color energy glow — ported from app.html's .energy-glow-active so the
+   landing demo matches the real popup. Same gold/green/red palette. */
 .lp-box-glow-active {
   border: 2px solid transparent !important;
   border-radius: 5px !important;
   background:
     linear-gradient(#0F0F10, #0F0F10) padding-box,
-    conic-gradient(from var(--lp-glow-angle),
-      rgba(61,220,151,0.9),
-      rgba(90,229,176,0.85),
-      rgba(45,200,135,0.9),
-      rgba(61,220,151,0.9)) border-box !important;
+    conic-gradient(from var(--lp-glow-angle), #3DDC97, #F5A623, #FF5A5F, #3DDC97) border-box !important;
   box-shadow:
-    0 0 6px 1px rgba(61,220,151,0.5),
-    0 0 14px 3px rgba(90,229,176,0.35),
-    0 0 22px 5px rgba(61,220,151,0.2) !important;
+    0 0 0 1px rgba(245,166,35,0.25),
+    0 0 24px 2px rgba(245,166,35,0.45),
+    0 0 48px 4px rgba(61,220,151,0.25) !important;
   animation: lpRotateConic 2s linear infinite !important;
 }
 
@@ -1600,13 +1610,33 @@ footer {
   position: absolute; left: calc(100% + 40px); top: 50%;
   transform: translateY(-50%); width: 220px;
   display: flex; flex-direction: column; align-items: center; gap: 14px;
-  z-index: 10; background: #1d1f23; padding: 22px 20px; border-radius: 18px;
+  z-index: 10;
+  /* Ported from app.html — same exact recipe as the .lp-week-pills day bar:
+     160deg two-stop dark gradient + shadow + inset top glint + ::before sheen. */
+  background: linear-gradient(160deg, #242424 0%, #131313 100%);
+  padding: 22px 20px; border-radius: 18px;
   border: none;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.10);
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.55),
+    0 1px 3px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
   overflow: visible;
+  isolation: isolate;
 }
+.lp-timer-widget::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 55%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.07) 0%, transparent 100%);
+  border-radius: 18px 18px 0 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.lp-timer-widget > * { position: relative; z-index: 1; }
 .lp-timer-ring-container {
-  background: #1d1f23;
+  /* Inner disk removed — only ring + number visible inside the widget box. */
+  background: transparent;
   width: 180px; height: 180px;
   border-radius: 50%;
   position: relative;
@@ -1714,11 +1744,28 @@ footer {
 .lp-row-disabled .lp-cell-time { color: #3a3d47; }
 .lp-row-disabled .lp-dd-trigger { color: rgba(255,255,255,0.18); border-color: rgba(111,111,111,0.2); }
 .lp-row-disabled .lp-act-empty { border-color: rgba(111,111,111,0.2); }
-/* ── NOW WIDGET: green vertical bar (same position/style as red fill line) ── */
+/* PRESERVED FOR REVERT — original Now vertical-line tick.
+   Replaced by .lp-now-dot (green circle) below to match app.html.
+   To revert: uncomment this block and swap <div class="lp-now-dot"> back
+   to <div class="lp-now-vline"> in the lp-now-widget innerHTML.
 .lp-now-vline {
   position: absolute; left: 0; top: 5px; width: 3px; height: calc(100% - 5px);
   background: #3DDC97; border-radius: 2px;
   box-shadow: 0 0 4px rgba(61,220,151,0.45);
+}
+*/
+/* Small green circle at the right end of the Now widget's horizontal line —
+   ported from app.html so the landing demo matches the real app. */
+.lp-now-dot {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3DDC97;
+  box-shadow: 0 0 6px rgba(61,220,151,0.7);
+  transform: translate(-50%, -50%);
 }
 
 /* ── RESPONSIVE (hide floating buttons, compact columns) ── */
@@ -2112,8 +2159,10 @@ footer {
   .lp-score-preview .c-energy-line .track { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; display: block; }
   .lp-score-preview .c-energy-line .fill { height: 100%; border-radius: 3px; display: block; }
   .lp-score-preview .c-energy-line .pct { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; width: 34px; text-align: right; }
-  .lp-score-preview .c-energy-line.h .fill { background: #3DDC97; } .lp-score-preview .c-energy-line.h .pct { color: #3DDC97; }
-  .lp-score-preview .c-energy-line.m .fill { background: rgba(255,255,255,0.55); } .lp-score-preview .c-energy-line.m .pct { color: rgba(255,255,255,0.75); }
+  /* High tier = gold, matching the new app-wide palette (gold/green/red). */
+  .lp-score-preview .c-energy-line.h .fill { background: #F5A623; } .lp-score-preview .c-energy-line.h .pct { color: #F5A623; }
+  /* Med tier = green, matching the app-wide gold/green/red palette. */
+  .lp-score-preview .c-energy-line.m .fill { background: #3DDC97; } .lp-score-preview .c-energy-line.m .pct { color: #3DDC97; }
   .lp-score-preview .c-energy-line.l .fill { background: #FF5A5F; } .lp-score-preview .c-energy-line.l .pct { color: #FF5A5F; }
   .lp-score-preview .c-question {
     margin-top: 12px;
@@ -2693,20 +2742,23 @@ footer {
   }
   .lp-tracker-table tr.lp-table-row td:hover .lp-category-pill.has-color,
   .lp-tracker-table tr.lp-table-row td:hover .lp-status-pill.has-color { color: #3DDC97 !important; }
-  /* Now widget — thinner lines + push vline OUTSIDE the row card so it
-     doesn't touch the card's left edge. Matches new-ui.html style. */
-  .lp-now-vline {
+  /* Now widget — match app.html exactly so the dot connects to the hline
+     and the button sits at the same offset from the row card.
+     The .lp-now-vline rule is preserved for revert (now using .lp-now-dot). */
+  /* .lp-now-vline {
     left: -10px !important;
     top: 0 !important;
     width: 1px !important;
     height: 100% !important;
-  }
+  } */
   .lp-now-hline {
     height: 1px !important;
-    right: calc(100% + 10px) !important;
+    /* hline ends exactly at widget left edge (= dot's center) — connected */
+    right: 100% !important;
   }
   .lp-now-btn {
-    right: calc(100% + 46px) !important;
+    /* 36px gap from widget edge to button (matches app's .now-btn) */
+    right: calc(100% + 36px) !important;
   }
   /* Allow vline to overflow the wrap on the left side */
   .lp-tbl-scroll-wrap { overflow: visible !important; }
@@ -3121,11 +3173,11 @@ footer {
                     <span class="c-panel-meta">Mon – Sun</span>
                   </div>
                   <div class="c-week-bars">
-                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:92%;background:#10b981"></div></div><div class="c-week-bar-label">M</div></div>
-                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:78%;background:#10b981"></div></div><div class="c-week-bar-label">T</div></div>
-                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:55%;background:#3b82f6"></div></div><div class="c-week-bar-label">W</div></div>
-                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:88%;background:#10b981"></div></div><div class="c-week-bar-label">T</div></div>
-                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:95%;background:#10b981"></div></div><div class="c-week-bar-label">F</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:92%;background:#F5A623"></div></div><div class="c-week-bar-label">M</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:78%;background:#F5A623"></div></div><div class="c-week-bar-label">T</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:55%;background:#10b981"></div></div><div class="c-week-bar-label">W</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:88%;background:#F5A623"></div></div><div class="c-week-bar-label">T</div></div>
+                    <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:95%;background:#F5A623"></div></div><div class="c-week-bar-label">F</div></div>
                     <div class="c-week-bar"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:32%;background:#ef4444"></div></div><div class="c-week-bar-label">S</div></div>
                     <div class="c-week-bar empty"><div class="c-week-bar-track"><div class="c-week-bar-fill" style="height:0%"></div></div><div class="c-week-bar-label">S</div></div>
                   </div>
@@ -3357,8 +3409,13 @@ footer {
 (function () {
   'use strict';
 
+  // 9 universal categories — ported from app.html's new defaults so the landing
+  // demo shows the same picker the user will see inside the app after paying.
   const CATS = [
     { id:'deep-work',    label:'Deep Work',    color:'#3DDC97' },
+    { id:'meeting',      label:'Meeting',      color:'#3DDC97' },
+    { id:'admin',        label:'Admin',        color:'#3DDC97' },
+    { id:'learning',     label:'Learning',     color:'#3DDC97' },
     { id:'movement',     label:'Movement',     color:'#3DDC97' },
     { id:'meal-break',   label:'Meal/Break',   color:'#4DA3FF' },
     { id:'sleep-rest',   label:'Sleep/Rest',   color:'#4DA3FF' },
@@ -3651,7 +3708,10 @@ footer {
     if (!w) {
       w = document.createElement('div');
       w.id = 'lpNowWidget'; w.className = 'lp-now-widget';
-      w.innerHTML = `<div class="lp-now-vline"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn">Now</button>`;
+      // REVERT NOTE: was `<div class="lp-now-vline"></div>` — ported to .lp-now-dot
+      // to match app.html. To revert, swap dot back to vline and uncomment the
+      // .lp-now-vline CSS block in both rule locations.
+      w.innerHTML = `<div class="lp-now-dot"></div><div class="lp-now-hline"></div><button class="lp-now-btn" id="lpNowBtn">Now</button>`;
       wrap.appendChild(w);
     }
     // Re-wire the click handler each call so it points at the latest curIdx.
@@ -3661,10 +3721,16 @@ footer {
       btn.parentNode.replaceChild(fresh, btn);
       fresh.addEventListener('click', () => openAlarmPopup(curIdx));
     }
-    w.style.top    = curRow.offsetTop + 'px';
-    w.style.height = curRow.offsetHeight + 'px';
-    w.style.left   = '0';
-    w.style.width  = '100%';
+    // Position the widget the SAME WAY as app.html's positionNowWidget:
+    // widget.left = row.left - 14, producing ~11px visible gap between the
+    // dot's right edge and the row card's left edge. Don't set width — the
+    // dot/hline/button render leftward via right:100% / right:calc(100%+36px).
+    const wrapRect = wrap.getBoundingClientRect();
+    const rRect    = curRow.getBoundingClientRect();
+    w.style.top    = (rRect.top  - wrapRect.top) + 'px';
+    w.style.height = rRect.height + 'px';
+    w.style.left   = (rRect.left - wrapRect.left - 14) + 'px';
+    w.style.width  = 'auto';
     w.classList.add('visible');
   }
 
@@ -3877,16 +3943,27 @@ footer {
     });
     alEngBtn.addEventListener('click', e => {
       e.stopPropagation();
-      openAlarmDd('energy', alEngBtn, val => { alEng = val; syncPills(); });
+      openAlarmDd('energy', alEngBtn, val => {
+        alEng = val;
+        // Stop the tri-color glow once the user picks an energy level.
+        alEngBtn.classList.remove('lp-box-glow-active');
+        syncPills();
+      });
     });
 
-    // Same as last
+    // Same as last — ported from app.html's Feature 1 handler. Fills Activity
+    // + Category, but EXPLICITLY clears Energy and starts the tri-color glow
+    // around the Energy pill so the user still picks their energy level.
     document.getElementById('lpAlSame').addEventListener('click', () => {
       const prev = DEMO_ROWS.slice(0, rowIdx).reverse().find(r => r.activity);
-      if (prev) {
-        document.getElementById('lpAlAct').value = prev.activity;
-        alCat = prev.category; alEng = prev.energy; syncPills();
-      }
+      if (!prev) return;
+      document.getElementById('lpAlAct').value = prev.activity;
+      alCat = prev.category;
+      alEng = ''; // do NOT auto-fill energy
+      syncPills();
+      // Glow the Energy pill so the next required action is obvious.
+      const engBtn = document.getElementById('lpAlEng');
+      if (engBtn) engBtn.classList.add('lp-box-glow-active');
     });
 
     function doLog() {
@@ -4268,15 +4345,34 @@ footer {
     padding: 16px;
   }
   .fb-overlay.open { display: flex; opacity: 1; }
+  /* Feedback modal — full app-side This-Week-modal recipe (gradient + sheen
+     + border + shadow). Inner controls below also get the dark inner-panel
+     treatment so the look matches the app's feedback popup. */
   .fb-card {
-    background: linear-gradient(135deg, #161618 0%, #0d0d0d 100%);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 14px;
-    padding: 22px;
+    background: linear-gradient(160deg, #242424 0%, #131313 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 26px 26px 22px;
+    box-shadow:
+      0 24px 60px rgba(0,0,0,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.1);
     width: 100%;
     max-width: 460px;
     font-family: 'Inter', system-ui, sans-serif;
+    position: relative;
+    overflow: hidden;
   }
+  .fb-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 100%);
+    border-radius: 18px 18px 0 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .fb-card > * { position: relative; z-index: 1; }
   .fb-header {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 16px;
@@ -4290,8 +4386,9 @@ footer {
   .fb-type-row { display: flex; gap: 8px; margin-bottom: 12px; }
   .fb-type-btn {
     flex: 1;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+    /* Dark inner panel — matches the .c-panel boxes in the This Week modal. */
+    background: #0F0F10;
+    border: 1px solid rgba(255,255,255,0.06);
     color: rgba(255,255,255,0.7);
     border-radius: 8px;
     padding: 8px 10px;
@@ -4300,16 +4397,20 @@ footer {
     font-family: inherit;
     transition: all 0.15s ease;
   }
+  /* Active = lighter gray stroke + bold white text (no green) — mirrors the
+     app's .feedback-type-btn.active so both feedback popups feel the same. */
   .fb-type-btn.active {
-    background: rgba(61,220,151,0.12);
-    border-color: rgba(61,220,151,0.4);
-    color: #3DDC97;
+    border-color: #4a4d57;
+    background: rgba(255,255,255,0.05);
+    color: #ffffff;
+    font-weight: 700;
   }
   .fb-textarea {
     width: 100%;
     min-height: 140px;
-    background: rgba(0,0,0,0.45);
-    border: 1px solid rgba(255,255,255,0.10);
+    /* Same dark inner panel as the type buttons. */
+    background: #0F0F10;
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 8px;
     padding: 12px 14px;
     color: #fff;
@@ -4319,7 +4420,8 @@ footer {
     outline: none;
     box-sizing: border-box;
   }
-  .fb-textarea:focus { border-color: #3DDC97; box-shadow: 0 0 0 3px rgba(61,220,151,0.18); }
+  /* Focus = lighter gray stroke (no green), matching the app's onboarding. */
+  .fb-textarea:focus { border-color: #4a4d57; }
   .fb-textarea::placeholder { color: rgba(255,255,255,0.35); }
   .fb-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
   .fb-btn {
@@ -4741,11 +4843,11 @@ footer {
       total: 37.0,
       delta: 'First tracked week',
       bars: [
-        { pct: 50, color: '#3b82f6' },
-        { pct: 60, color: '#10b981' },
-        { pct: 55, color: '#10b981' },
-        { pct: 65, color: '#10b981' },
-        { pct: 45, color: '#3b82f6' },
+        { pct: 50, color: '#10b981' },
+        { pct: 60, color: '#F5A623' },
+        { pct: 55, color: '#F5A623' },
+        { pct: 65, color: '#F5A623' },
+        { pct: 45, color: '#10b981' },
         { pct: 35, color: '#ef4444' },
         { pct: 20, color: '#ef4444' }
       ],
@@ -4772,13 +4874,13 @@ footer {
       total: 54.0,
       delta: '+17h vs last week',
       bars: [
-        { pct: 75, color: '#10b981' },
-        { pct: 70, color: '#10b981' },
-        { pct: 65, color: '#10b981' },
-        { pct: 80, color: '#10b981' },
-        { pct: 60, color: '#3b82f6' },
-        { pct: 40, color: '#3b82f6' },
-        { pct: 30, color: '#3b82f6' }
+        { pct: 75, color: '#F5A623' },
+        { pct: 70, color: '#F5A623' },
+        { pct: 65, color: '#F5A623' },
+        { pct: 80, color: '#F5A623' },
+        { pct: 60, color: '#10b981' },
+        { pct: 40, color: '#10b981' },
+        { pct: 30, color: '#10b981' }
       ],
       acts: [
         { name: 'Building product',   time: '20h' },
@@ -4808,12 +4910,12 @@ footer {
       total: 83.5,
       delta: '+29.5h vs last week',
       bars: [
-        { pct: 88, color: '#10b981' },
-        { pct: 82, color: '#10b981' },
-        { pct: 75, color: '#10b981' },
-        { pct: 92, color: '#10b981' },
-        { pct: 80, color: '#10b981' },
-        { pct: 60, color: '#3b82f6' },
+        { pct: 88, color: '#F5A623' },
+        { pct: 82, color: '#F5A623' },
+        { pct: 75, color: '#F5A623' },
+        { pct: 92, color: '#F5A623' },
+        { pct: 80, color: '#F5A623' },
+        { pct: 60, color: '#10b981' },
         { pct: 25, color: '#ef4444' }
       ],
       acts: [
@@ -4849,13 +4951,13 @@ footer {
       total: 90.5,
       delta: '+7h vs last week',
       bars: [
-        { pct: 92, color: '#10b981' },
-        { pct: 78, color: '#10b981' },
-        { pct: 55, color: '#3b82f6' },
-        { pct: 88, color: '#10b981' },
-        { pct: 95, color: '#10b981' },
+        { pct: 92, color: '#F5A623' },
+        { pct: 78, color: '#F5A623' },
+        { pct: 55, color: '#10b981' },
+        { pct: 88, color: '#F5A623' },
+        { pct: 95, color: '#F5A623' },
         { pct: 32, color: '#ef4444' },
-        { pct: 0,  color: '#10b981' }
+        { pct: 0,  color: '#F5A623' }
       ],
       acts: [
         { name: 'Building product',   time: '22h' },
