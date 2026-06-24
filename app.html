@@ -6614,14 +6614,10 @@ function _esc(s) {
 // defaults. Existing users can add the new ones via the "Edit options" button.
 let CATEGORIES = [
   { id: 'deep-work',    emoji: '', label: 'Deep Work',    color: '#3DDC97' },
-  { id: 'meeting',      emoji: '', label: 'Meeting',      color: '#3DDC97' },
-  { id: 'admin',        emoji: '', label: 'Admin',        color: '#3DDC97' },
-  { id: 'learning',     emoji: '', label: 'Learning',     color: '#3DDC97' },
   { id: 'movement',     emoji: '', label: 'Movement',     color: '#3DDC97' },
   { id: 'meal-break',   emoji: '', label: 'Meal/Break',   color: '#4DA3FF' },
-  { id: 'sleep-rest',   emoji: '', label: 'Sleep/Rest',   color: '#4DA3FF' },
-  { id: 'spirituality', emoji: '', label: 'Spirituality', color: '#3DDC97' },
   { id: 'distracted',   emoji: '', label: 'Distracted',   color: '#FF5A5F' },
+  { id: 'spirituality', emoji: '', label: 'Spirituality', color: '#3DDC97' },
 ];
 
 let ENERGY_OPTIONS = [
@@ -6636,9 +6632,17 @@ const KEYWORD_MAP = [
   { label: 'Deep Work', keywords: ['writing','coding','working','deep work','studying','learning','designing','editing','researching','brainstorming','planning','strategizing','debugging','testing','reviewing','documenting','reading','analyzing','problem solving','building','creating','developing','engineering','architecting','synthesizing','compiling','formatting','presenting','pitching','negotiating','closing','prospecting','emailing','marketing','sales','copywriting','content creation','video editing','photo editing','graphic design','ui design','ux design','wireframing','prototyping','data analysis','data entry','accounting','bookkeeping','legal work','medical work','teaching','tutoring','coaching','consulting','advising'] },
   { label: 'Movement', keywords: ['gym','exercise','workout','running','walking','yoga','stretching','cardio','lifting','sports','basketball','swimming','cycling','hiking','dancing','martial arts','boxing','pilates','calisthenics','jogging','sprinting','climbing','skiing','snowboarding','surfing','skating','skateboarding','frisbee','soccer','football','baseball','tennis','badminton','volleyball','wrestling','judo','taekwondo','kickboxing','crossfit','zumba','aerobics','step class','spinning','rowing','paddling','kayaking','canoeing'] },
   { label: 'Distracted', keywords: ['doomscrolling','distracted','procrastinating','scrolling','social media','tiktok','instagram','facebook','twitter','x','threads','bluesky','snapchat','youtube','netflix','hulu','disney plus','prime video','gaming','video games','browsing','wandering','daydreaming','zoning out','waiting','stuck','time wasting','lurking','stalking','doom spiraling','rabbit hole','binge watching','binge scrolling','shopping online','window shopping','online shopping','amazon browsing','shein browsing'] },
-  { label: 'Sleep/Rest', keywords: ['sleeping','sleep','rest','nap','napping','dozing','meditating','meditation','breathwork','lying down','resting eyes','power nap','deep sleep','rem sleep','bedtime','going to bed','waking up','lounging','relaxing'] },
   { label: 'Meal/Break', keywords: ['eating','breakfast','lunch','dinner','supper','snack','snacking','meal','brunch','feast','dining','chewing','drinking water','drinking coffee','drinking tea','hydration break','coffee break','tea break','water break','lunch break','dinner break','meal prep','cooking','baking','food prep','grocery shopping','break time','rest break','pause','intermission','chill time','breather','reset'] },
 ];
+
+// Sleep keywords drive energy = "Charging" (replaces the old Sleep/Rest
+// category coupling). Detected on the activity text, independent of category.
+const SLEEP_KEYWORDS = ['sleeping','sleep','rest','resting','nap','napping','dozing','meditating','meditation','breathwork','lying down','resting eyes','power nap','deep sleep','rem sleep','bedtime','going to bed','waking up','lounging','relaxing'];
+function isSleepActivity(text) {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return SLEEP_KEYWORDS.some(kw => lower.includes(kw));
+}
 
 const CATEGORY_COLOR_MAP = {
   'deep-work':    '#3DDC97',
@@ -6651,7 +6655,7 @@ const CATEGORY_COLOR_MAP = {
   'spirituality': '#3DDC97',
   'distracted':   '#FF5A5F',
 };
-const CATEGORY_ORDER = ['deep-work','meeting','admin','learning','movement','meal-break','sleep-rest','spirituality','distracted'];
+const CATEGORY_ORDER = ['deep-work','movement','meal-break','distracted','spirituality'];
 
 // Removed legacy IDs that should be stripped from saved user lists. Note:
 // 'learning' and 'spirituality' were here previously but are now back as
@@ -6687,6 +6691,21 @@ function loadCustomOptions() {
         localStorage.setItem(MIGRATION_KEY, '1');
       }
 
+      // ONE-SHOT MIGRATION (mozimin_minimal_cats_v2):
+      // Trim existing saved lists down to the 4 minimal defaults by removing
+      // the now-dropped default categories. User-added custom categories are
+      // kept. Runs once per browser, so re-adding any of these later sticks.
+      const MIN_KEY = 'mozimin_minimal_cats_v2_done';
+      if (!localStorage.getItem(MIN_KEY)) {
+        const DROPPED = new Set(['meeting','admin','learning','sleep-rest']);
+        const before = filtered.length;
+        for (let i = filtered.length - 1; i >= 0; i--) {
+          if (DROPPED.has(filtered[i].id)) filtered.splice(i, 1);
+        }
+        if (filtered.length !== before) changed = true;
+        localStorage.setItem(MIN_KEY, '1');
+      }
+
       filtered.sort((a, b) => {
         const ai = CATEGORY_ORDER.indexOf(a.id);
         const bi = CATEGORY_ORDER.indexOf(b.id);
@@ -6711,6 +6730,17 @@ function saveCustomOptions() {
     category: CATEGORIES
     // productive and energy are fixed — not persisted
   }));
+}
+
+// Persist a typed category into the dropdown choices (the "+ Add" button).
+// No-ops on blank input or an existing label (case-insensitive).
+function addCustomCategory(label) {
+  const clean = (label || '').trim();
+  if (!clean) return;
+  if (CATEGORIES.some(c => c.label.toLowerCase() === clean.toLowerCase())) return;
+  const slug = clean.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || ('cat-' + Date.now());
+  CATEGORIES.push({ id: slug, emoji: '', label: clean, color: '#3DDC97' });
+  saveCustomOptions();
 }
 
 // Day boundaries — set during onboarding (wake / log-off times).
@@ -6794,10 +6824,10 @@ function minToTime(m) {
   return `${h12}:${String(min).padStart(2,'0')} ${p}`;
 }
 
-function genSlots(interval, extraSlots = 0) {
+function genSlots(interval, extraSlots = 0, startMin = DAY_START_MIN) {
   const slots = [];
-  let lastM = DAY_START_MIN;
-  for (let m = DAY_START_MIN; m <= DAY_END_MIN; m += interval) {
+  let lastM = startMin;
+  for (let m = startMin; m <= DAY_END_MIN; m += interval) {
     slots.push(minToTime(m));
     lastM = m;
   }
@@ -6824,6 +6854,17 @@ function currentSlotTime() {
   const slotMin = DAY_START_MIN + Math.floor((total - DAY_START_MIN) / state.interval) * state.interval;
   const slot = minToTime(slotMin);
   return state.rows.some(r => r.time === slot) ? slot : null;
+}
+
+// For a FRESH "today", the grid starts at the current time (snapped down to the
+// interval grid, aligned to DAY_START_MIN — so 6:02 AM → 6:00 AM) instead of the
+// configured wake time, so there are no empty pre-wake rows each morning. If the
+// current time is before the wake time or past log-off, falls back to wake time.
+function todayStartMin(interval) {
+  const n = new Date();
+  const total = n.getHours() * 60 + n.getMinutes();
+  if (total <= DAY_START_MIN || total > DAY_END_MIN) return DAY_START_MIN;
+  return DAY_START_MIN + Math.floor((total - DAY_START_MIN) / interval) * interval;
 }
 
 function getCat(label) { return CATEGORIES.find(c => c.label === label) || null; }
@@ -6907,7 +6948,9 @@ function loadData(date, defaultInterval) {
   }
   state.interval = defaultInterval;
   state.extraSlots = 0;
-  state.rows = genSlots(defaultInterval).map(blankRow);
+  // Fresh "today" → begin at the current time (snapped); other dates → wake time.
+  const startMin = (date === todayStr()) ? todayStartMin(defaultInterval) : DAY_START_MIN;
+  state.rows = genSlots(defaultInterval, 0, startMin).map(blankRow);
   state.setupTimeDone = !!localStorage.getItem('mozimin_setup_done');
 }
 
@@ -6916,8 +6959,11 @@ function loadData(date, defaultInterval) {
 // persist the corrected values on the next user action).
 function sanitizeSleepRestEnergy() {
   state.rows.forEach(r => {
-    if (r.category === 'Sleep/Rest' && r.energy !== 'Charging') r.energy = 'Charging';
-    else if (r.category !== 'Sleep/Rest' && r.energy === 'Charging') r.energy = '';
+    // Charging is valid when the activity reads as sleep (new keyword model) or
+    // the row uses the legacy Sleep/Rest category. Otherwise strip stray Charging.
+    const isSleep = r.category === 'Sleep/Rest' || isSleepActivity(r.activity);
+    if (isSleep) r.energy = 'Charging';
+    else if (r.energy === 'Charging') r.energy = '';
   });
 }
 
@@ -7077,19 +7123,26 @@ function onTimerDone() {
   // Fire an immediate browser notification (works even in background).
   fireNotification(slotTime);
 
-  // Always trigger alarm — interval is done regardless of missed rows.
-  isAlarmActive = true;
-  playAlarm();
-  flashCurrentRow();
-  startTitleFlash();
-  setFaviconAlert(true);
-  startNotificationLoop(slotTime);
-
   // Show check-in popup for the current slot only.
   // Missed rows (red line) only open via the red Fill-all button — never auto-open.
   if (rowIdx >= 0) {
+    // There's a current slot to log → ring + flash + nag until the user logs
+    // or dismisses it via the alarm overlay (which calls stopAlarm). Unchanged.
+    isAlarmActive = true;
+    playAlarm();
+    flashCurrentRow();
+    startTitleFlash();
+    setFaviconAlert(true);
+    startNotificationLoop(slotTime);
     showAlarmOverlay(slotTime, rowIdx);
   } else {
+    // Nothing to log (current time is past the last row). Do NOT start the
+    // until-dismissed audio/visual nags — there'd be no overlay to stop them,
+    // so notif1 would loop forever in the background (the phantom loop). Clear
+    // anything still running from a previous slot, then just prompt to add rows.
+    stopAlarm();
+    stopTitleFlash();
+    setFaviconAlert(false);
     bounceLoadMoreBtn();
   }
 
@@ -8121,6 +8174,10 @@ function openFillAllUI(idxs) {
       faRenderCell('category');
       faRenderCell('energy');
     }
+    if (isSleepActivity(actInput.value)) {
+      gapFillData[0].energy = 'Charging';
+      faRenderCell('energy');
+    }
   });
 
   // Use gf* ids so the existing dropdown pickOption → gapFillRenderCell path
@@ -8707,6 +8764,7 @@ function openActivityPopup(rowIdx) {
       state.rows[rowIdx].category = matched;
       coupleEnergyToCategory(state.rows[rowIdx], 'category', matched);
     }
+    if (isSleepActivity(val)) state.rows[rowIdx].energy = 'Charging';
     saveData();
     // Merge shape may have changed — full re-render keeps it accurate.
     renderTable();
@@ -8793,6 +8851,22 @@ function openDropdown(colType, rowIdx, anchor) {
       optEl.appendChild(div);
     });
 
+    // "+ Add ‘query’" — category only. Shows when the typed query has no exact
+    // (case-insensitive) match. Click = persist to CATEGORIES so it appears in
+    // every future row's dropdown. (Pressing Enter instead applies it to THIS
+    // row only, without saving — handled in the keydown below.)
+    const q = (filter || '').trim();
+    const hasExact = opts.some(o => o.label.toLowerCase() === q.toLowerCase());
+    if (isCategory && q && !hasExact) {
+      const add = document.createElement('div');
+      add.className = 'dropdown-option dropdown-add';
+      add.dataset.label = q;
+      add.setAttribute('role', 'option');
+      add.innerHTML = `<span class="opt-emoji" style="opacity:0.7">+</span><span class="opt-label">Add “${q}”</span>`;
+      add.addEventListener('click', e => { e.stopPropagation(); addCustomCategory(q); pickOption(q); });
+      optEl.appendChild(add);
+    }
+
     // Clear option — category and energy
     if (isCategory || colType === 'energy') {
       const clr = document.createElement('div');
@@ -8834,9 +8908,20 @@ function openDropdown(colType, rowIdx, anchor) {
       idx = (idx - 1 + items.length) % items.length;
       items[idx].classList.add('kb-focus');
       items[idx].scrollIntoView({ block: 'nearest' });
-    } else if (e.key === 'Enter' && focused) {
-      e.preventDefault();
-      pickOption(focused.dataset.label || '');
+    } else if (e.key === 'Enter') {
+      if (focused) {
+        e.preventDefault();
+        // Enter on the focused "+ Add" row persists it (same as clicking +).
+        if (focused.classList.contains('dropdown-add')) addCustomCategory(focused.dataset.label || '');
+        pickOption(focused.dataset.label || '');
+        return;
+      }
+      // Enter while typing (no row navigated to): use the typed text for THIS
+      // row only — NOT added to the dropdown choices.
+      if (isCategory) {
+        const qv = search.value.trim();
+        if (qv) { e.preventDefault(); pickOption(qv); }
+      }
     }
   };
 
@@ -8879,7 +8964,11 @@ function repositionDropdown() {
     left = window.innerWidth - pRect.width - 8 + sx;
     panel.style.left = left + 'px';
   }
-  if (pRect.bottom > window.innerHeight - 8) {
+  // Prefer opening BELOW the cell (esp. on laptops). Only flip above when the
+  // panel genuinely can't fit below AND there's more room above.
+  const spaceBelow = window.innerHeight - rect.bottom - 8;
+  const spaceAbove = rect.top - 8;
+  if (pRect.height > spaceBelow && spaceAbove > spaceBelow) {
     top = rect.top - pRect.height - 4 + sy;
     panel.style.top = top + 'px';
   }
@@ -9250,6 +9339,10 @@ function openGapFillUI(emptyIdxs) {
         gapFillRenderCell(gi, 'category');
         gapFillRenderCell(gi, 'energy');
       }
+      if (isSleepActivity(inp.value)) {
+        gapFillData[gi].energy = 'Charging';
+        gapFillRenderCell(gi, 'energy');
+      }
     });
   });
 
@@ -9571,6 +9664,10 @@ function showAlarmOverlay(slotTime, rowIdx) {
       if (matched) {
         overlayRow.category = matched;
         coupleEnergyToCategory(overlayRow, 'category', matched);
+        refreshOverlayCells();
+      }
+      if (isSleepActivity(actInput.value)) {
+        overlayRow.energy = 'Charging';
         refreshOverlayCells();
       }
     });
